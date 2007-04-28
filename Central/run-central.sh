@@ -1,0 +1,1 @@
+java -classpath ../lib/log4j-1.2.14.jar:../lib/jdom.jar:.  org.spbgu.pmpu.athynia.central.Central

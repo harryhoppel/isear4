@@ -1,0 +1,22 @@
+<settings>
+    <worker-main-port value="44446"/>
+    <broadcast>
+        <broadcast-port value="44445"/>
+        <group-address-to-join value="239.0.0.1"/>
+    </broadcast>
+    <classloader>
+       <home-directory value="tests/data/worker/classloader/"/>
+    </classloader>
+    <common>
+        <worker-server>
+            <port value="8181"/>
+        </worker-server>
+        <broadcast>
+            <port value="7777"/>
+            <broadcastAddress value="239.0.0.1"/>
+            <portToListen value="44445"/>
+            <nicName value="en0"/>
+            <nicParticularAddress value="/172.16.0.2"/>
+        </broadcast>
+    </common>
+</settings>

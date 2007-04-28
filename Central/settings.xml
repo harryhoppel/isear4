@@ -1,0 +1,16 @@
+<settings>
+    <common>
+        <central-server>
+            <port value="9999"/>
+            <server-directory value="tests/data/serverData/"/>
+        </central-server>
+        <broadcast>
+            <broadcasting-timeout-in-ms value="3000"/>
+            <port value="7777"/>
+            <broadcastAddress value="239.0.0.1"/>
+            <portToListen value="44445"/>
+            <nicName value="lo"/>
+            <nicParticularAddress value="/127.0.0.1"/>
+        </broadcast>
+    </common>
+</settings>
