@@ -1,0 +1,105 @@
+package org.spbgu.pmpu.athynia.central.communications.join.impl;
+
+import org.spbgu.pmpu.athynia.central.communications.CommunicationConstants;
+import org.spbgu.pmpu.athynia.central.communications.Worker;
+import org.spbgu.pmpu.athynia.central.communications.WorkersExecutorSender;
+import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
+import org.spbgu.pmpu.athynia.central.communications.impl.WorkersExecutorSenderImpl;
+import org.spbgu.pmpu.athynia.central.communications.join.JoinPart;
+import org.spbgu.pmpu.athynia.central.communications.join.Joiner;
+import org.spbgu.pmpu.athynia.central.communications.join.SearchTask;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Set;
+
+/**
+ * User: vasiliy
+ */
+public class JoinerImpl implements Joiner {
+    //todo: should we send this from multiple threads? --> profile that
+    //todo: collisions - what should we do if we have 2 workers and collisions(2 different values for the same key)?
+    //todo: null values (is it good to return null, if nothing was found?)
+    private final WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
+    private WorkersManager workersManager;
+
+    public JoinerImpl(WorkersManager workersManager) {
+        this.workersManager = workersManager;
+    }
+
+    public String join(String key) {
+        Set<Worker> workers = workersManager.getAll();
+        for (Worker worker : workers) {
+            sendSearchTask(worker, key);
+        }
+        JoinPart[] retrievedParts = new JoinPart[workers.size()];
+        int i = 0;
+        for (Worker worker : workers) {
+            retrievedParts[i++] = retrieveData(worker);
+        }
+        String ret = joinDataParts(retrievedParts);
+        if (ret == null) {
+
+        }
+        return ret;
+    }
+
+    private void sendSearchTask(Worker worker, String key) {
+        workersExecutorSender.runExecutorOnWorker(worker, SearchTask.class.getName());
+        try {
+            BufferedOutputStream outputToWorker = new BufferedOutputStream(worker.getSocket().getOutputStream());
+            outputToWorker.write(key.length());
+            outputToWorker.write(key.getBytes("UTF-8"));
+            outputToWorker.flush();
+        } catch (IOException e) {
+            /*ignore, in case of any exceptions we will throw CommunicationException later*/
+        }
+    }
+
+    private JoinPart retrieveData(Worker worker) {
+        try {
+            BufferedInputStream inputFromWorker = new BufferedInputStream(worker.getSocket().getInputStream());
+            byte[] joinPartLengthBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
+            inputFromWorker.read(joinPartLengthBuffer);
+            int joinPartLength = Integer.parseInt(new String(joinPartLengthBuffer, "UTF-8"));
+            byte[] joinPartBuffer = new byte[joinPartLength];
+            inputFromWorker.read(joinPartBuffer);
+            return new JoinPartImpl(joinPartBuffer);
+        } catch (IOException e) {
+            return null; //ignore, we will throw an exception later
+        }
+    }
+
+    private String joinDataParts(JoinPart[] retrievedParts) {
+        ArrayList<JoinPart> filteredRetrievedParts = new ArrayList<JoinPart>();
+        for (JoinPart retrievedPart : retrievedParts) {
+            if (retrievedPart != null && retrievedPart.getWholePartsNumber() != -1) { // -1 - in case of null value found in worker's index
+                filteredRetrievedParts.add(retrievedPart);
+            }
+        }
+        if (filteredRetrievedParts.size() == 0) {
+            return null;
+        }
+        if (filteredRetrievedParts.get(0).getWholePartsNumber() != filteredRetrievedParts.size()){
+            return null;
+        }
+        Collections.sort(filteredRetrievedParts, new Comparator<JoinPart>() {
+            public int compare(JoinPart o1, JoinPart o2) {
+                return ((Integer) o1.getPartNumber()).compareTo(o2.getPartNumber());
+            }
+        });
+        StringBuffer ret = new StringBuffer();
+        for (int index = 0; index < filteredRetrievedParts.size(); index++) {
+            JoinPart joinPart = filteredRetrievedParts.get(index);
+            if (joinPart.getPartNumber() != index) {
+                return null;
+            }
+            ret.append(joinPart.getValue());
+        }
+        return ret.toString();
+    }
+}
