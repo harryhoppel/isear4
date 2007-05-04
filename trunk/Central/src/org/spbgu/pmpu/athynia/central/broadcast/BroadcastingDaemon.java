@@ -3,6 +3,7 @@ package org.spbgu.pmpu.athynia.central.broadcast;
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.settings.IllegalConfigException;
 import org.spbgu.pmpu.athynia.central.Central;
+import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
 
 import java.io.IOException;
 import java.net.*;
@@ -29,15 +30,15 @@ public class BroadcastingDaemon implements Runnable {
     private final int portToListen;
     private final Runnable workersSignalsGetter;
 
-    public BroadcastingDaemon(String broadcastAddress, int portToListen, String nicName, String nicParticularAddress) throws IllegalConfigException {
-        this(DEFAULT_TIMEOUT, DEFAULT_BROADCAST_PORT, broadcastAddress, portToListen, nicName, nicParticularAddress);
+    public BroadcastingDaemon(String broadcastAddress, int portToListen, String nicName, String nicParticularAddress, WorkersManager workersManager) throws IllegalConfigException {
+        this(DEFAULT_TIMEOUT, DEFAULT_BROADCAST_PORT, broadcastAddress, portToListen, nicName, nicParticularAddress, workersManager);
     }
 
-    public BroadcastingDaemon(long timeout, String broadcastAddress, int portToListen, String nicName, String nicParticularAddress) throws IllegalConfigException {
-        this(timeout, DEFAULT_BROADCAST_PORT, broadcastAddress, portToListen, nicName, nicParticularAddress);
+    public BroadcastingDaemon(long timeout, String broadcastAddress, int portToListen, String nicName, String nicParticularAddress, WorkersManager workersManager) throws IllegalConfigException {
+        this(timeout, DEFAULT_BROADCAST_PORT, broadcastAddress, portToListen, nicName, nicParticularAddress, workersManager);
     }
 
-    public BroadcastingDaemon(long timeout, int broadcastPort, String broadcastAddress, int portToListen, String nicName, String nicParticularAddress) throws IllegalConfigException {
+    public BroadcastingDaemon(long timeout, int broadcastPort, String broadcastAddress, int portToListen, String nicName, String nicParticularAddress, WorkersManager workersManager) throws IllegalConfigException {
         this.timeout = timeout;
         this.broadcastPort = broadcastPort;
         this.portToListen = portToListen;
@@ -73,7 +74,7 @@ public class BroadcastingDaemon implements Runnable {
             throw new IllegalConfigException("Unknown host: " + broadcastAddress, e);
         }
         try {
-            this.workersSignalsGetter = new WorkersSignalGetter(portToListen, broadcastInetAddress);
+            this.workersSignalsGetter = new WorkersSignalGetter(portToListen, broadcastInetAddress, workersManager);
         } catch (IOException e) {
             throw new IllegalConfigException("Can't create listener for workers' signals", e);
         }

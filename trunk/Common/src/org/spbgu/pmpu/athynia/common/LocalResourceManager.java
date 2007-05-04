@@ -1,7 +1,7 @@
-package org.spbgu.pmpu.athynia.worker.classloader;
+package org.spbgu.pmpu.athynia.common;
 
-import org.spbgu.pmpu.athynia.central.communications.join.JoinPart;
-import org.spbgu.pmpu.athynia.central.communications.join.impl.JoinPartImpl;
+import org.spbgu.pmpu.athynia.common.JoinPart;
+import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,22 +1,16 @@
 package org.spbgu.pmpu.athynia.central;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.spbgu.pmpu.athynia.central.broadcast.BroadcastingDaemon;
-import org.spbgu.pmpu.athynia.central.classloader.ZipClassReader;
-import org.spbgu.pmpu.athynia.central.network.Client;
-import org.spbgu.pmpu.athynia.central.network.Processor;
-import org.spbgu.pmpu.athynia.central.network.Server;
+import org.spbgu.pmpu.athynia.central.communications.CentralMainPortListener;
+import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
 import org.spbgu.pmpu.athynia.central.settings.IllegalConfigException;
 import org.spbgu.pmpu.athynia.central.settings.Settings;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * Author: Selivanov
@@ -33,18 +27,10 @@ public class Central {
     public static final int SERVER_PORT = Integer.parseInt(centralSettings.getValue("port"));
     public InetAddress SERVER_INETADDRESS;
 
-    private File homeDirectory;
-    private ZipClassReader classReader;
-    private Executor executor;
+    private final WorkersManager workersManager;
 
     public Central() throws MalformedURLException {
-        PropertyConfigurator.configure("log4j.properties");
-        homeDirectory = new File(centralSettings.getValue("server-directory"));
-        classReader = new ZipClassReader(homeDirectory);
-        executor = Executors.newFixedThreadPool(4);
-        if (homeDirectory.exists() && homeDirectory.isFile()) {
-            scanHomeDirectory();
-        }
+        workersManager = DataManager.getInstance().getData(WorkersManager.class);
         try {
             SERVER_INETADDRESS = InetAddress.getByName("localhost");
         } catch (UnknownHostException e) {
@@ -52,35 +38,10 @@ public class Central {
         }
     }
 
-    public void executeClass(InetAddress inetAddress, int port, String className) {
-        System.out.println("CENTRAL:executeClass:" + className);
-        send(inetAddress, port, (className).getBytes());
-
-    }
-
-    public byte[] getClassAsByteArray(String className) {
-        return classReader.getClassFromCache(className);
-    }
-
-    public void split() {
-    }
-
-    public void join() {
-    }
-
-    public void  start() {
-       startServer();
+    public void start() {
         startBroadcasting();
-    }
-
-    public void startServer() {
-        try {
-            Processor processor = new Processor();
-            executor.execute(processor);
-            executor.execute(new Server(InetAddress.getLocalHost(), SERVER_PORT, processor));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        startCentralMainPortListener();
+        startServerSideClassLoading();
     }
 
     private void startBroadcasting() {
@@ -91,41 +52,38 @@ public class Central {
         int broadcastingTimeout = broadcastSettings.getIntValue("broadcasting-timeout-in-ms");
         String nicParticularAddress = broadcastSettings.getValue("nicParticularAddress");
         try {
-            BroadcastingDaemon broadcastingDaemon = new BroadcastingDaemon(broadcastingTimeout, broadcastAddress, portToListen, nicName, nicParticularAddress);
-            Thread broadcastingDaemonThread = new Thread(new ThreadGroup("Broadcasting threads"), broadcastingDaemon, "Broadcast daemon");
-            broadcastingDaemonThread.setDaemon(true);
+            ThreadGroup broadcastingThreadGroup = new ThreadGroup("Broadcasting threads");
+            broadcastingThreadGroup.setMaxPriority(Thread.MIN_PRIORITY);
+            broadcastingThreadGroup.setDaemon(true);
+            BroadcastingDaemon broadcastingDaemon = new BroadcastingDaemon(broadcastingTimeout, broadcastAddress, portToListen, nicName, nicParticularAddress, workersManager);
+            Thread broadcastingDaemonThread = new Thread(broadcastingThreadGroup, broadcastingDaemon, "Broadcast daemon");
             broadcastingDaemonThread.start();
         } catch (IllegalConfigException e) {
             LOG.error("Illegal broadcasting config: can't search for workers", e);
         }
     }
 
-    private void send(InetAddress inetAddress, int port, byte[] sendBytes) {
+    private void startCentralMainPortListener() {
         try {
-            Client client = new Client(inetAddress, port);
-            Thread clientThread = new Thread(client);
-            clientThread.setDaemon(true);
-            clientThread.start();
-            client.send(sendBytes, null);
-        } catch (IOException e) {
-            e.printStackTrace();
+            CentralMainPortListener centralMainPortListener = new CentralMainPortListener(SERVER_PORT, workersManager);
+            Thread centralMainPortListenerThread = new Thread(centralMainPortListener, "Central main port listener");
+            centralMainPortListenerThread.setDaemon(true);
+            centralMainPortListenerThread.start();
+        } catch (IllegalConfigException e) {
+            LOG.fatal("Can't create central main port listening thread", e);
         }
     }
 
-    private void scanHomeDirectory() {
-        File[] files = homeDirectory.listFiles();
-        for (File file : files) {
-            if (file.toURI().toString().endsWith(".zip") || file.toURI().toString().endsWith(".jar")) {
-                classReader.readZipFile(file);
-            }
+    private void startServerSideClassLoading() {
+        try {
+            Runtime.getRuntime().exec("java -jar ../Cclp/CentralClassLoaderPart.jar ../Cclp/Home");
+        } catch (IOException e) {
+            LOG.fatal("Can't start classloader server side", e);
         }
     }
 
     public static void main(String[] args) throws Exception {
         Central central = new Central();
         central.start();
-        central.executeClass(InetAddress.getLocalHost(), 8181, "org.spbgu.pmpu.athynia.central.classloader.usercode.simple.SimpleExecutor");
     }
-
-
 }
