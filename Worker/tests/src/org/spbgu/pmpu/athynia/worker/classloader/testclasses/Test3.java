@@ -1,8 +1,8 @@
 package org.spbgu.pmpu.athynia.worker.classloader.testclasses;
 
-import org.spbgu.pmpu.athynia.worker.classloader.ExecutorException;
-import org.spbgu.pmpu.athynia.worker.classloader.LocalResourceManager;
-import org.spbgu.pmpu.athynia.worker.classloader.usercode.Executor;
+import org.spbgu.pmpu.athynia.common.LocalResourceManager;
+import org.spbgu.pmpu.athynia.common.Executor;
+import org.spbgu.pmpu.athynia.common.ExecutorException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

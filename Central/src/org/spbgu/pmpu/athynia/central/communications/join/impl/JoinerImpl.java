@@ -5,9 +5,10 @@ import org.spbgu.pmpu.athynia.central.communications.Worker;
 import org.spbgu.pmpu.athynia.central.communications.WorkersExecutorSender;
 import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
 import org.spbgu.pmpu.athynia.central.communications.impl.WorkersExecutorSenderImpl;
-import org.spbgu.pmpu.athynia.central.communications.join.JoinPart;
 import org.spbgu.pmpu.athynia.central.communications.join.Joiner;
 import org.spbgu.pmpu.athynia.central.communications.join.SearchTask;
+import org.spbgu.pmpu.athynia.common.JoinPart;
+import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -84,7 +85,7 @@ public class JoinerImpl implements Joiner {
         if (filteredRetrievedParts.size() == 0) {
             return null;
         }
-        if (filteredRetrievedParts.get(0).getWholePartsNumber() != filteredRetrievedParts.size()){
+        if (filteredRetrievedParts.get(0).getWholePartsNumber() != filteredRetrievedParts.size()) {
             return null;
         }
         Collections.sort(filteredRetrievedParts, new Comparator<JoinPart>() {

@@ -1,4 +1,4 @@
-package org.spbgu.pmpu.athynia.worker.classloader;
+package org.spbgu.pmpu.athynia.common;
 
 /**
  * User: vasiliy

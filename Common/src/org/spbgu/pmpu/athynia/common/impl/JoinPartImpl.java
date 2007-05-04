@@ -1,7 +1,7 @@
-package org.spbgu.pmpu.athynia.central.communications.join.impl;
+package org.spbgu.pmpu.athynia.common.impl;
 
-import org.spbgu.pmpu.athynia.central.communications.join.JoinPart;
-import org.spbgu.pmpu.athynia.central.communications.CommunicationConstants;
+import org.spbgu.pmpu.athynia.common.JoinPart;
+import org.spbgu.pmpu.athynia.common.CommunicationConstants;
 
 import java.io.UnsupportedEncodingException;
 

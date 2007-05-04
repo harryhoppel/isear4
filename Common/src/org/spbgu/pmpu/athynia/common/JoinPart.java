@@ -1,4 +1,4 @@
-package org.spbgu.pmpu.athynia.central.communications.join;
+package org.spbgu.pmpu.athynia.common;
 
 /**
  * User: vasiliy

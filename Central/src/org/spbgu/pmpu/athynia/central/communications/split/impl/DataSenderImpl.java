@@ -1,17 +1,15 @@
 package org.spbgu.pmpu.athynia.central.communications.split.impl;
 
-import org.spbgu.pmpu.athynia.central.communications.split.DataSender;
+import org.spbgu.pmpu.athynia.central.communications.CommunicationConstants;
 import org.spbgu.pmpu.athynia.central.communications.Worker;
 import org.spbgu.pmpu.athynia.central.communications.WorkersExecutorSender;
-import org.spbgu.pmpu.athynia.central.communications.CommunicationConstants;
-import org.spbgu.pmpu.athynia.central.communications.join.JoinPart;
-import org.spbgu.pmpu.athynia.central.communications.join.impl.JoinPartImpl;
-import org.spbgu.pmpu.athynia.central.communications.impl.WorkersExecutorSenderImpl;
-import org.spbgu.pmpu.athynia.central.communications.common.Commit;
 import org.spbgu.pmpu.athynia.central.communications.common.Abort;
-import org.spbgu.pmpu.athynia.central.communications.split.SplitReceiver;
+import org.spbgu.pmpu.athynia.central.communications.common.Commit;
+import org.spbgu.pmpu.athynia.central.communications.impl.WorkersExecutorSenderImpl;
+import org.spbgu.pmpu.athynia.central.communications.split.DataSender;
 import org.spbgu.pmpu.athynia.central.communications.split.DataSplitter;
-import org.spbgu.pmpu.athynia.central.communications.split.impl.DataSplitterImpl;
+import org.spbgu.pmpu.athynia.central.communications.split.SplitReceiver;
+import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -67,7 +65,7 @@ public class DataSenderImpl implements DataSender {
     }
 
     private boolean waitForCompletion(Worker[] workers) {
-        synchronized(this) {
+        synchronized (this) {
             try {
                 wait(CommunicationConstants.CENTRAL_WAIT_FOR_COMPLETION_TIMEOUT);
             } catch (InterruptedException e) {/*ignore*/}

@@ -1,6 +1,9 @@
 package org.spbgu.pmpu.athynia.central.broadcast;
 
 import org.apache.log4j.Logger;
+import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
+import org.spbgu.pmpu.athynia.central.communications.Worker;
+import org.spbgu.pmpu.athynia.central.communications.impl.WorkerImpl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +20,10 @@ class WorkersSignalGetter implements Runnable {
 
     private final ServerSocket socketToListen;
 
-    public WorkersSignalGetter(int portToListen, InetAddress inetAddress) throws IOException {
+    private final WorkersManager workersManager;
+
+    public WorkersSignalGetter(int portToListen, InetAddress inetAddress, WorkersManager workersManager) throws IOException {
+        this.workersManager = workersManager;
         this.socketToListen = new ServerSocket(portToListen, 0, inetAddress);
     }
 
@@ -34,10 +40,8 @@ class WorkersSignalGetter implements Runnable {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("New address detected: " + detectedAddress.toString() + ":" + detectedPort);
                 }
-                BroadcastingDaemon.WORKERS_ADDRESSES.add(new InetSocketAddress(detectedAddress, detectedPort));
-                synchronized (BroadcastingDaemon.WORKERS_ADDRESSES) {
-                    BroadcastingDaemon.WORKERS_ADDRESSES.notifyAll();
-                }
+                Worker newWorker = new WorkerImpl(new InetSocketAddress(detectedAddress, detectedPort), workersManager);
+                workersManager.addNewWorker(newWorker);
             } catch (IOException e) {
                 LOG.error("Can't communicate with worker", e);
             } finally {
