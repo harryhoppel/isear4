@@ -118,7 +118,6 @@ public class NetworkClassLoader extends URLClassLoader {
             if (BroadcastListeningDaemon.centralAddress == null || BroadcastListeningDaemon.centralBroadcastPort == 0)
                 throw new IOException("No central detected");
             Client client = new Client(BroadcastListeningDaemon.centralAddress, BroadcastListeningDaemon.centralBroadcastPort);
-//            Client client = new Client(InetAddress.getLocalHost(), 10000);
             Thread clientThread = new Thread(client);
             clientThread.setDaemon(true);
             clientThread.start();

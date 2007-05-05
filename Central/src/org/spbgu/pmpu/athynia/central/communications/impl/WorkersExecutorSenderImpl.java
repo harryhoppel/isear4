@@ -20,6 +20,7 @@ public class WorkersExecutorSenderImpl implements WorkersExecutorSender {
         try {
             socketToWorker = worker.getSocket();
             outputToWorker = new BufferedOutputStream(socketToWorker.getOutputStream());
+            LOG.debug("Sending class: " + executorClassName + " to " + socketToWorker.getInetAddress() + ":" + socketToWorker.getPort());
             outputToWorker.write(("loadClass:" + executorClassName).getBytes("UTF-8"));
             outputToWorker.flush();
             return true;

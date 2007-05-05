@@ -3,13 +3,14 @@
         <central-server>
             <port value="9999"/>
             <server-directory value="tests/data/serverData/"/>
+            <class-loader-home-dir value="home"/>
         </central-server>
         <broadcast>
             <broadcasting-timeout-in-ms value="3000"/>
             <port value="7777"/>
             <broadcastAddress value="239.0.0.1"/>
             <portToListen value="44445"/>
-            <nicName value="lo"/>
+            <nicName value="lo0"/>
             <nicParticularAddress value="/127.0.0.1"/>
         </broadcast>
     </common>

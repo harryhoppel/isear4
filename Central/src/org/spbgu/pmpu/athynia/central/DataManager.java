@@ -2,6 +2,8 @@ package org.spbgu.pmpu.athynia.central;
 
 import org.spbgu.pmpu.athynia.central.settings.Settings;
 import org.spbgu.pmpu.athynia.central.settings.impl.XmlSettings;
+import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
+import org.spbgu.pmpu.athynia.central.communications.impl.WorkersManagerImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +21,8 @@ public class DataManager {
             final Settings settings = XmlSettings.load("settings.xml");
             map.put(Settings.class, settings);
 
+            final WorkersManager workersManager = WorkersManagerImpl.getInstance();
+            map.put(WorkersManager.class, workersManager);
         } catch (Exception e) {
             e.printStackTrace();
         }

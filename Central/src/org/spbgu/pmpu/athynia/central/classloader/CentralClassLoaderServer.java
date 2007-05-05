@@ -1,8 +1,8 @@
-package org.spbgu.pmpu.athynia.central;
+package org.spbgu.pmpu.athynia.central.classloader;
 
-import org.spbgu.pmpu.athynia.central.classloader.ZipClassReader;
-import org.spbgu.pmpu.athynia.central.network.Processor;
-import org.spbgu.pmpu.athynia.central.network.Server;
+import org.spbgu.pmpu.athynia.central.classloader.network.Processor;
+import org.spbgu.pmpu.athynia.central.classloader.network.Server;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,27 +15,31 @@ import java.util.concurrent.Executors;
  * User: Selivanov
  * Date: 27.04.2007
  */
-public class Main {
+public class CentralClassLoaderServer {
+    private static final Logger LOG = Logger.getLogger(CentralClassLoaderServer.class);
+
     private Executor executor;
     private static final int SERVER_PORT = 10000;
     ZipClassReader classReader;
 
-    public Main(File homeDirectory) throws MalformedURLException {
+    public CentralClassLoaderServer(File homeDirectory) throws MalformedURLException {
         classReader = new ZipClassReader(homeDirectory);
         executor = Executors.newFixedThreadPool(4);
         scanHomeDirectory(homeDirectory);
     }
 
-    public static void main(String[] args) throws IOException {
-      File homeDirectory = new File(args[0]);
-      Main main = new Main(homeDirectory);
-      main.startServer();
-    }
-
     private void scanHomeDirectory(File homedirectory) throws MalformedURLException {
-        for (File file : homedirectory.listFiles()) {
-            if (file.toURI().toURL().toString().endsWith(".zip")) {
-                classReader.readZipFile(file);
+        File[] files = homedirectory.listFiles();
+        if (files == null) {
+            LOG.error("Can't find classloader home directory: " + homedirectory);
+            return;
+        }
+        if (files.length > 0) {
+            for (File file : files) {
+                if (file.toURI().toURL().toString().endsWith(".zip")) {
+                    LOG.debug("Reading class loader classes from zip-file: " + file.getAbsolutePath());
+                    classReader.readZipFile(file);
+                }
             }
         }
     }

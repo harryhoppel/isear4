@@ -15,6 +15,7 @@ import java.io.IOException;
  */
 public class SplitReceiver implements Executor {
     public void execute(InputStream fromServer, OutputStream toServer, LocalResourceManager manager) throws ExecutorException {
+        System.out.println("Hello, world!");
         try {
             byte[] keyLengthBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
             fromServer.read(keyLengthBuffer);
