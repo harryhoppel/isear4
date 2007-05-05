@@ -2,15 +2,20 @@ package org.spbgu.pmpu.athynia.central;
 
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.broadcast.BroadcastingDaemon;
-import org.spbgu.pmpu.athynia.central.communications.CentralMainPortListener;
+import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
 import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
+import org.spbgu.pmpu.athynia.central.communications.CentralMainPortListener;
+import org.spbgu.pmpu.athynia.central.communications.WorkersExecutorSender;
+import org.spbgu.pmpu.athynia.central.communications.Worker;
+import org.spbgu.pmpu.athynia.central.communications.impl.WorkersExecutorSenderImpl;
 import org.spbgu.pmpu.athynia.central.settings.IllegalConfigException;
 import org.spbgu.pmpu.athynia.central.settings.Settings;
 
-import java.io.IOException;
+import java.io.File;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.util.Set;
 
 /**
  * Author: Selivanov
@@ -28,9 +33,11 @@ public class Central {
     public InetAddress SERVER_INETADDRESS;
 
     private final WorkersManager workersManager;
+    private final String classLoaderHomeDir;
 
     public Central() throws MalformedURLException {
         workersManager = DataManager.getInstance().getData(WorkersManager.class);
+        classLoaderHomeDir = centralSettings.getValue("class-loader-home-dir");
         try {
             SERVER_INETADDRESS = InetAddress.getByName("localhost");
         } catch (UnknownHostException e) {
@@ -41,7 +48,7 @@ public class Central {
     public void start() {
         startBroadcasting();
         startCentralMainPortListener();
-        startServerSideClassLoading();
+        startClassLoaderCentralPart();
     }
 
     private void startBroadcasting() {
@@ -74,16 +81,25 @@ public class Central {
         }
     }
 
-    private void startServerSideClassLoading() {
+    private void startClassLoaderCentralPart() {
         try {
-            Runtime.getRuntime().exec("java -jar ../Cclp/CentralClassLoaderPart.jar ../Cclp/Home");
-        } catch (IOException e) {
-            LOG.fatal("Can't start classloader server side", e);
+            File homeDirectory = new File(classLoaderHomeDir);
+            CentralClassLoaderServer centralClassLoaderServer = new CentralClassLoaderServer(homeDirectory);
+            centralClassLoaderServer.startServer();
+        } catch (MalformedURLException e) {
+            LOG.fatal("Can't start class loader on central", e);
         }
     }
 
     public static void main(String[] args) throws Exception {
         Central central = new Central();
         central.start();
+        Thread.sleep(10*1000);
+        LOG.info("Start sending the code");
+        WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
+        Set<Worker> workers = DataManager.getInstance().getData(WorkersManager.class).getAll();
+        for (Worker worker : workers) {
+            workersExecutorSender.runExecutorOnWorker(worker, "org.spbgu.pmpu.athynia.central.communications.split.SplitReceiver");
+        }
     }
 }

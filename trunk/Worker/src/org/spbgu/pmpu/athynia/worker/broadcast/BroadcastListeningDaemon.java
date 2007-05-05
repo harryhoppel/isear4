@@ -42,6 +42,10 @@ public class BroadcastListeningDaemon implements Runnable {
         } catch (IOException e) {
             throw new IllegalConfigException("Illegal config parameters: port " + broadcastingPort + ", address " + groupAddressToJoin, e);
         }
+        Runnable mainPortListener = new MainPortListener(workerMainPort);
+        Thread mainPortListenerThread = new Thread(Thread.currentThread().getThreadGroup(), mainPortListener, "Worker main port listener");
+        mainPortListenerThread.setDaemon(true);
+        mainPortListenerThread.start();
     }
 
     public void run() {

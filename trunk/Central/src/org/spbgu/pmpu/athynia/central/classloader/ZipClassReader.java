@@ -26,7 +26,10 @@ public class ZipClassReader {
     }
 
     public byte[] getClassFromCache(String className) {
-        return zipBytes(cache.get(className));
+        System.out.println("ZipClassReader.getClassFromCache: " + className);
+        if (cache.containsKey(className))
+          return zipBytes(cache.get(className));
+        else return new byte[1];
     }
 
     public void readZipFile(File zipFile) {
@@ -41,9 +44,10 @@ public class ZipClassReader {
                     byte[] classBytes = getClassBytes(in);
                     cache.put(definer.getClassName(classBytes), classBytes);
                 }
-                // else ignore it; it could be an image or audio zipFile
+                // else ignore it; it could be an image or audio zipFile (or ".svn" dir :-) )
                 in.closeEntry();
             }
+            System.out.println("cache.size() = " + cache.size());
         } catch (IOException ioe) {
             LOG.warn("Badly formatted zip file", ioe);
         }
@@ -63,7 +67,7 @@ public class ZipClassReader {
         }
         return retval;
     }
-    
+
     private byte[] getClassBytes(InputStream is) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         BufferedInputStream bis = new BufferedInputStream(is);

@@ -23,11 +23,14 @@ public class WorkersManagerImpl implements WorkersManager {
         return instance;
     }
 
-    private final Set<Worker> workers = Collections.synchronizedSet(new HashSet<Worker>());
-    private final Map<InetSocketAddress, Worker> workersAddresses = Collections.synchronizedMap(new HashMap<InetSocketAddress, Worker>());
-    private final Map<Worker, Socket> workersSockets = Collections.synchronizedMap(new HashMap<Worker, Socket>());
+    private final Set<Worker> workers;
+    private final Map<InetSocketAddress, Worker> workersAddresses;
+    private final Map<Worker, Socket> workersSockets;
 
     private WorkersManagerImpl() {
+        workers = Collections.synchronizedSet(new HashSet<Worker>());
+        workersAddresses = Collections.synchronizedMap(new HashMap<InetSocketAddress, Worker>());
+        workersSockets = Collections.synchronizedMap(new HashMap<Worker, Socket>());
     }
 
     public Set<Worker> getAll() {

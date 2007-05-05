@@ -1,4 +1,4 @@
-package org.spbgu.pmpu.athynia.central.network;
+package org.spbgu.pmpu.athynia.central.classloader.network;
 
 import java.nio.channels.SocketChannel;
 

@@ -5,7 +5,7 @@
         <group-address-to-join value="239.0.0.1"/>
     </broadcast>
     <classloader>
-       <home-directory value="tests/data/worker/classloader/"/>
+       <home-directory value="home"/>
     </classloader>
     <common>
         <worker-server>
