@@ -1,5 +1,6 @@
 package org.spbgu.pmpu.athynia.central.communications.impl;
 
+import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.communications.Worker;
 import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
 
@@ -17,6 +18,7 @@ import java.util.Set;
  * User: vasiliy
  */
 public class WorkersManagerImpl implements WorkersManager {
+    private static final Logger LOG = Logger.getLogger(WorkersManagerImpl.class);
     private static final WorkersManager instance = new WorkersManagerImpl();
 
     public static WorkersManager getInstance() {
@@ -51,7 +53,8 @@ public class WorkersManagerImpl implements WorkersManager {
             return false;
         }
         workers.add(worker);
-        workersAddresses.put(new InetSocketAddress(worker.getSocket().getInetAddress(), worker.getSocket().getPort()), worker);
+//todo:        workersAddresses.put(new InetSocketAddress(worker.getSocket().getInetAddress(), worker.getSocket().getPort()), worker);
+        workersAddresses.put(worker.getFullAddress(), worker);
         return true;
     }
 
@@ -74,6 +77,7 @@ public class WorkersManagerImpl implements WorkersManager {
                 workersSockets.put(worker, socket);
                 return socket;
             } catch (IOException e) {
+                LOG.error("Cannot create socket on " + worker.getFullAddress(), e);
                 return null;
             }
         }

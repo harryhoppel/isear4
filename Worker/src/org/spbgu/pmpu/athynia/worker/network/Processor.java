@@ -1,10 +1,10 @@
 package org.spbgu.pmpu.athynia.worker.network;
 
+import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.worker.DataManager;
 import org.spbgu.pmpu.athynia.worker.classloader.ClassExecutor;
 import org.spbgu.pmpu.athynia.worker.classloader.NetworkClassExecutor;
 import org.spbgu.pmpu.athynia.worker.index.Index;
-import org.apache.log4j.Logger;
 
 import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
@@ -48,9 +48,8 @@ public class Processor implements Runnable {
                 }
                 dataEvent = queue.remove(0);
                 String request = new String(dataEvent.data);
-                System.out.println(dataEvent.socket.socket().getPort());
                 if (request.startsWith(LOAD_CLASS_PREFIX)) {
-                    String className  =  request.substring(LOAD_CLASS_PREFIX.length() + 1);
+                    String className = request.substring(LOAD_CLASS_PREFIX.length());
                     LOG.info("WORKER:executeClass = " + className);
                     classExecutor.executeClass(className);
                 }

@@ -1,8 +1,10 @@
 package org.spbgu.pmpu.athynia.central.classloader;
 
 import org.apache.log4j.Logger;
+import org.spbgu.pmpu.athynia.central.DataManager;
 import org.spbgu.pmpu.athynia.central.classloader.network.Processor;
 import org.spbgu.pmpu.athynia.central.classloader.network.Server;
+import org.spbgu.pmpu.athynia.central.settings.Settings;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +19,11 @@ import java.util.concurrent.Executors;
  */
 public class CentralClassLoaderServer {
     private static final Logger LOG = Logger.getLogger(CentralClassLoaderServer.class);
+    private static final Settings CLASS_LOADER_SETTINGS = DataManager.getInstance().getData(Settings.class).childSettings("common").childSettings("classloader");
+    private static final String HOST_ADDRESS = CLASS_LOADER_SETTINGS.getValue("host-address");
+    public static final int SERVER_PORT = CLASS_LOADER_SETTINGS.getIntValue("port");
 
     private Executor executor;
-    private static final int SERVER_PORT = 10000;
     ZipClassReader classReader;
 
     public CentralClassLoaderServer(File homeDirectory) throws MalformedURLException {
@@ -48,7 +52,7 @@ public class CentralClassLoaderServer {
         try {
             Processor processor = new Processor(classReader);
             executor.execute(processor);
-            executor.execute(new Server(InetAddress.getLocalHost(), SERVER_PORT, processor));
+            executor.execute(new Server(InetAddress.getByName(HOST_ADDRESS), SERVER_PORT, processor));
         } catch (IOException e) {
             e.printStackTrace();
         }

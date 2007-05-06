@@ -1,12 +1,19 @@
 package org.spbgu.pmpu.athynia.central.broadcast;
 
 import org.apache.log4j.Logger;
-import org.spbgu.pmpu.athynia.central.settings.IllegalConfigException;
 import org.spbgu.pmpu.athynia.central.Central;
+import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
 import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
+import org.spbgu.pmpu.athynia.central.settings.IllegalConfigException;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -86,7 +93,7 @@ public class BroadcastingDaemon implements Runnable {
         final Thread workersSignalsGetterThread = new Thread(Thread.currentThread().getThreadGroup(), workersSignalsGetter, "Workers signals listener/getter");
         workersSignalsGetterThread.setDaemon(true);
         workersSignalsGetterThread.start();
-        final byte[] bufferToSend = (portToListen + "," + Central.SERVER_PORT).getBytes();
+        final byte[] bufferToSend = (portToListen + "," + Central.SERVER_PORT + "," + CentralClassLoaderServer.SERVER_PORT).getBytes();
         while (true) {
             DatagramPacket packet = new DatagramPacket(bufferToSend, 0, bufferToSend.length, broadcastGroup, broadcastPort);
             try {

@@ -44,8 +44,8 @@ public class ZipClassReader {
                 String zipEntryName = zipEntry.getName().replaceAll("/", ".");
                 if (zipEntryName.endsWith(".class")) {
                     byte[] classBytes = getClassBytes(in);
-                    cache.put(zipEntryName, classBytes);
-//                    LOG.info("adding " + zipEntryName);
+                    cache.put(zipEntryName.substring(0, zipEntryName.length() - 6), classBytes);
+                    LOG.info("adding " + zipEntryName.substring(0, zipEntryName.length() - 6));
                     //todo define className
                 }
                 // else ignore it; it could be an image or audio zipFile (or ".svn" dir :-) )

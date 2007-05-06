@@ -13,5 +13,9 @@
             <nicName value="lo0"/>
             <nicParticularAddress value="/127.0.0.1"/>
         </broadcast>
+        <classloader>
+            <host-address value="127.0.0.1"/>
+            <port value="10000"/>
+        </classloader>
     </common>
 </settings>
