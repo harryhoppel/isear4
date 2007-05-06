@@ -29,7 +29,7 @@
 
 
     <target name="release-worker" description="Builds worker">
-        <copy file="${common.lib.jar}" todir="${worker.libs.dir}"/>
+        <copy file="${common.lib.jar}" todir="${worker.libs.dir}" overwrite="true"/>
         <ant dir="${worker.dir}" target="release" inheritall="false"/>
     </target>
 
