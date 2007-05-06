@@ -1,5 +1,7 @@
 package org.spbgu.pmpu.athynia.worker.network;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -22,6 +24,7 @@ import java.util.Map;
  * Time: 20:04:49
  */
 public class Server implements Runnable {
+    private final static Logger LOG = Logger.getLogger(Server.class);
     private InetAddress hostAddress;
     private int port;
     private Processor processor;
@@ -37,6 +40,7 @@ public class Server implements Runnable {
         this.port = port;
         this.selector = initSelector();
         this.processor = processor;
+        LOG.info("Server started on " + hostAddress.getHostAddress() + ":" + port);
     }
 
     private Selector initSelector() throws IOException {
@@ -116,9 +120,7 @@ public class Server implements Runnable {
     }
 
     public void run() {
-        //noinspection InfiniteLoopStatement
         while (this.isRunning) {
-            System.out.println("Server.run");
             try {
                 synchronized (pendingChanges) {
                     for (Request change : pendingChanges) {
@@ -157,15 +159,9 @@ public class Server implements Runnable {
     }
 
     public void shutDown() throws IOException {
-//        log.info("**** stopping Server4Test instance");
-//        try {
-        this.selector.close();
         this.isRunning = false;
-
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        log.info("**** stopped Server4Test instance");
+        this.selector.close();
+        LOG.info("stopped Server");
     }
 
 }

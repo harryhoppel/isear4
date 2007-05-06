@@ -21,6 +21,7 @@ public class BroadcastListeningDaemon implements Runnable {
     public static Integer centralBroadcastPort;
     public static Integer centralMainPort;
     public static InetAddress centralAddress;
+    public static Integer centralClassLoaderPort;
     public static final Object CENTRAL_ADDRESS_NOTIFICATOR = new Object();
 
     private final int workerMainPort;
@@ -66,7 +67,7 @@ public class BroadcastListeningDaemon implements Runnable {
                     CENTRAL_ADDRESS_NOTIFICATOR.notifyAll();
                 }
                 centralAddressFound = true;
-                LOG.info("Central found: " + centralAddress.toString() + ":" + centralBroadcastPort + ";" + centralMainPort);
+                LOG.info("Central found: " + centralAddress.toString() + ":" + centralBroadcastPort + ";" + centralMainPort + ";" + centralClassLoaderPort);
             } catch (IOException e) {
                 LOG.error("Error while retrieving central address", e);
             } finally {
@@ -123,23 +124,25 @@ public class BroadcastListeningDaemon implements Runnable {
         }
         if (centralMainPort == null) {
             char[] chars = data.toCharArray();
+            for (int i = currentPos + 1; i < chars.length; i++) {
+                if (Character.isDigit(chars[i])) {
+                    tmp += chars[i];
+                } else if (chars[i] == ',') {
+                    currentPos = i;
+                    break;
+                }
+            }
+            centralMainPort = Integer.parseInt(tmp);
+            tmp = "";
+        }
+        if (centralClassLoaderPort == null) {
+            char[] chars = data.toCharArray();
             for (int i = currentPos; i < chars.length; i++) {
                 if (Character.isDigit(chars[i])) {
                     tmp += chars[i];
                 }
             }
-            centralMainPort = Integer.parseInt(tmp);
+            centralClassLoaderPort = Integer.parseInt(tmp);
         }
     }
-/*    private int veryDumbMethodToParseUnknownIntegers(String integerFollowedByMess) {
-        int result = 0;
-        for (int i = integerFollowedByMess.length(); i > 0; i--) {
-            String temp = integerFollowedByMess.substring(0, i);
-            try {
-                result = Integer.parseInt(temp);
-                break;
-            } catch (NumberFormatException e) {*//*skip one step*//*}
-        }
-        return result;
-    }*/
 }

@@ -21,11 +21,10 @@ import java.util.concurrent.Executors;
 public class Worker {
     private static final Logger LOG = Logger.getLogger(Worker.class);
 
-    final Settings settings = DataManager.getInstance().getData(Settings.class).childSettings("common");
-    final Settings workerSettings = settings.childSettings("worker-server");
     final Settings broadcastSettings = DataManager.getInstance().getData(Settings.class).childSettings("broadcast");
-    int SERVER_PORT = Integer.parseInt(workerSettings.getValue("port"));
-    private final int mainWorkerPort = DataManager.getInstance().getData(Settings.class).getIntValue("worker-main-port");
+    final Settings serverSettings = DataManager.getInstance().getData(Settings.class).childSettings("server");
+    private final String HOST_ADDRESS = serverSettings.getValue("host-address");
+    private final int MAIN_WORKER_PORT = serverSettings.getIntValue("worker-main-port");
 
     java.util.concurrent.Executor executor;
 
@@ -39,7 +38,6 @@ public class Worker {
         synchronized (BroadcastListeningDaemon.CENTRAL_ADDRESS_NOTIFICATOR) {
             BroadcastListeningDaemon.CENTRAL_ADDRESS_NOTIFICATOR.wait();
         }
-//        while (!BroadcastListeningDaemon.centralAddressFound);
         startServer();
     }
 
@@ -47,7 +45,7 @@ public class Worker {
         int broadcastingPort = broadcastSettings.getIntValue("broadcast-port");
         String groupAddressToJoin = broadcastSettings.getValue("group-address-to-join");
         try {
-            BroadcastListeningDaemon broadcastListeningDaemon = new BroadcastListeningDaemon(mainWorkerPort, broadcastingPort, groupAddressToJoin);
+            BroadcastListeningDaemon broadcastListeningDaemon = new BroadcastListeningDaemon(MAIN_WORKER_PORT, broadcastingPort, groupAddressToJoin);
             Thread broadcastListeningDaemonThread = new Thread(broadcastListeningDaemon, "Broadcast listening thread");
             broadcastListeningDaemonThread.setDaemon(true);
             broadcastListeningDaemonThread.start();
@@ -59,7 +57,7 @@ public class Worker {
     private void startServer() throws IOException {
         Processor processor = new Processor();
         executor.execute(processor);
-        executor.execute(new Server(InetAddress.getLocalHost(), mainWorkerPort, processor));
+        executor.execute(new Server(InetAddress.getByName(HOST_ADDRESS), MAIN_WORKER_PORT, processor));
     }
 
     public static void main(String[] args) throws Exception {

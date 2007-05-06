@@ -1,5 +1,7 @@
 package org.spbgu.pmpu.athynia.central.classloader.network;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -22,6 +24,7 @@ import java.util.Map;
  * Time: 20:04:49
  */
 public class Server implements Runnable {
+    private static final Logger LOG = Logger.getLogger(Server.class);
     private InetAddress hostAddress;
     private int port;
     private Processor processor;
@@ -31,12 +34,12 @@ public class Server implements Runnable {
     private final Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<SocketChannel, List<ByteBuffer>>();
     private boolean isRunning = true;
 
-
     public Server(InetAddress hostAddress, int port, Processor processor) throws IOException {
         this.hostAddress = hostAddress;
         this.port = port;
         this.selector = initSelector();
         this.processor = processor;
+        LOG.info("Classloader server started on " + hostAddress.getHostAddress() + ":" + port);
     }
 
     public void send(SocketChannel socket, byte[] data) {

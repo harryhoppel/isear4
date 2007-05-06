@@ -109,11 +109,12 @@ public class NetworkClassLoader extends URLClassLoader {
     }
 
     private byte[] downloadClass(String className) {
-        LOG.info("download class" + className);
         try {
-            if (BroadcastListeningDaemon.centralAddress == null || BroadcastListeningDaemon.centralBroadcastPort == 0)
+            if (BroadcastListeningDaemon.centralAddress == null || BroadcastListeningDaemon.centralClassLoaderPort == 0) {
                 throw new IOException("No central detected");
-            Client client = new Client(BroadcastListeningDaemon.centralAddress, BroadcastListeningDaemon.centralBroadcastPort);
+            }
+            LOG.info("download class:" + className + " from" + BroadcastListeningDaemon.centralAddress + ":" + BroadcastListeningDaemon.centralClassLoaderPort);
+            Client client = new Client(BroadcastListeningDaemon.centralAddress, BroadcastListeningDaemon.centralClassLoaderPort);
             Thread clientThread = new Thread(client);
             clientThread.setDaemon(true);
             clientThread.start();
