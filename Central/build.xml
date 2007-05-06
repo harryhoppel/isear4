@@ -44,6 +44,7 @@
         <mkdir dir="${production.lib.dir}"/>
         <copy file="lib/log4j-1.2.14.jar" todir="${production.lib.dir}"/>
         <copy file="lib/jdom.jar" todir="${production.lib.dir}"/>
+        <copy file="lib/athynia-common.jar" todir="${production.lib.dir}"/>
         <copy file="run-central.sh" todir="${compiled.src.dir}"/>
     </target>
 
