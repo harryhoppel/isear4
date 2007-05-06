@@ -42,10 +42,10 @@ public class BroadcastListeningDaemon implements Runnable {
         } catch (IOException e) {
             throw new IllegalConfigException("Illegal config parameters: port " + broadcastingPort + ", address " + groupAddressToJoin, e);
         }
-        Runnable mainPortListener = new MainPortListener(workerMainPort);
-        Thread mainPortListenerThread = new Thread(Thread.currentThread().getThreadGroup(), mainPortListener, "Worker main port listener");
-        mainPortListenerThread.setDaemon(true);
-        mainPortListenerThread.start();
+//        Runnable mainPortListener = new MainPortListener(workerMainPort);
+//        Thread mainPortListenerThread = new Thread(Thread.currentThread().getThreadGroup(), mainPortListener, "Worker main port listener");
+//        mainPortListenerThread.setDaemon(true);
+//        mainPortListenerThread.start();
     }
 
     public void run() {
@@ -92,7 +92,8 @@ public class BroadcastListeningDaemon implements Runnable {
                 try {
                     outputToCentral.close();
                 } catch (IOException e) {
-                    LOG.error("Can't close opened stream to central", e);                }
+                    LOG.error("Can't close opened stream to central", e);
+                }
             }
             if (socket != null) {
                 try {

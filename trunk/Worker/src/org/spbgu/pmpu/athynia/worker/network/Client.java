@@ -39,7 +39,6 @@ public class Client implements Runnable {
     public void run() {
         //noinspection InfiniteLoopStatement
         while (true) {
-            System.out.println("Client.run");
             try {
                 synchronized (pendingChanges) {
                     for (Request pending : pendingChanges) {
@@ -60,7 +59,6 @@ public class Client implements Runnable {
 
                 Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
                 while (selectedKeys.hasNext()) {
-                    System.out.println("Client.run11");
                     SelectionKey key = selectedKeys.next();
                     selectedKeys.remove();
 
@@ -77,7 +75,7 @@ public class Client implements Runnable {
                     }
                 }
             } catch (Exception e) {
-               LOG.warn("warn conneting to central:", e);
+                LOG.warn("warn conneting to central:", e);
             }
         }
     }

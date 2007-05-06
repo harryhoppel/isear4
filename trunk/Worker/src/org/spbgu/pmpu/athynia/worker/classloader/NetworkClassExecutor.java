@@ -2,11 +2,11 @@ package org.spbgu.pmpu.athynia.worker.classloader;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.spbgu.pmpu.athynia.common.Executor;
+import org.spbgu.pmpu.athynia.common.LocalResourceManager;
 import org.spbgu.pmpu.athynia.worker.DataManager;
 import org.spbgu.pmpu.athynia.worker.broadcast.BroadcastListeningDaemon;
 import org.spbgu.pmpu.athynia.worker.settings.Settings;
-import org.spbgu.pmpu.athynia.common.LocalResourceManager;
-import org.spbgu.pmpu.athynia.common.Executor;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -21,7 +21,8 @@ import java.net.SocketAddress;
  */
 public class NetworkClassExecutor implements ClassExecutor {
     private static final Logger LOG = Logger.getLogger(NetworkClassExecutor.class);
-    final Settings settings = DataManager.getInstance().getData(Settings.class).childSettings("classloader");
+    private static final Settings settings = DataManager.getInstance().getData(Settings.class).childSettings("classloader");
+
     private NetworkClassLoader classLoader;
     private InetAddress centralAddress;
     private Integer cenralPort;
@@ -35,28 +36,19 @@ public class NetworkClassExecutor implements ClassExecutor {
     }
 
     public NetworkClassExecutor(InetAddress centralAddress, int cenralPort) {
-        this.centralAddress = centralAddress;
-        this.cenralPort = cenralPort;
-        try {
-            File homeDirectory = new File(settings.getValue("home-directory"));
-            if (homeDirectory.exists())
-                classLoader = new NetworkClassLoader(new File(settings.getValue("home-directory")));
-            else
-                LOG.info("home directory: " + homeDirectory.toURI().toString() + " not exists!!");
-                classLoader = new NetworkClassLoader(new File(""));
-        } catch (MalformedURLException e) {
-            LOG.warn("Unknown home directory", e);
-        }
+        this(new File(settings.getValue("home-directory")), centralAddress, cenralPort);
     }
 
     public NetworkClassExecutor(File homeDirectory, InetAddress centralAddress, Integer cenralPort) {
         this.centralAddress = centralAddress;
         this.cenralPort = cenralPort;
         try {
-            if (homeDirectory.exists())
+            if (homeDirectory.exists()) {
                 classLoader = new NetworkClassLoader(homeDirectory);
-            else
+            } else {
                 LOG.info("home directory: " + homeDirectory.toURI().toString() + " not exists!!");
+                classLoader = new NetworkClassLoader(new File(""));
+            }
         } catch (MalformedURLException e) {
             LOG.warn("Unknown home directory", e);
         }
@@ -66,8 +58,7 @@ public class NetworkClassExecutor implements ClassExecutor {
         try {
             SocketAddress socketAddress = new InetSocketAddress(centralAddress, cenralPort);
             Socket socket = new Socket();
-            int timeoutMs = 2000;   // 2 seconds
-            socket.connect(socketAddress, timeoutMs);
+            socket.connect(socketAddress);
             //if ClassCastException => return false todo: unload this class
             Executor executor = (Executor) classLoader.loadClass(className).newInstance();
             executor.execute(socket.getInputStream(), socket.getOutputStream(), new LocalResourceManager());

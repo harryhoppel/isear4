@@ -1,12 +1,13 @@
 package org.spbgu.pmpu.athynia.central;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.spbgu.pmpu.athynia.central.broadcast.BroadcastingDaemon;
 import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
-import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
 import org.spbgu.pmpu.athynia.central.communications.CentralMainPortListener;
-import org.spbgu.pmpu.athynia.central.communications.WorkersExecutorSender;
 import org.spbgu.pmpu.athynia.central.communications.Worker;
+import org.spbgu.pmpu.athynia.central.communications.WorkersExecutorSender;
+import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
 import org.spbgu.pmpu.athynia.central.communications.impl.WorkersExecutorSenderImpl;
 import org.spbgu.pmpu.athynia.central.settings.IllegalConfigException;
 import org.spbgu.pmpu.athynia.central.settings.Settings;
@@ -36,6 +37,7 @@ public class Central {
     private final String classLoaderHomeDir;
 
     public Central() throws MalformedURLException {
+        PropertyConfigurator.configure("log4j.properties");
         workersManager = DataManager.getInstance().getData(WorkersManager.class);
         classLoaderHomeDir = centralSettings.getValue("class-loader-home-dir");
         try {
@@ -94,7 +96,7 @@ public class Central {
     public static void main(String[] args) throws Exception {
         Central central = new Central();
         central.start();
-        Thread.sleep(10*1000);
+        Thread.sleep(10 * 1000);
         LOG.info("Start sending the code");
         WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
         Set<Worker> workers = DataManager.getInstance().getData(WorkersManager.class).getAll();

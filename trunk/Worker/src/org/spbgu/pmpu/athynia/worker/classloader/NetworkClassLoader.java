@@ -32,18 +32,15 @@ public class NetworkClassLoader extends URLClassLoader {
         super(new URL[]{dir.toURI().toURL()}, null);
         urlBase = dir.toURI().toURL();
         cache = new Hashtable<String, byte[]>();
-        scanHomeDirectory();
         LOG.info("NetworkClassLoader has loaded");
     }
 
-    private void scanHomeDirectory() {
-    }
-
     public synchronized Class loadClass(String className) throws ClassNotFoundException {
-        LOG.info("LOAD class:" + className);
         try {
+            LOG.info("[Default]LOAD class:" + className);
             return getClass().getClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
+            LOG.info("[NetworkClassLoader]LOAD class:" + className);
             return super.loadClass(className);
         }
     }
@@ -114,7 +111,6 @@ public class NetworkClassLoader extends URLClassLoader {
     private byte[] downloadClass(String className) {
         LOG.info("download class" + className);
         try {
-            //TODO!!!
             if (BroadcastListeningDaemon.centralAddress == null || BroadcastListeningDaemon.centralBroadcastPort == 0)
                 throw new IOException("No central detected");
             Client client = new Client(BroadcastListeningDaemon.centralAddress, BroadcastListeningDaemon.centralBroadcastPort);
@@ -139,7 +135,7 @@ public class NetworkClassLoader extends URLClassLoader {
         while ((len = inputStream.read(buf)) > 0) {
             bos.write(buf, 0, len);
         }
-        byte[] retval =  bos.toByteArray();
+        byte[] retval = bos.toByteArray();
         bis.close();
         inputStream.close();
         bos.close();

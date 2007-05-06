@@ -31,12 +31,12 @@
     <target name="compile" description="Compiles all project sources(and creates necessary folders, sets logging up, copies settings-files etc.)">
         <mkdir dir="${compiled.src.dir}"/>
         <javac
-                srcdir="${src.dir}"
-                destdir="${compiled.src.dir}"
-                fork="yes"
-                debug="true"
-                debuglevel="source,lines,vars"
-                target="1.5">
+            srcdir="${src.dir}"
+            destdir="${compiled.src.dir}"
+            fork="yes"
+            debug="true"
+            debuglevel="source,lines,vars"
+            target="1.5">
             <classpath refid="classpath"/>
         </javac>
         <copy file="log4j.properties" todir="${compiled.src.dir}"/>
@@ -47,15 +47,15 @@
     </target>
 
 
-    <target name="tests-compile" description="Compiles all tests(and creates necessary folders)">
+    <target name="tests-compile" description="Compiles all tests(and creates necessary folders)" depends="compile">
         <mkdir dir="${compiled.tests.dir}"/>
         <javac
-                srcdir="${tests.src.dir}"
-                destdir="${compiled.tests.dir}"
-                fork="yes"
-                debug="true"
-                debuglevel="source,lines,vars"
-                target="1.5">
+            srcdir="${tests.src.dir}"
+            destdir="${compiled.tests.dir}"
+            fork="yes"
+            debug="true"
+            debuglevel="source,lines,vars"
+            target="1.5">
             <classpath refid="classpath"/>
         </javac>
     </target>
@@ -65,9 +65,9 @@
         <delete dir="${tests.result.dir}" failonerror="true"/>
         <mkdir dir="${tests.result.dir}"/>
         <junit
-                fork="yes"
-                failureproperty="testFailed"
-                dir="${basedir}">
+            fork="yes"
+            failureproperty="testFailed"
+            dir="${basedir}">
             <classpath refid="classpath"/>
             <batchtest todir="${tests.result.dir}/">
                 <formatter type="brief"/>
@@ -85,7 +85,7 @@
     <target name="release" description="Compiles and tests everything" depends="jar,tests-compile,test"/>
 
 
-    <target name="clean release" description="Cleans, compiles and tests everything" depends="clean,jar,tests-compile"/>
+    <target name="clean release" description="Cleans, compiles and tests everything" depends="clean,jar,tests-compile,test"/>
 
 
     <target name="jar" description="Creates jar-file with central-app" depends="compile">

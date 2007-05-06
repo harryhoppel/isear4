@@ -30,7 +30,7 @@ public class Worker {
     java.util.concurrent.Executor executor;
 
     public Worker() throws MalformedURLException {
-        PropertyConfigurator.configure("log4j.properties"); 
+        PropertyConfigurator.configure("log4j.properties");
         executor = Executors.newFixedThreadPool(4);
     }
 
@@ -59,7 +59,7 @@ public class Worker {
     private void startServer() throws IOException {
         Processor processor = new Processor();
         executor.execute(processor);
-        executor.execute(new Server(InetAddress.getLocalHost(), SERVER_PORT, processor));
+        executor.execute(new Server(InetAddress.getLocalHost(), mainWorkerPort, processor));
     }
 
     public static void main(String[] args) throws Exception {

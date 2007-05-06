@@ -29,7 +29,7 @@ public class Server implements Runnable {
     private ByteBuffer readBuffer = ByteBuffer.allocate(1024);
     private final List<Request> pendingChanges = new LinkedList<Request>();
     private final Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<SocketChannel, List<ByteBuffer>>();
-    private boolean isRunning = true;
+    private volatile boolean isRunning = true;
 
 
     public Server(InetAddress hostAddress, int port, Processor processor) throws IOException {
@@ -118,6 +118,7 @@ public class Server implements Runnable {
     public void run() {
         //noinspection InfiniteLoopStatement
         while (this.isRunning) {
+            System.out.println("Server.run");
             try {
                 synchronized (pendingChanges) {
                     for (Request change : pendingChanges) {
@@ -158,8 +159,8 @@ public class Server implements Runnable {
     public void shutDown() throws IOException {
 //        log.info("**** stopping Server4Test instance");
 //        try {
-            this.selector.close();
-            this.isRunning = false;
+        this.selector.close();
+        this.isRunning = false;
 
 //        } catch (Exception e) {
 //            e.printStackTrace();
