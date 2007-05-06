@@ -1,13 +1,13 @@
 package org.spbgu.pmpu.athynia.central.classloader;
 
+import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.classloader.network.Processor;
 import org.spbgu.pmpu.athynia.central.classloader.network.Server;
-import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -23,7 +23,7 @@ public class CentralClassLoaderServer {
     ZipClassReader classReader;
 
     public CentralClassLoaderServer(File homeDirectory) throws MalformedURLException {
-        classReader = new ZipClassReader(homeDirectory);
+        classReader = new ZipClassReader();
         executor = Executors.newFixedThreadPool(4);
         scanHomeDirectory(homeDirectory);
     }
