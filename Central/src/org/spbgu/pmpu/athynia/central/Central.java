@@ -6,9 +6,9 @@ import org.spbgu.pmpu.athynia.central.broadcast.BroadcastingDaemon;
 import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
 import org.spbgu.pmpu.athynia.central.communications.CentralMainPortListener;
 import org.spbgu.pmpu.athynia.central.communications.Worker;
-import org.spbgu.pmpu.athynia.central.communications.WorkersExecutorSender;
 import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
-import org.spbgu.pmpu.athynia.central.communications.impl.WorkersExecutorSenderImpl;
+import org.spbgu.pmpu.athynia.central.communications.split.DataSender;
+import org.spbgu.pmpu.athynia.central.communications.split.impl.DataSenderImpl;
 import org.spbgu.pmpu.athynia.central.settings.IllegalConfigException;
 import org.spbgu.pmpu.athynia.central.settings.Settings;
 
@@ -98,10 +98,9 @@ public class Central {
         central.start();
         Thread.sleep(10 * 1000);
         LOG.info("Start sending the code");
-        WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
         Set<Worker> workers = DataManager.getInstance().getData(WorkersManager.class).getAll();
-        for (Worker worker : workers) {
-            workersExecutorSender.runExecutorOnWorker(worker, "org.spbgu.pmpu.athynia.central.communications.split.SplitReceiver");
-        }
+        DataSender dataSender = new DataSenderImpl();
+        dataSender.sendData("xxx", "Hello, world!", workers.toArray(new Worker[0]));
+//        Thread.sleep(10 * 1000);
     }
 }
