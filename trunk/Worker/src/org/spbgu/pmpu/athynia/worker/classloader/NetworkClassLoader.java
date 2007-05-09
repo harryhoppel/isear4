@@ -122,7 +122,7 @@ public class NetworkClassLoader extends URLClassLoader {
             client.send(className.getBytes(), handler);
             return unzipBytes(handler.waitForResponse());
         } catch (IOException e) {
-            LOG.warn("Error while downloading:" + e);
+            LOG.warn("Error while downloading:" + className, e);
         }
         return null;
     }

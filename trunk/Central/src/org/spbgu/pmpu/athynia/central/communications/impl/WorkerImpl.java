@@ -11,7 +11,7 @@ import java.net.Socket;
  */
 public class WorkerImpl implements Worker {
     private final InetSocketAddress address;
-    private WorkersManager manager;
+    private final WorkersManager manager;
 
     public WorkerImpl(InetSocketAddress address, WorkersManager manager) {
         this.address = address;

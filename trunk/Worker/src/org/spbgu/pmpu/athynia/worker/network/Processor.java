@@ -49,7 +49,7 @@ public class Processor implements Runnable {
                 dataEvent = queue.remove(0);
                 String request = new String(dataEvent.data);
                 if (request.startsWith(LOAD_CLASS_PREFIX)) {
-                    String className = request.substring(LOAD_CLASS_PREFIX.length());
+                    String className = request.substring(LOAD_CLASS_PREFIX.length(), request.length());
                     LOG.info("WORKER:executeClass = " + className);
                     classExecutor.executeClass(className);
                 }

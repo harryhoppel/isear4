@@ -10,6 +10,7 @@ import org.spbgu.pmpu.athynia.central.communications.split.DataSender;
 import org.spbgu.pmpu.athynia.central.communications.split.DataSplitter;
 import org.spbgu.pmpu.athynia.central.communications.split.SplitReceiver;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -22,6 +23,8 @@ import java.net.Socket;
 public class DataSenderImpl implements DataSender {
     //todo: should we send this from multiple threads? --> profile that
     //todo: where to synchronize - right now all sync is done on Central-side
+    private static final Logger LOG = Logger.getLogger(DataSenderImpl.class);
+
     private final WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
 
     public boolean sendData(String key, String value, Worker[] workers) {
@@ -30,7 +33,9 @@ public class DataSenderImpl implements DataSender {
         for (int i = 0; i < workers.length; i++) {
             sendDataTask(workers[i], key, splittedData[i], i, workers.length);
         }
+        LOG.debug("Data was send to workers");
         boolean sended = waitForCompletion(workers);
+        LOG.debug("\"Wait for completion\" completed");
         if (!sended) {
             return false;
         }
@@ -51,9 +56,13 @@ public class DataSenderImpl implements DataSender {
         workersExecutorSender.runExecutorOnWorker(worker, SplitReceiver.class.getName());
         BufferedOutputStream outputToWorker = null;
         try {
-            outputToWorker = new BufferedOutputStream(worker.getSocket().getOutputStream());
+            Socket workersSocket = worker.getSocket();
+            LOG.debug("Trying to send data to worker: " + worker.getFullAddress());
+            outputToWorker = new BufferedOutputStream(workersSocket.getOutputStream());
             outputToWorker.write(new JoinPartImpl(key, data, particularPartNumber, wholePartsQuantity).toBinaryForm());
+            outputToWorker.flush();
         } catch (IOException e) {
+            LOG.warn("Can't send data to worker: " + worker.getFullAddress(), e);
         } finally {
             if (outputToWorker != null) {
                 try {

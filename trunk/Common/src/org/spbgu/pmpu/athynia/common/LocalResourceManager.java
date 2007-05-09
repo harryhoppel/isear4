@@ -1,6 +1,6 @@
 package org.spbgu.pmpu.athynia.common;
 
-import org.spbgu.pmpu.athynia.common.JoinPart;
+import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
 import java.util.HashMap;
@@ -10,6 +10,8 @@ import java.util.Map;
  * User: vasiliy
  */
 public class LocalResourceManager {
+    private static final Logger LOG = Logger.getLogger(LocalResourceManager.class);
+
     private long previousDropTime;
     private JoinPart previousJoinPart;
 
@@ -23,6 +25,7 @@ public class LocalResourceManager {
     public void commit() {
         if (System.currentTimeMillis() <= previousDropTime) {
             index.put(previousJoinPart.getKey(), previousJoinPart);
+            LOG.debug("New index commit: " + previousJoinPart.getKey() + " ---> " + previousJoinPart.getValue());
         }
     }
 
