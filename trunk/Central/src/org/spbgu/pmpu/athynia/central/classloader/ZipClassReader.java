@@ -67,7 +67,7 @@ public class ZipClassReader {
             retval = bos.toByteArray();
             bos.close();
         } catch (IOException e) {
-            LOG.warn("Error while zipping: " + e);
+            LOG.warn("Error while zipping: ", e);
         }
         return retval;
     }
