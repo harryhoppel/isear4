@@ -1,9 +1,9 @@
 package org.spbgu.pmpu.athynia.central;
 
-import org.spbgu.pmpu.athynia.central.settings.Settings;
-import org.spbgu.pmpu.athynia.central.settings.impl.XmlSettings;
-import org.spbgu.pmpu.athynia.central.communications.WorkersManager;
-import org.spbgu.pmpu.athynia.central.communications.impl.WorkersManagerImpl;
+import org.spbgu.pmpu.athynia.central.network.WorkersManager;
+import org.spbgu.pmpu.athynia.central.network.impl.WorkersManagerImpl;
+import org.spbgu.pmpu.athynia.common.settings.Settings;
+import org.spbgu.pmpu.athynia.common.settings.impl.XmlSettings;
 
 import java.util.HashMap;
 import java.util.Map;

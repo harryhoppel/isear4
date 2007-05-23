@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.LocalResourceManager;
+import org.spbgu.pmpu.athynia.common.settings.Settings;
 import org.spbgu.pmpu.athynia.worker.DataManager;
 import org.spbgu.pmpu.athynia.worker.broadcast.BroadcastListeningDaemon;
-import org.spbgu.pmpu.athynia.worker.settings.Settings;
 
 import java.io.File;
 import java.net.InetAddress;
