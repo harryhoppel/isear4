@@ -1,10 +1,8 @@
 package org.spbgu.pmpu.athynia.worker.network;
 
 import org.apache.log4j.Logger;
-import org.spbgu.pmpu.athynia.worker.DataManager;
 import org.spbgu.pmpu.athynia.worker.classloader.ClassExecutor;
 import org.spbgu.pmpu.athynia.worker.classloader.NetworkClassExecutor;
-import org.spbgu.pmpu.athynia.worker.index.Index;
 
 import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
@@ -16,7 +14,6 @@ import java.util.List;
  */
 public class Processor implements Runnable {
     private static final Logger LOG = Logger.getLogger(Processor.class);
-    protected final Index index = DataManager.getInstance().getData(Index.class);
     protected final List<ServerDataEvent> queue = new LinkedList<ServerDataEvent>();
     ClassExecutor classExecutor;
     final String LOAD_CLASS_PREFIX = "loadClass:";
