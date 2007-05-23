@@ -2,11 +2,9 @@ package org.spbgu.pmpu.athynia.worker.broadcast;
 
 import org.apache.log4j.Logger;
 
-import java.net.Socket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * User: vasiliy
