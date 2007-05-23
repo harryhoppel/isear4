@@ -59,12 +59,14 @@
         <mkdir dir="${tests.result.dir}"/>
         <junit
                 fork="yes"
-                failureproperty="testFailed">
+                failureproperty="testFailed"
+                dir="${basedir}">
             <classpath refid="classpath"/>
             <batchtest todir="${tests.result.dir}/">
                 <formatter type="brief"/>
                 <fileset dir="${compiled.tests.dir}">
                     <include name="**/*.class"/>
+                    <exclude name="org/spbgu/pmpu/athynia/common/network/SocketOpenerTest$1.class"/> <!-- not a test - a helper thread -->
                 </fileset>
             </batchtest>
         </junit>
@@ -81,6 +83,9 @@
     <target name="jar" description="Creates jar-file with Athynia-common" depends="compile">
         <mkdir dir="${jar.build.dir}"/>
         <jar destfile="${jar.file.path}">
+            <manifest>
+                <attribute name="Class-Path" value="jdom.jar"/>
+            </manifest>
             <fileset dir="${compiled.src.dir}"/>
         </jar>
     </target>

@@ -2,8 +2,8 @@ package org.spbgu.pmpu.athynia.worker;
 
 import org.spbgu.pmpu.athynia.worker.index.Index;
 import org.spbgu.pmpu.athynia.worker.index.impl.MemoryIndex;
-import org.spbgu.pmpu.athynia.worker.settings.Settings;
-import org.spbgu.pmpu.athynia.worker.settings.impl.XmlSettings;
+import org.spbgu.pmpu.athynia.common.settings.Settings;
+import org.spbgu.pmpu.athynia.common.settings.impl.XmlSettings;
 
 import java.util.Map;
 import java.util.HashMap;

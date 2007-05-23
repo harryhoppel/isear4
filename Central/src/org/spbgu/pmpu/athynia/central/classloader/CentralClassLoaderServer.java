@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.DataManager;
 import org.spbgu.pmpu.athynia.central.classloader.network.Processor;
 import org.spbgu.pmpu.athynia.central.classloader.network.Server;
-import org.spbgu.pmpu.athynia.central.settings.Settings;
+import org.spbgu.pmpu.athynia.common.settings.Settings;
 
 import java.io.File;
 import java.io.IOException;

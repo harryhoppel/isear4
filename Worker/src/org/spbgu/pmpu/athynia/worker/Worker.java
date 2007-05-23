@@ -5,8 +5,8 @@ import org.apache.log4j.PropertyConfigurator;
 import org.spbgu.pmpu.athynia.worker.broadcast.BroadcastListeningDaemon;
 import org.spbgu.pmpu.athynia.worker.network.Processor;
 import org.spbgu.pmpu.athynia.worker.network.Server;
-import org.spbgu.pmpu.athynia.worker.settings.IllegalConfigException;
-import org.spbgu.pmpu.athynia.worker.settings.Settings;
+import org.spbgu.pmpu.athynia.common.settings.Settings;
+import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
 
 import java.io.IOException;
 import java.net.InetAddress;

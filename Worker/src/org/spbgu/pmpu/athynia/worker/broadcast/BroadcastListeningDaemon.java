@@ -1,7 +1,7 @@
 package org.spbgu.pmpu.athynia.worker.broadcast;
 
 import org.apache.log4j.Logger;
-import org.spbgu.pmpu.athynia.worker.settings.IllegalConfigException;
+import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
 
 import java.io.IOException;
 import java.io.OutputStream;
