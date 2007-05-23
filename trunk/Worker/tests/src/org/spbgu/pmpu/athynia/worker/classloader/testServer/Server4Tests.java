@@ -55,12 +55,12 @@ public class Server4Tests implements Runnable {
 
     @SuppressWarnings({"StatementWithEmptyBody"})
     public void shutDown() {
-//        try {
-//            while(!server.isClosed());
-//            listener.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            while (!server.isClosed()) ;
+            listener.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private class Proccessor implements Runnable {
@@ -88,7 +88,7 @@ public class Server4Tests implements Runnable {
                     String s;
                     BufferedReader reader = new BufferedReader(new InputStreamReader(server.getInputStream()));
                     while ((s = reader.readLine()) != null) {
-                        System.out.println("Server4Tests$Proccessor" + s);
+                        System.out.println("Server4Tests$Proccessor: " + s);
                     }
                     needResponse = false;
                     server.shutdownInput();
