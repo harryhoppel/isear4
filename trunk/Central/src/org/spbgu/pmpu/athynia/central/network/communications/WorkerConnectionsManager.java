@@ -13,4 +13,6 @@ import java.io.IOException;
 public interface WorkerConnectionsManager {
     Socket getSocket(Worker worker) throws IOException;
     void closeSocket(Worker worker) throws IOException;
+
+    void replaceWorkerConnection(Worker worker, Socket newConnection) throws IOException;
 }

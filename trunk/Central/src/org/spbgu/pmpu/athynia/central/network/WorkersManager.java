@@ -35,4 +35,5 @@ public interface WorkersManager {
 
     Socket openSocket(Worker worker) throws IOException;
     void closeSocket(Worker worker) throws IOException;
+    void replaceSocket(Worker worker, Socket newConnection) throws IOException;
 }

@@ -1,4 +1,4 @@
-package org.spbgu.pmpu.athynia.worker.broadcast;
+package org.spbgu.pmpu.athynia.worker.network.broadcast;
 
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
 public class BroadcastListeningDaemon implements Runnable {
     private static final Logger LOG = Logger.getLogger(BroadcastListeningDaemon.class);
 
-    public static Integer centralBroadcastPort;
+    private Integer centralBroadcastPort;
     public static Integer centralMainPort;
     public static InetAddress centralAddress;
     public static Integer centralClassLoaderPort;
@@ -43,10 +43,6 @@ public class BroadcastListeningDaemon implements Runnable {
         } catch (IOException e) {
             throw new IllegalConfigException("Illegal config parameters: port " + broadcastingPort + ", address " + groupAddressToJoin, e);
         }
-//        Runnable mainPortListener = new MainPortListener(workerMainPort);
-//        Thread mainPortListenerThread = new Thread(Thread.currentThread().getThreadGroup(), mainPortListener, "Worker main port listener");
-//        mainPortListenerThread.setDaemon(true);
-//        mainPortListenerThread.start();
     }
 
     public void run() {
@@ -67,7 +63,7 @@ public class BroadcastListeningDaemon implements Runnable {
                     CENTRAL_ADDRESS_NOTIFICATOR.notifyAll();
                 }
                 centralAddressFound = true;
-                LOG.info("Central found: " + centralAddress.toString() + ":" + centralBroadcastPort + ";" + centralMainPort + ";" + centralClassLoaderPort);
+                LOG.info("Central found: " + centralAddress + ":" + centralBroadcastPort + ";" + centralMainPort + ";" + centralClassLoaderPort);
             } catch (IOException e) {
                 LOG.error("Error while retrieving central address", e);
             } finally {
@@ -85,7 +81,7 @@ public class BroadcastListeningDaemon implements Runnable {
         try {
             socket = new Socket(centralAddress, centralBroadcastPort);
             outputToCentral = socket.getOutputStream();
-            outputToCentral.write(Integer.toString(workerMainPort).getBytes("US-ASCII"));
+            outputToCentral.write(Integer.toString(workerMainPort).getBytes("UTF-8"));
         } catch (IOException e) {
             LOG.error("Can't communicate with central", e);
         } finally {

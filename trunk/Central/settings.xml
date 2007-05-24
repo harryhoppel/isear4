@@ -2,12 +2,10 @@
     <common>
         <central-server>
             <port value="9999"/>
-            <server-directory value="tests/data/serverData/"/>
             <class-loader-home-dir value="home"/>
         </central-server>
         <broadcast>
             <broadcasting-timeout-in-ms value="3000"/>
-            <port value="7777"/>
             <broadcast-local-port value="20000"/>
             <broadcastAddress value="239.0.0.1"/>
             <portToListen value="44445"/>

@@ -1,5 +1,7 @@
 package org.spbgu.pmpu.athynia.worker;
 
+import org.spbgu.pmpu.athynia.worker.network.CentralConnectionManager;
+import org.spbgu.pmpu.athynia.worker.network.impl.CentralConnectionManagerImpl;
 import org.spbgu.pmpu.athynia.common.settings.Settings;
 import org.spbgu.pmpu.athynia.common.settings.impl.XmlSettings;
 
@@ -19,6 +21,9 @@ public class DataManager {
             final Settings settings = XmlSettings.load("settings.xml");
             map.put(Settings.class, settings);
 
+
+            final CentralConnectionManager centralConnectionManager = new CentralConnectionManagerImpl();
+            map.put(CentralConnectionManager.class, centralConnectionManager);
         } catch (Exception e) {
             e.printStackTrace();
         }

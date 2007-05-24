@@ -37,7 +37,7 @@ class WorkersSignalGetter implements Runnable {
                 InputStream inputFromWorker = socket.getInputStream();
                 byte[] buffer = new byte[256]; //size is surely enough to accept worker's main port number
                 int bytesRead = inputFromWorker.read(buffer);
-                int detectedPort = veryDumbMethodToParseUnknownIntegers(new String(buffer, 0, bytesRead, "US-ASCII"));
+                int detectedPort = veryDumbMethodToParseUnknownIntegers(new String(buffer, 0, bytesRead, "UTF-8"));
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("New address detected: " + detectedAddress.toString() + ":" + detectedPort);
                 }
