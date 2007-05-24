@@ -75,19 +75,8 @@
                 <formatter type="brief"/>
                 <fileset dir="${compiled.tests.dir}">
                     <include name="**/*.class"/>
-                    <exclude name="**/BTreeBench.class"/>
-                    <exclude name="**/TestObject.class"/>
-                    <exclude name="**/TestInsertPerf.class"/>
-                    <exclude name="**/TestCachePolicy.class"/>
-                    <exclude name="**/TestCachePolicy$CountingListener.class"/>
-                    <exclude name="**/TestCachePolicy$ThrowingListener.class"/>
-                    <exclude name="**/TestBTree$TestThread.class"/>
                     <exclude name="**/Server4Tests.class"/>
-                    <exclude name="**/TestPerformance.class"/>
                     <exclude name="**/Server4Tests$Proccessor.class"/>
-                    <exclude name="**/TestStress$RecordData.class"/>
-                    <exclude name="**/TestUtil.class"/>
-                    <exclude name="**/TestStress.class"/>
                     <exclude name="**/classloader/testclasses/**"/>
                 </fileset>
             </batchtest>
