@@ -5,6 +5,7 @@ import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.communications.WorkerConnectionsManager;
 import org.spbgu.pmpu.athynia.central.network.communications.impl.WorkerConnectionsManagerImpl;
 import org.spbgu.pmpu.athynia.common.network.SocketOpener;
+import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -16,7 +17,10 @@ import java.io.IOException;
  * User: vasiliy
  */
 public class WorkersManagerImpl implements WorkersManager {
+    private static final Logger LOG = Logger.getLogger(WorkersManagerImpl.class);
+
     private static final WorkersManager INSTANCE = new WorkersManagerImpl();
+
     private WorkerConnectionsManager workerConnectionsManager;
 
     public static WorkersManager getInstance() {
@@ -46,10 +50,12 @@ public class WorkersManagerImpl implements WorkersManager {
 
     public boolean addNewWorker(Worker worker) {
         if (workers.contains(worker)) {
+            LOG.debug("Worker " + worker.getFullAddress() + " wasn't added; reason: we already know about him");
             return false;
         }
         workers.add(worker);
         workersAddresses.put(worker.getFullAddress(), worker);
+        LOG.debug("Added new worker: " + worker.getFullAddress());
         return true;
     }
 
@@ -67,5 +73,9 @@ public class WorkersManagerImpl implements WorkersManager {
 
     public void closeSocket(Worker worker) throws IOException {
         workerConnectionsManager.closeSocket(worker);
+    }
+
+    public void replaceSocket(Worker worker, Socket newConnection) throws IOException {
+        workerConnectionsManager.replaceWorkerConnection(worker, newConnection);
     }
 }

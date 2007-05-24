@@ -1,7 +1,7 @@
 package org.spbgu.pmpu.athynia.worker.classloader;
 
 import org.apache.log4j.Logger;
-import org.spbgu.pmpu.athynia.worker.broadcast.BroadcastListeningDaemon;
+import org.spbgu.pmpu.athynia.worker.network.broadcast.BroadcastListeningDaemon;
 import org.spbgu.pmpu.athynia.worker.network.Client;
 import org.spbgu.pmpu.athynia.worker.network.ResponseHandler;
 

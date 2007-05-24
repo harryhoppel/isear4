@@ -33,9 +33,9 @@ public class DataSenderImpl implements DataSender {
         for (int i = 0; i < workers.length; i++) {
             sendDataTask(workers[i], key, splittedData[i], i, workers.length);
         }
-        LOG.debug("Data was send to workers");
+        LOG.debug("Data was sent to workers");
         boolean sended = waitForCompletion(workers);
-        LOG.debug("\"Wait for completion\" completed");
+        LOG.debug("Operation \"Wait for completion\" completed");
         if (!sended) {
             return false;
         }
@@ -54,7 +54,7 @@ public class DataSenderImpl implements DataSender {
 
     private void sendDataTask(Worker worker, String key, String data, int particularPartNumber, int wholePartsQuantity) {
         workersExecutorSender.runExecutorOnWorker(worker, SplitReceiver.class.getName());
-        BufferedOutputStream outputToWorker = null;
+        BufferedOutputStream outputToWorker;
         try {
             Socket workersSocket = worker.openSocket();
             LOG.debug("Trying to send data to worker: " + worker.getFullAddress());
@@ -63,13 +63,6 @@ public class DataSenderImpl implements DataSender {
             outputToWorker.flush();
         } catch (IOException e) {
             LOG.warn("Can't send data to worker: " + worker.getFullAddress(), e);
-        } finally {
-            if (outputToWorker != null) {
-                try {
-                    outputToWorker.close();
-                } catch (IOException e) {
-                }
-            }
         }
     }
 
