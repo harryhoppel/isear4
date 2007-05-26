@@ -24,13 +24,16 @@ public class BroadcastListeningDaemon implements Runnable {
     public static Integer centralClassLoaderPort;
     public static final Object CENTRAL_ADDRESS_NOTIFICATOR = new Object();
 
-    private final int workerMainPort;
+    private final int workerClassloaderMainPort;
     private final MulticastSocket multicastSocket;
     private final InetAddress inetGroupAddressToJoin;
 
     public static boolean centralAddressFound = false;
 
-    public BroadcastListeningDaemon(int workerMainPort, int broadcastingPort, String groupAddressToJoin) throws IllegalConfigException {
+    private final int workerMainPort;
+
+    public BroadcastListeningDaemon(int workerClassloaderMainPort, int workerMainPort, int broadcastingPort, String groupAddressToJoin) throws IllegalConfigException {
+        this.workerClassloaderMainPort = workerClassloaderMainPort;
         this.workerMainPort = workerMainPort;
         try {
             this.inetGroupAddressToJoin = InetAddress.getByName(groupAddressToJoin);
@@ -81,7 +84,7 @@ public class BroadcastListeningDaemon implements Runnable {
         try {
             socket = new Socket(centralAddress, centralBroadcastPort);
             outputToCentral = socket.getOutputStream();
-            outputToCentral.write(Integer.toString(workerMainPort).getBytes("UTF-8"));
+            outputToCentral.write((Integer.toString(workerClassloaderMainPort) + "," + Integer.toString(workerMainPort)).getBytes("UTF-8"));
         } catch (IOException e) {
             LOG.error("Can't communicate with central", e);
         } finally {

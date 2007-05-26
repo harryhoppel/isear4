@@ -37,11 +37,13 @@ class WorkersSignalGetter implements Runnable {
                 InputStream inputFromWorker = socket.getInputStream();
                 byte[] buffer = new byte[256]; //size is surely enough to accept worker's main port number
                 int bytesRead = inputFromWorker.read(buffer);
-                int detectedPort = veryDumbMethodToParseUnknownIntegers(new String(buffer, 0, bytesRead, "UTF-8"));
+                String received = new String(buffer, 0, bytesRead, "UTF-8");
+                int mainPort = parseIntegerFollowedByMess(received.substring(received.indexOf(',') + 1, received.length()));
+                int classloaderPort = Integer.parseInt(received.substring(0, received.indexOf(',')));
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("New address detected: " + detectedAddress.toString() + ":" + detectedPort);
+                    LOG.debug("New address detected: " + detectedAddress.toString() + ":" + mainPort);
                 }
-                Worker newWorker = new WorkerImpl(new InetSocketAddress(detectedAddress, detectedPort), workersManager);
+                Worker newWorker = new WorkerImpl(new InetSocketAddress(detectedAddress, classloaderPort), mainPort, workersManager);
                 workersManager.addNewWorker(newWorker);
             } catch (IOException e) {
                 LOG.error("Can't communicate with worker", e);
@@ -57,15 +59,16 @@ class WorkersSignalGetter implements Runnable {
         }
     }
 
-    private int veryDumbMethodToParseUnknownIntegers(String integerFollowedByMess) {
-        int result = 0;
-        for (int i = integerFollowedByMess.length(); i > 0; i--) {
-            String temp = integerFollowedByMess.substring(0, i);
-            try {
-                result = Integer.parseInt(temp);
+    private int parseIntegerFollowedByMess(String intFollowedByMess) {
+        StringBuffer temp = new StringBuffer();
+        for (int i = 0; i < intFollowedByMess.length(); i++) {
+            char nextChar = intFollowedByMess.charAt(i);
+            if (Character.isDigit(nextChar)) {
+                temp.append(nextChar);
+            } else {
                 break;
-            } catch (NumberFormatException e) {/*skip one step*/}
+            }
         }
-        return result;
+        return Integer.parseInt(temp.toString());
     }
 }

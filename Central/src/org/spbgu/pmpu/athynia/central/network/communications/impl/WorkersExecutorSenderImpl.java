@@ -16,8 +16,9 @@ public class WorkersExecutorSenderImpl implements WorkersExecutorSender {
 
     public boolean runExecutorOnWorker(Worker worker, String executorClassName) {
         BufferedOutputStream outputToWorker = null;
+        Socket socketToWorker = null;
         try {
-            Socket socketToWorker = worker.openSocket();
+            socketToWorker = new Socket(worker.getFullAddress().getAddress(), worker.getFullAddress().getPort());
             outputToWorker = new BufferedOutputStream(socketToWorker.getOutputStream());
             LOG.debug("Sending class: " + executorClassName + " to " + socketToWorker.getInetAddress() + ":" + socketToWorker.getPort());
             outputToWorker.write(("loadClass:" + executorClassName).getBytes("UTF-8"));
@@ -31,7 +32,9 @@ public class WorkersExecutorSenderImpl implements WorkersExecutorSender {
                 if (outputToWorker != null) {
                     outputToWorker.close();
                 }
-                worker.closeSocket();
+                if (socketToWorker != null) {
+                    socketToWorker.close();
+                }
             } catch (IOException e) {
                 LOG.error("Can't close output socket/stream to worker: " + worker.getFullAddress(), e);
             }

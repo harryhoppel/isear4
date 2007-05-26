@@ -57,7 +57,7 @@ public class DataSenderImpl implements DataSender {
         BufferedOutputStream outputToWorker;
         try {
             Socket workersSocket = worker.openSocket();
-            LOG.debug("Trying to send data to worker: " + worker.getFullAddress());
+            LOG.debug("Trying to send data to worker: " + worker.getFullAddress().getHostName() + ":" + worker.getMainPort());
             outputToWorker = new BufferedOutputStream(workersSocket.getOutputStream());
             outputToWorker.write(new JoinPartImpl(key, data, particularPartNumber, wholePartsQuantity).toBinaryForm());
             outputToWorker.flush();
