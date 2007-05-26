@@ -13,14 +13,20 @@ import java.io.IOException;
 public class WorkerImpl implements Worker {
     private final InetSocketAddress address;
     private final WorkersManager manager;
+    private final int mainPort;
 
-    public WorkerImpl(InetSocketAddress address, WorkersManager manager) {
+    public WorkerImpl(InetSocketAddress address, int mainPort, WorkersManager manager) {
         this.address = address;
+        this.mainPort = mainPort;
         this.manager = manager;
     }
 
     public InetSocketAddress getFullAddress() {
         return address;
+    }
+
+    public int getMainPort() {
+        return mainPort;
     }
 
     public Socket openSocket() throws IOException {

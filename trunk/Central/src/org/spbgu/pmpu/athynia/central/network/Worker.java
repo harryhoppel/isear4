@@ -1,16 +1,16 @@
 package org.spbgu.pmpu.athynia.central.network;
 
-import org.spbgu.pmpu.athynia.central.network.WorkersManager;
-
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.io.IOException;
 
 /**
  * User: vasiliy
  */
 public interface Worker {
     InetSocketAddress getFullAddress();
+
+    int getMainPort();
 
     Socket openSocket() throws IOException;
     void closeSocket() throws IOException;

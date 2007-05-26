@@ -10,6 +10,7 @@
     </classloader>
     <server>
         <host-address value="127.0.0.1"/>
-        <worker-main-port value="44446"/>
+        <worker-main-classloader-port value="44446"/>
+        <worker-main-port value="44447"/>
     </server>
 </settings>

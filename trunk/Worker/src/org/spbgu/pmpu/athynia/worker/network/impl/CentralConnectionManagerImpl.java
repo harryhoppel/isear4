@@ -10,7 +10,6 @@ import org.spbgu.pmpu.athynia.worker.network.broadcast.BroadcastListeningDaemon;
 import org.spbgu.pmpu.athynia.worker.network.broadcast.MainPortListener;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
 
 /**
@@ -21,11 +20,9 @@ public class CentralConnectionManagerImpl implements CentralConnectionManager {
 
     private volatile Socket socketToCentral;
 
-    private int mainWorkerPort;
     private MainPortListener mainPortListener;
 
-    public void start(Settings settings, int portToListen) {
-        this.mainWorkerPort = portToListen;
+    public void start(Settings settings, int mainWorkerClassloaderPort, int mainWorkerPort) {
         int broadcastingPort = settings.getIntValue("broadcast-port");
         String groupAddressToJoin = settings.getValue("group-address-to-join");
         String defaultLocalNic = settings.getValue("default-local-nic");
@@ -33,11 +30,11 @@ public class CentralConnectionManagerImpl implements CentralConnectionManager {
         try {
             SocketOpener socketOpener = new SocketOpenerImpl(defaultLocalNic, defaultLocalAddress);
             ThreadGroup broadcastingThreadGroup = new ThreadGroup("Broadcasting threads");
-            BroadcastListeningDaemon broadcastListeningDaemon = new BroadcastListeningDaemon(portToListen, broadcastingPort, groupAddressToJoin);
+            BroadcastListeningDaemon broadcastListeningDaemon = new BroadcastListeningDaemon(mainWorkerClassloaderPort, mainWorkerPort, broadcastingPort, groupAddressToJoin);
             Thread broadcastListeningDaemonThread = new Thread(broadcastingThreadGroup, broadcastListeningDaemon, "Broadcast listening thread");
             broadcastListeningDaemonThread.setDaemon(true);
             broadcastListeningDaemonThread.start();
-            mainPortListener = new MainPortListener(portToListen, socketOpener);
+            mainPortListener = new MainPortListener(mainWorkerPort, socketOpener);
             Thread mainPortListenerThread = new Thread(broadcastingThreadGroup, mainPortListener, "Worker main port listener");
             mainPortListenerThread.setDaemon(true);
             mainPortListenerThread.start();
@@ -60,7 +57,7 @@ public class CentralConnectionManagerImpl implements CentralConnectionManager {
             socketToCentral = mainPortListener.getCentralConnection();
 //            socketToCentral = new Socket(BroadcastListeningDaemon.centralAddress, BroadcastListeningDaemon.centralMainPort);
 //            OutputStream outputToCentral = socketToCentral.getOutputStream();
-//            outputToCentral.write(Integer.toString(mainWorkerPort).getBytes("UTF-8"));
+//            outputToCentral.write(Integer.toString(mainWorkerClassloaderPort).getBytes("UTF-8"));
 //            outputToCentral.flush();
 //            outputToCentral.close();
             return socketToCentral;

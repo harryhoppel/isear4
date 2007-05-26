@@ -1,6 +1,5 @@
 package org.spbgu.pmpu.athynia.worker;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
 import org.spbgu.pmpu.athynia.common.settings.Settings;
@@ -8,7 +7,6 @@ import org.spbgu.pmpu.athynia.worker.network.CentralConnectionManager;
 import org.spbgu.pmpu.athynia.worker.network.Processor;
 import org.spbgu.pmpu.athynia.worker.network.Server;
 import org.spbgu.pmpu.athynia.worker.network.broadcast.BroadcastListeningDaemon;
-import org.spbgu.pmpu.athynia.worker.network.impl.CentralConnectionManagerImpl;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -23,11 +21,10 @@ import java.util.concurrent.Executors;
 public class Worker {
     public static CentralConnectionManager centralConnectionManager;
 
-    private static final Logger LOG = Logger.getLogger(Worker.class);
-
     private final Settings broadcastSettings = DataManager.getInstance().getData(Settings.class).childSettings("broadcast");
     private final Settings serverSettings = DataManager.getInstance().getData(Settings.class).childSettings("server");
     private final String HOST_ADDRESS = serverSettings.getValue("host-address");
+    private final int MAIN_WORKER_CLASSOADER_PORT = serverSettings.getIntValue("worker-main-classloader-port");
     private final int MAIN_WORKER_PORT = serverSettings.getIntValue("worker-main-port");
 
     private final java.util.concurrent.Executor executor;
@@ -39,7 +36,7 @@ public class Worker {
 
     public void start() throws IOException, IllegalConfigException, InterruptedException {
         centralConnectionManager = DataManager.getInstance().getData(CentralConnectionManager.class);
-        centralConnectionManager.start(broadcastSettings, MAIN_WORKER_PORT);
+        centralConnectionManager.start(broadcastSettings, MAIN_WORKER_CLASSOADER_PORT, MAIN_WORKER_PORT);
         synchronized (BroadcastListeningDaemon.CENTRAL_ADDRESS_NOTIFICATOR) {
             BroadcastListeningDaemon.CENTRAL_ADDRESS_NOTIFICATOR.wait();
         }
@@ -49,7 +46,7 @@ public class Worker {
     private void startServer() throws IOException {
         Processor processor = new Processor();
         executor.execute(processor);
-        executor.execute(new Server(InetAddress.getByName(HOST_ADDRESS), MAIN_WORKER_PORT, processor));
+        executor.execute(new Server(InetAddress.getByName(HOST_ADDRESS), MAIN_WORKER_CLASSOADER_PORT, processor));
     }
 
     public static void main(String[] args) throws Exception {

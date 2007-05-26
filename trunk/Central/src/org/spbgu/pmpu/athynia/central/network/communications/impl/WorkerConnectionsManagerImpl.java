@@ -28,7 +28,7 @@ public class WorkerConnectionsManagerImpl implements WorkerConnectionsManager {
     public Socket getSocket(Worker worker) throws IOException {
         Socket ret = openedSockets.get(worker);
         if (ret == null) {
-            ret = socketOpener.openSocketOnDefaultNic(worker.getFullAddress().getHostName(), worker.getFullAddress().getPort());
+            ret = socketOpener.openSocketOnDefaultNic(worker.getFullAddress().getHostName(), worker.getMainPort());
             openedSockets.put(worker, ret);
         }
         return ret;
