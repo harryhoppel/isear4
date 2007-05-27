@@ -5,6 +5,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.spbgu.pmpu.athynia.central.network.broadcast.BroadcastingDaemon;
 import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
 import org.spbgu.pmpu.athynia.central.network.communications.CentralMainPortListener;
+import org.spbgu.pmpu.athynia.central.network.communications.join.impl.JoinerImpl;
 import org.spbgu.pmpu.athynia.central.network.Worker;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSender;
@@ -122,6 +123,7 @@ public class Central {
         Set<Worker> workers = DataManager.getInstance().getData(WorkersManager.class).getAll();
         DataSender dataSender = new DataSenderImpl();
         dataSender.sendData("xxx", "Hello, world!", workers.toArray(new Worker[0]));
-//        Thread.sleep(10 * 1000);
+        String joined = (new JoinerImpl(DataManager.getInstance().getData(WorkersManager.class))).join("xxx");
+        System.out.println("joined = " + joined);
     }
 }

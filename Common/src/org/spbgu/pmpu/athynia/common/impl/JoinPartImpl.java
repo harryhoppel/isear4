@@ -77,7 +77,7 @@ public class JoinPartImpl implements JoinPart {
                     + key
                     + getIntInUtf8(valueLength)
                     + value;
-            return ((getIntInUtf8(ret.getBytes("UTF-8").length) + ret).getBytes("UTF-8"));
+            return (ret.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             return null;
         }

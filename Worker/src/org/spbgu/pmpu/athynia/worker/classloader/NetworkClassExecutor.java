@@ -10,6 +10,9 @@ import org.spbgu.pmpu.athynia.worker.network.CentralConnectionManager;
 import org.spbgu.pmpu.athynia.worker.network.broadcast.BroadcastListeningDaemon;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -55,18 +58,21 @@ public class NetworkClassExecutor implements ClassExecutor {
 
     public boolean executeClass(String className) {
         try {
+            Socket socket;
+            OutputStream output;
+            InputStream input;
 //            SocketAddress socketAddress = new InetSocketAddress(centralAddress, cenralPort);
 //            Socket socket = new Socket();
 //            socket.connect(socketAddress);
             //if ClassCastException => return false todo: unload this class
-            Thread.sleep(100);
-            Socket socket = DataManager.getInstance().getData(CentralConnectionManager.class).getSocket();
+            socket = DataManager.getInstance().getData(CentralConnectionManager.class).getSocket();
             Executor executor = (Executor) classLoader.loadClass(className).newInstance();
-            LOG.debug("Socket is bound to address: " + socket.getInetAddress() + ":" + socket.getPort());
-            executor.execute(socket.getInputStream(), socket.getOutputStream(), new LocalResourceManager());
+            LOG.debug("Socket to central is bound to address: " + socket.getInetAddress() + ":" + socket.getPort());
+            input = socket.getInputStream();
+            output = socket.getOutputStream();
+            executor.execute(input, output, new LocalResourceManager());
         } catch (Throwable t) {
-            //todo LOG excetion
-            LOG.warn("", t);
+            LOG.warn("Exception was thrown while executing class:" + className, t);
             return false;
         }
         //todo auto close streams

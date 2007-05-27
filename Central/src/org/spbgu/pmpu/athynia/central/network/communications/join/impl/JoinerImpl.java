@@ -9,6 +9,7 @@ import org.spbgu.pmpu.athynia.central.network.communications.join.Joiner;
 import org.spbgu.pmpu.athynia.central.network.communications.join.SearchTask;
 import org.spbgu.pmpu.athynia.common.JoinPart;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
+import java.net.Socket;
 
 /**
  * User: vasiliy
@@ -25,6 +27,9 @@ public class JoinerImpl implements Joiner {
     //todo: should we send this from multiple threads? --> profile that
     //todo: collisions - what should we do if we have 2 workers and collisions(2 different values for the same key)?
     //todo: null values (is it good to return null, if nothing was found?)
+
+    private static final Logger LOG = Logger.getLogger(JoinerImpl.class);
+
     private final WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
     private WorkersManager workersManager;
 
@@ -63,7 +68,9 @@ public class JoinerImpl implements Joiner {
 
     private JoinPart retrieveData(Worker worker) {
         try {
-            BufferedInputStream inputFromWorker = new BufferedInputStream(worker.openSocket().getInputStream());
+            Socket workerSocket = worker.openSocket();
+            LOG.debug("Sending request for data to worker: " + workerSocket.getInetAddress() + ":" + workerSocket.getPort());
+            BufferedInputStream inputFromWorker = new BufferedInputStream(workerSocket.getInputStream());
             byte[] joinPartLengthBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
             inputFromWorker.read(joinPartLengthBuffer);
             int joinPartLength = Integer.parseInt(new String(joinPartLengthBuffer, "UTF-8"));

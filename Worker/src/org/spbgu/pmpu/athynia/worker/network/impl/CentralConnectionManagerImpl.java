@@ -1,10 +1,10 @@
 package org.spbgu.pmpu.athynia.worker.network.impl;
 
 import org.apache.log4j.Logger;
+import org.spbgu.pmpu.athynia.common.network.SocketOpener;
+import org.spbgu.pmpu.athynia.common.network.impl.SocketOpenerImpl;
 import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
 import org.spbgu.pmpu.athynia.common.settings.Settings;
-import org.spbgu.pmpu.athynia.common.network.impl.SocketOpenerImpl;
-import org.spbgu.pmpu.athynia.common.network.SocketOpener;
 import org.spbgu.pmpu.athynia.worker.network.CentralConnectionManager;
 import org.spbgu.pmpu.athynia.worker.network.broadcast.BroadcastListeningDaemon;
 import org.spbgu.pmpu.athynia.worker.network.broadcast.MainPortListener;
@@ -46,21 +46,24 @@ public class CentralConnectionManagerImpl implements CentralConnectionManager {
     }
 
     public synchronized Socket getSocket() throws IOException {
-        if (socketToCentral != null
-                && !socketToCentral.isClosed()
-                && socketToCentral.isBound()
-                && socketToCentral.isConnected()
-                && !socketToCentral.isInputShutdown()
-                && !socketToCentral.isOutputShutdown()) {
-            return socketToCentral;
+        if (socketToCentral != null && !socketToCentral.isClosed()
+                && socketToCentral.isBound() && socketToCentral.isConnected()
+                && !socketToCentral.isInputShutdown() && !socketToCentral.isOutputShutdown()) {
+            try {
+                socketToCentral.getInputStream();
+                socketToCentral.getOutputStream();
+            } catch (IOException e) {
+                socketToCentral = mainPortListener.getCentralConnection();
+            }
         } else {
             socketToCentral = mainPortListener.getCentralConnection();
-//            socketToCentral = new Socket(BroadcastListeningDaemon.centralAddress, BroadcastListeningDaemon.centralMainPort);
-//            OutputStream outputToCentral = socketToCentral.getOutputStream();
-//            outputToCentral.write(Integer.toString(mainWorkerClassloaderPort).getBytes("UTF-8"));
-//            outputToCentral.flush();
-//            outputToCentral.close();
-            return socketToCentral;
         }
+        return socketToCentral;
     }
+
+    public synchronized void closeSocket() {
+        mainPortListener.closeCentralConnection();
+        socketToCentral = null;
+    }
+
 }

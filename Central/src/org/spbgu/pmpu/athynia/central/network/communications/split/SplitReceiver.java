@@ -20,6 +20,14 @@ public class SplitReceiver implements Executor {
     public void execute(InputStream fromServer, OutputStream toServer, LocalResourceManager manager) throws ExecutorException {
         System.out.println("Hello, world!");
         try {
+            byte[] totalSplitNumbersBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
+            fromServer.read(totalSplitNumbersBuffer);
+            int totalSplitNumber = Integer.parseInt(decodeStringWithInteger(new String(totalSplitNumbersBuffer, "UTF-8")));
+
+            byte[] particularSplitNumberBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
+            fromServer.read(particularSplitNumberBuffer);
+            int particularSplitNumber = Integer.parseInt(decodeStringWithInteger(new String(particularSplitNumberBuffer, "UTF-8")));
+
             byte[] keyLengthBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
             fromServer.read(keyLengthBuffer);
             int keyLength = Integer.parseInt(decodeStringWithInteger(new String(keyLengthBuffer, "UTF-8")));
@@ -27,6 +35,7 @@ public class SplitReceiver implements Executor {
             fromServer.read(keyBuffer);
             String key = new String(keyBuffer, "UTF-8");
             LOG.debug("Received key: " + key);
+
             byte[] valueLengthBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
             fromServer.read(valueLengthBuffer);
             int valueLength = Integer.parseInt(decodeStringWithInteger(new String(valueLengthBuffer, "UTF-8")));
@@ -34,12 +43,7 @@ public class SplitReceiver implements Executor {
             fromServer.read(valueBuffer);
             String value = new String(valueBuffer, "UTF-8");
             LOG.debug("Received value: " + value);
-            byte[] particularSplitNumberBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
-            fromServer.read(particularSplitNumberBuffer);
-            int particularSplitNumber = Integer.parseInt(decodeStringWithInteger(new String(particularSplitNumberBuffer, "UTF-8")));
-            byte[] totalSplitNumbersBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
-            fromServer.read(totalSplitNumbersBuffer);
-            int totalSplitNumber = Integer.parseInt(decodeStringWithInteger(new String(totalSplitNumbersBuffer, "UTF-8")));
+
             manager.write(key, value, particularSplitNumber, totalSplitNumber, CommunicationConstants.TIMEOUT_UNTIL_DATA_DROP);
             toServer.write("OK".getBytes("UTF-8"));
             toServer.flush();
@@ -52,7 +56,7 @@ public class SplitReceiver implements Executor {
 
     private String decodeStringWithInteger(String s) {
         StringBuffer buffer = new StringBuffer(s);
-        while (buffer.substring(0, 1).equals("0")) {
+        while (buffer.substring(0, 1).equals("0") && buffer.length() > 1) {
             buffer.delete(0, 1);
         }
         return buffer.toString();
