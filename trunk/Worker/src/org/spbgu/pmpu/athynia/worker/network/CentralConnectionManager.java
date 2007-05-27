@@ -12,4 +12,5 @@ public interface CentralConnectionManager {
     void start(Settings settings, int mainWorkerClassloaderPort, int mainWorkerPort);
 
     Socket getSocket() throws IOException;
+    void closeSocket();
 }

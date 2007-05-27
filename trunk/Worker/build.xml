@@ -78,6 +78,7 @@
                     <exclude name="**/Server4Tests.class"/>
                     <exclude name="**/Server4Tests$Proccessor.class"/>
                     <exclude name="**/classloader/testclasses/**"/>
+                    <exclude name="org/spbgu/pmpu/athynia/worker/classloader/TestNetworkClassExecutor.class"/>
                 </fileset>
             </batchtest>
         </junit>

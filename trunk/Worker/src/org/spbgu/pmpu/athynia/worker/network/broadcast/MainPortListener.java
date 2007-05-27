@@ -79,4 +79,14 @@ public class MainPortListener implements Runnable {
             return connection;
         }
     }
+
+    public synchronized void closeCentralConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (IOException e) {
+                LOG.warn("Can't close connection to central", e);
+            }
+        }
+    }
 }
