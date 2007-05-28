@@ -11,6 +11,7 @@ public interface Settings extends XMLSerializible {
     Settings childSettings(String name);
 
     String getValue(String key);
+    String getValue(String key, String defaultValue);
     int getIntValue(String key);
     boolean getBoolValue(String key);
 }

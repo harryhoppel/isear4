@@ -36,6 +36,14 @@ public class XmlSettings implements Settings {
         return ret;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public String getValue(String key, String defaultValue) {
+        String result;
+        if ((result = getValue(key)) == null || result.equals("")) {
+            result = defaultValue;
+        }
+        return result;
+    }
+
     public int getIntValue(String key) {
         return Integer.parseInt((String) map.get(key));  //To change body of implemented methods use File | Settings | File Templates.
     }

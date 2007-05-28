@@ -3,7 +3,7 @@ package org.spbgu.pmpu.athynia.worker.classloader;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.spbgu.pmpu.athynia.common.Executor;
-import org.spbgu.pmpu.athynia.common.LocalResourceManager;
+import org.spbgu.pmpu.athynia.common.ResourceManager;
 import org.spbgu.pmpu.athynia.common.settings.Settings;
 import org.spbgu.pmpu.athynia.worker.DataManager;
 import org.spbgu.pmpu.athynia.worker.network.CentralConnectionManager;
@@ -69,7 +69,7 @@ public class NetworkClassExecutor implements ClassExecutor {
             LOG.debug("Socket to central is bound to address: " + socket.getInetAddress() + ":" + socket.getPort());
             input = socket.getInputStream();
             output = socket.getOutputStream();
-            executor.execute(input, output, DataManager.getInstance().getData(LocalResourceManager.class));
+            executor.execute(input, output, DataManager.getInstance().getData(ResourceManager.class));
         } catch (Throwable t) {
             LOG.warn("Exception was thrown while executing class:" + className, t);
             return false;

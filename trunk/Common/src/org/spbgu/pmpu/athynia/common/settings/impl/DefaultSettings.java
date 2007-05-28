@@ -71,6 +71,14 @@ public class DefaultSettings implements Settings {
         }
     }
 
+    public String getValue(String key, String defaultValue) {
+        String result;
+        if ((result = getValue(key)) == null || result.equals("")) {
+            result = defaultValue;
+        }
+        return result;
+    }
+
     public int getIntValue(String key) {
         String ret = getValue(key);
         return Integer.parseInt(ret);
