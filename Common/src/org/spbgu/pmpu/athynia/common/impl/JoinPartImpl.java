@@ -77,14 +77,6 @@ public class JoinPartImpl implements JoinPart {
                     + key
                     + getIntInUtf8(valueLength)
                     + value;
-            byte [] bytedata = ret.getBytes("UTF-8");
-            for (int i = 0; i < bytedata.length; i += CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8) {
-                String rec = new String(bytedata, i, i + CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "utf-8");
-                System.out.println("rec = " + rec.getBytes().length);
-                System.out.println("bytedata [" + i + "]= " + rec);
-            }
-            JoinPartImpl part = new JoinPartImpl(ret.getBytes("UTF-8"));
-            System.out.println("ggg =)) " + part.getValue());
             return (ret.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             return null;
