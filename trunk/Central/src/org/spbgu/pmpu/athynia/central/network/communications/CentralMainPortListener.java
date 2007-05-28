@@ -39,15 +39,14 @@ public class CentralMainPortListener implements Runnable {
             InetAddress newAddress;
             try {
                 newConnection = centralMainSocket.accept();
-                byte[] buffer = new byte[256]; //enough to accept worker's address and port
+                byte[] buffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8 * 2 + 1];
                 BufferedInputStream input = new BufferedInputStream(newConnection.getInputStream());
                 input.read(buffer);
                 String received = new String(buffer, "UTF-8");
-                classloaderPort = Integer.parseInt(received.substring(0, received.indexOf(',')));
-                mainPort = parseMainPort(received.substring(received.indexOf(',') + 1));
+                classloaderPort = Integer.parseInt(deleteZeroes(received.substring(0, received.indexOf(','))));
+                mainPort = Integer.parseInt(deleteZeroes(received.substring(received.indexOf(',') + 1)));
                 LOG.debug("Received port number: " + classloaderPort);
                 newAddress = newConnection.getInetAddress();
-                input.close();
             } catch (IOException e) {
                 LOG.error("I/O error while waiting for incoming connections", e);
                 synchronized (this) {
@@ -69,14 +68,12 @@ public class CentralMainPortListener implements Runnable {
         }
     }
 
-    private int parseMainPort(String received) {
-        StringBuffer buffer = new StringBuffer();
-        int index = 0;
-        while (Character.isDigit(received.charAt(index))) {
-            index++;
-            buffer.append(received.charAt(index));
+    private String deleteZeroes(String s) {
+        StringBuffer buffer = new StringBuffer(s);
+        while (buffer.substring(0, 1).equals("0") && buffer.length() > 1) {
+            buffer.delete(0, 1);
         }
-        return Integer.parseInt(buffer.toString());
+        return buffer.toString();
     }
 
 }

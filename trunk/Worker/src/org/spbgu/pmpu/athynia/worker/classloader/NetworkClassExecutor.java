@@ -10,9 +10,9 @@ import org.spbgu.pmpu.athynia.worker.network.CentralConnectionManager;
 import org.spbgu.pmpu.athynia.worker.network.broadcast.BroadcastListeningDaemon;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -57,23 +57,35 @@ public class NetworkClassExecutor implements ClassExecutor {
     }
 
     public boolean executeClass(String className) {
+        OutputStream output = null;
+        InputStream input = null;
         try {
-            Socket socket;
-            OutputStream output;
-            InputStream input;
 //            SocketAddress socketAddress = new InetSocketAddress(centralAddress, cenralPort);
 //            Socket socket = new Socket();
 //            socket.connect(socketAddress);
             //if ClassCastException => return false todo: unload this class
-            socket = DataManager.getInstance().getData(CentralConnectionManager.class).getSocket();
             Executor executor = (Executor) classLoader.loadClass(className).newInstance();
+            Socket socket = DataManager.getInstance().getData(CentralConnectionManager.class).getSocket();
             LOG.debug("Socket to central is bound to address: " + socket.getInetAddress() + ":" + socket.getPort());
             input = socket.getInputStream();
             output = socket.getOutputStream();
-            executor.execute(input, output, new LocalResourceManager());
+            executor.execute(input, output, DataManager.getInstance().getData(LocalResourceManager.class));
         } catch (Throwable t) {
             LOG.warn("Exception was thrown while executing class:" + className, t);
             return false;
+        } finally {
+            try {
+                if (input != null) {
+                    input.close();
+                }
+                if (output != null) {
+                    output.close();
+                }
+                DataManager.getInstance().getData(CentralConnectionManager.class).closeSocket();
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+
         }
         //todo auto close streams
         return true;

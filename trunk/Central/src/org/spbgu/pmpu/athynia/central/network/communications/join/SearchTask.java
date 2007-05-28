@@ -1,15 +1,15 @@
 package org.spbgu.pmpu.athynia.central.network.communications.join;
 
 
-import org.spbgu.pmpu.athynia.common.ExecutorException;
+import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.common.Executor;
+import org.spbgu.pmpu.athynia.common.ExecutorException;
 import org.spbgu.pmpu.athynia.common.JoinPart;
 import org.spbgu.pmpu.athynia.common.LocalResourceManager;
-import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
 
 /**
  * User: vasiliy
@@ -23,14 +23,36 @@ public class SearchTask implements Executor {
         try {
             byte[] keyLengthBuffer = new byte[INTEGER_LENGTH_IN_BYTES_IN_UTF8];
             fromServer.read(keyLengthBuffer);
-            int keyLength = Integer.parseInt(new String(keyLengthBuffer, "UTF-8"));
+            int keyLength = Integer.parseInt(decodeStringWithInteger(new String(keyLengthBuffer, "UTF-8")));
             byte[] keyBuffer = new byte[keyLength];
             fromServer.read(keyBuffer);
             String key = new String(keyBuffer, "UTF-8");
+            LOG.debug("Searching in index with a key: " + key);
             JoinPart joinPart = manager.search(key);
-            toServer.write(joinPart.toBinaryForm());
+            byte[] joinPartAsBinary = joinPart.toBinaryForm();
+            toServer.write(getIntInUtf8(joinPartAsBinary.length).getBytes("UTF-8"));
+            toServer.write(joinPartAsBinary);
+            LOG.debug("Responce was send to server: " + new String(joinPart.toBinaryForm()));
         } catch (IOException e) {
             LOG.warn("Can't communicate with central", e);
         }
+    }
+
+    private String decodeStringWithInteger(String s) {
+        StringBuffer buffer = new StringBuffer(s);
+        while (buffer.substring(0, 1).equals("0") && buffer.length() > 1) {
+            buffer.delete(0, 1);
+        }
+        return buffer.toString();
+    }
+
+    private String getIntInUtf8(int i) {
+        StringBuffer buffer = new StringBuffer();
+        String integer = Integer.toString(i);
+        buffer.append(integer);
+        while (buffer.length() < org.spbgu.pmpu.athynia.common.CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8) {
+            buffer.insert(0, "0");
+        }
+        return buffer.toString();
     }
 }

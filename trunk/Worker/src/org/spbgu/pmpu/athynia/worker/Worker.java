@@ -21,10 +21,12 @@ import java.util.concurrent.Executors;
 public class Worker {
     public static CentralConnectionManager centralConnectionManager;
 
-    private final Settings broadcastSettings = DataManager.getInstance().getData(Settings.class).childSettings("broadcast");
-    private final Settings serverSettings = DataManager.getInstance().getData(Settings.class).childSettings("server");
+    private static final Settings broadcastSettings = DataManager.getInstance().getData(Settings.class).childSettings("broadcast");
+    private static final Settings serverSettings = DataManager.getInstance().getData(Settings.class).childSettings("server");
+
+    public static final int MAIN_WORKER_CLASSOADER_PORT = serverSettings.getIntValue("worker-main-classloader-port");
+
     private final String HOST_ADDRESS = serverSettings.getValue("host-address");
-    private final int MAIN_WORKER_CLASSOADER_PORT = serverSettings.getIntValue("worker-main-classloader-port");
     private final int MAIN_WORKER_PORT = serverSettings.getIntValue("worker-main-port");
 
     private final java.util.concurrent.Executor executor;

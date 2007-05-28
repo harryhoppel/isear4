@@ -1,7 +1,9 @@
 package org.spbgu.pmpu.athynia.worker.network.broadcast;
 
 import org.apache.log4j.Logger;
+import org.spbgu.pmpu.athynia.common.CommunicationConstants;
 import org.spbgu.pmpu.athynia.common.network.SocketOpener;
+import org.spbgu.pmpu.athynia.worker.Worker;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -73,7 +75,7 @@ public class MainPortListener implements Runnable {
             LOG.debug("Trying to connect to central: " + BroadcastListeningDaemon.centralAddress + ":" + BroadcastListeningDaemon.centralMainPort);
             connection = new Socket(BroadcastListeningDaemon.centralAddress, BroadcastListeningDaemon.centralMainPort);
             OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(Integer.toString(mainPort).getBytes("UTF-8"));
+            outputStream.write((getIntInUtf8(Worker.MAIN_WORKER_CLASSOADER_PORT) + "," + getIntInUtf8(mainPort)).getBytes("UTF-8"));
             outputStream.flush();
 //            outputStream.close();
             return connection;
@@ -84,9 +86,22 @@ public class MainPortListener implements Runnable {
         if (connection != null) {
             try {
                 connection.close();
+                connection = null;
+                LOG.debug("Socket to central was closed");
             } catch (IOException e) {
                 LOG.warn("Can't close connection to central", e);
             }
         }
     }
+
+    private String getIntInUtf8(int i) {
+        StringBuffer buffer = new StringBuffer();
+        String integer = Integer.toString(i);
+        buffer.append(integer);
+        while (buffer.length() < CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8) {
+            buffer.insert(0, "0");
+        }
+        return buffer.toString();
+    }
+
 }
