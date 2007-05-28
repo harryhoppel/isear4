@@ -42,7 +42,6 @@ public class Processor implements Runnable {
                 }
                 dataEvent = queue.remove(0);
                 String request = new String(dataEvent.data);
-                System.out.println(request);
                 dataEvent.server.send(dataEvent.socket, classReader.getClassFromCache(request));
             }
         }

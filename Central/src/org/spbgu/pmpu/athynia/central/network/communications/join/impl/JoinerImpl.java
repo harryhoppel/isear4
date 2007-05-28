@@ -1,5 +1,6 @@
 package org.spbgu.pmpu.athynia.central.network.communications.join.impl;
 
+import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.network.Worker;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.communications.CommunicationConstants;
@@ -9,16 +10,15 @@ import org.spbgu.pmpu.athynia.central.network.communications.join.Joiner;
 import org.spbgu.pmpu.athynia.central.network.communications.join.SearchTask;
 import org.spbgu.pmpu.athynia.common.JoinPart;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
-import org.apache.log4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
-import java.net.Socket;
 
 /**
  * User: vasiliy
@@ -47,22 +47,18 @@ public class JoinerImpl implements Joiner {
         for (Worker worker : workers) {
             retrievedParts[i++] = retrieveData(worker);
         }
-        String ret = joinDataParts(retrievedParts);
-        if (ret == null) {
-
-        }
-        return ret;
+        return mergeDataParts(retrievedParts);
     }
 
     private void sendSearchTask(Worker worker, String key) {
         workersExecutorSender.runExecutorOnWorker(worker, SearchTask.class.getName());
         try {
             BufferedOutputStream outputToWorker = new BufferedOutputStream(worker.openSocket().getOutputStream());
-            outputToWorker.write(key.length());
+            outputToWorker.write(getIntInUtf8(key.length()).getBytes("UTF-8"));
             outputToWorker.write(key.getBytes("UTF-8"));
             outputToWorker.flush();
         } catch (IOException e) {
-            /*ignore, in case of any exceptions we will throw CommunicationException later*/
+            LOG.warn("Can't communicate with worker" + worker.getFullAddress(), e);
         }
     }
 
@@ -82,7 +78,7 @@ public class JoinerImpl implements Joiner {
         }
     }
 
-    private String joinDataParts(JoinPart[] retrievedParts) {
+    private String mergeDataParts(JoinPart[] retrievedParts) {
         ArrayList<JoinPart> filteredRetrievedParts = new ArrayList<JoinPart>();
         for (JoinPart retrievedPart : retrievedParts) {
             if (retrievedPart != null && retrievedPart.getWholePartsNumber() != -1) { // -1 - in case of null value found in worker's index
@@ -110,4 +106,15 @@ public class JoinerImpl implements Joiner {
         }
         return ret.toString();
     }
+
+    private String getIntInUtf8(int i) {
+        StringBuffer buffer = new StringBuffer();
+        String integer = Integer.toString(i);
+        buffer.append(integer);
+        while (buffer.length() < org.spbgu.pmpu.athynia.common.CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8) {
+            buffer.insert(0, "0");
+        }
+        return buffer.toString();
+    }
+
 }

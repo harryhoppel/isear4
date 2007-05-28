@@ -16,7 +16,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.util.Arrays;
 
 /**
  * User: vasiliy
@@ -38,6 +37,7 @@ public class DataSenderImpl implements DataSender {
         boolean sended = waitForCompletion(workers);
         LOG.debug("Operation \"Wait for completion\" completed");
         if (!sended) {
+            LOG.debug("Data wasn't committed");
             return false;
         }
         for (Worker worker : workers) {
@@ -45,11 +45,25 @@ public class DataSenderImpl implements DataSender {
         }
         boolean committed = waitForCompletion(workers);
         if (!committed) {
+            LOG.debug("Data wasn't committed");
             for (Worker worker : workers) {
                 sendAbortTask(worker);
+                try {
+                    worker.closeSocket();
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
             return false;
         }
+        for (Worker worker : workers) {
+            try {
+                worker.closeSocket();
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        LOG.debug("Data was committed successfully");
         return true;
     }
 

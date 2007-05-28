@@ -2,13 +2,7 @@ package org.spbgu.pmpu.athynia.central.classloader;
 
 import org.apache.log4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.util.Hashtable;
 import java.util.zip.GZIPOutputStream;
@@ -28,7 +22,6 @@ public class ZipClassReader {
     }
 
     public byte[] getClassFromCache(String className) {
-        System.out.println("ZipClassReader.getClassFromCache: " + className);
         if (cache.containsKey(className))
             return zipBytes(cache.get(className));
         else return new byte[1];
@@ -51,7 +44,6 @@ public class ZipClassReader {
                 // else ignore it; it could be an image or audio zipFile (or ".svn" dir :-) )
                 in.closeEntry();
             }
-            System.out.println("cache.size() = " + cache.size());
         } catch (IOException ioe) {
             LOG.warn("Badly formatted zip file", ioe);
         }

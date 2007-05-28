@@ -1,15 +1,15 @@
 package org.spbgu.pmpu.athynia.central.network.communications.impl;
 
+import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.network.Worker;
 import org.spbgu.pmpu.athynia.central.network.communications.WorkerConnectionsManager;
 import org.spbgu.pmpu.athynia.common.network.SocketOpener;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Collections;
 
 /**
  * User: vasiliy
@@ -37,7 +37,7 @@ public class WorkerConnectionsManagerImpl implements WorkerConnectionsManager {
     public void closeSocket(Worker worker) throws IOException {
         Socket socketToClose = openedSockets.remove(worker);
 //        if (!socketToClose.isClosed()) {
-        LOG.debug("Trying to close socket: " + socketToClose.getInetAddress());
+        LOG.debug("Trying to close socket: " + socketToClose.getInetAddress() + ":" + socketToClose.getPort());
         socketToClose.close();
         LOG.debug("Socket was closed");
 //        }

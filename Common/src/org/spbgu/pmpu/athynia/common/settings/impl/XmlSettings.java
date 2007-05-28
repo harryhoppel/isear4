@@ -27,7 +27,6 @@ public class XmlSettings implements Settings {
     public String getValue(String key) {
         String ret = (String) map.get(key);
         if (ret == null) {
-            System.out.println("ret = " + ret);
             try {
                 throw new RuntimeException();
             } catch (Exception e) {
