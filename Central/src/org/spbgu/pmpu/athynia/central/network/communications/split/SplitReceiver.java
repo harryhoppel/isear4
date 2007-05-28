@@ -3,7 +3,7 @@ package org.spbgu.pmpu.athynia.central.network.communications.split;
 import org.spbgu.pmpu.athynia.central.network.communications.CommunicationConstants;
 import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.ExecutorException;
-import org.spbgu.pmpu.athynia.common.LocalResourceManager;
+import org.spbgu.pmpu.athynia.common.ResourceManager;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
@@ -17,7 +17,7 @@ import java.io.IOException;
 public class SplitReceiver implements Executor {
     private static final Logger LOG = Logger.getLogger(SplitReceiver.class);
 
-    public void execute(InputStream fromServer, OutputStream toServer, LocalResourceManager manager) throws ExecutorException {
+    public void execute(InputStream fromServer, OutputStream toServer, ResourceManager manager) throws ExecutorException {
         System.out.println("Hello, world!");
         try {
             byte[] totalSplitNumbersBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];

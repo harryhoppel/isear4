@@ -1,6 +1,7 @@
 package org.spbgu.pmpu.athynia.worker;
 
-import org.spbgu.pmpu.athynia.common.LocalResourceManager;
+import org.spbgu.pmpu.athynia.worker.resource.BTreeResourceManager;
+import org.spbgu.pmpu.athynia.common.ResourceManager;
 import org.spbgu.pmpu.athynia.common.settings.Settings;
 import org.spbgu.pmpu.athynia.common.settings.impl.XmlSettings;
 import org.spbgu.pmpu.athynia.worker.network.CentralConnectionManager;
@@ -25,8 +26,8 @@ public class DataManager {
             final CentralConnectionManager centralConnectionManager = new CentralConnectionManagerImpl();
             map.put(CentralConnectionManager.class, centralConnectionManager);
 
-            final LocalResourceManager localResourceManager = new LocalResourceManager();
-            map.put(LocalResourceManager.class, localResourceManager);
+            final ResourceManager resourceManager = new BTreeResourceManager(settings.childSettings("resource-manager").getValue("database_file_name", BTreeResourceManager.DEFAULT_DATABASE_FILE_NAME));
+            map.put(ResourceManager.class, resourceManager);
         } catch (Exception e) {
             e.printStackTrace();
         }

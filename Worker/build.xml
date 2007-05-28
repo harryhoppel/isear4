@@ -45,6 +45,7 @@
         <copy file="lib/log4j-1.2.14.jar" todir="${production.lib.dir}"/>
         <copy file="lib/jdom.jar" todir="${production.lib.dir}"/>
         <copy file="lib/athynia-common.jar" todir="${production.lib.dir}"/>
+        <copy file="lib/jdbm-1.0.jar" todir="${production.lib.dir}"/>
     </target>
 
 
@@ -79,6 +80,7 @@
                     <exclude name="**/Server4Tests$Proccessor.class"/>
                     <exclude name="**/classloader/testclasses/**"/>
                     <exclude name="org/spbgu/pmpu/athynia/worker/classloader/TestNetworkClassExecutor.class"/>
+                    <exclude name="org/spbgu/pmpu/athynia/worker/util/FileUtil.class"/> <!-- not a test - just util -->
                 </fileset>
             </batchtest>
         </junit>

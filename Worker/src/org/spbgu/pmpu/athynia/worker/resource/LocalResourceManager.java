@@ -1,6 +1,9 @@
-package org.spbgu.pmpu.athynia.common;
+package org.spbgu.pmpu.athynia.worker.resource;
 
 import org.apache.log4j.Logger;
+import org.spbgu.pmpu.athynia.common.JoinPart;
+import org.spbgu.pmpu.athynia.common.CommunicationConstants;
+import org.spbgu.pmpu.athynia.common.ResourceManager;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
 import java.util.Collections;
@@ -10,7 +13,8 @@ import java.util.Map;
 /**
  * User: vasiliy
  */
-public class LocalResourceManager {
+@Deprecated
+public class LocalResourceManager implements ResourceManager {
     private static final Logger LOG = Logger.getLogger(LocalResourceManager.class);
 
     private Map<String, JoinPart> previousJoinParts = Collections.synchronizedMap(new HashMap<String, JoinPart>());
@@ -22,6 +26,14 @@ public class LocalResourceManager {
         LOG.debug("New pre-commit write to index: " + key + " ---> " + value);
     }
 
+    public JoinPart remove(String key) {
+        return index.remove(key);
+    }
+
+    public int getSize() {
+        return index.size();
+    }
+
     public void commit() {
         index.putAll(previousJoinParts);
         LOG.debug("New index commit");
@@ -30,6 +42,10 @@ public class LocalResourceManager {
     public void abort() {
         LOG.debug("Pre-commit writes to index were dropped");
         previousJoinParts.clear();
+    }
+
+    public void write(String key, String value) {
+        write(key, value, 0, 0, CommunicationConstants.TIMEOUT_UNTIL_DATA_DROP);
     }
 
     public JoinPart search(String key) {

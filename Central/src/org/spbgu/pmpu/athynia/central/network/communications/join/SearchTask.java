@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.ExecutorException;
 import org.spbgu.pmpu.athynia.common.JoinPart;
-import org.spbgu.pmpu.athynia.common.LocalResourceManager;
+import org.spbgu.pmpu.athynia.common.ResourceManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ public class SearchTask implements Executor {
 
     private static final int INTEGER_LENGTH_IN_BYTES_IN_UTF8 = 8;
 
-    public void execute(InputStream fromServer, OutputStream toServer, LocalResourceManager manager) throws ExecutorException {
+    public void execute(InputStream fromServer, OutputStream toServer, ResourceManager manager) throws ExecutorException {
         try {
             byte[] keyLengthBuffer = new byte[INTEGER_LENGTH_IN_BYTES_IN_UTF8];
             fromServer.read(keyLengthBuffer);

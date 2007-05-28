@@ -13,4 +13,7 @@
         <worker-main-classloader-port value="44446"/>
         <worker-main-port value="44447"/>
     </server>
+    <resource-manager>
+        <database_file_name value="test"/>
+    </resource-manager>
 </settings>

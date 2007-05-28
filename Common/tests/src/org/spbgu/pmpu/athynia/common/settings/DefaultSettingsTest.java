@@ -22,7 +22,7 @@ public class DefaultSettingsTest extends TestCase {
         Settings sambaSettings = crawlerSettings.childSettings("smb-crawler");
         assertEquals(10, sambaSettings.getIntValue("numThreads"));
         assertEquals(10, ftpSettings.getIntValue("numThreads"));
-
+        assertEquals("null", ftpSettings.getValue("nothing", "null"));
     }
 }
 

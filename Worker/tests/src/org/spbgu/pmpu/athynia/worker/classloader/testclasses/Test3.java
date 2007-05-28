@@ -1,6 +1,6 @@
 package org.spbgu.pmpu.athynia.worker.classloader.testclasses;
 
-import org.spbgu.pmpu.athynia.common.LocalResourceManager;
+import org.spbgu.pmpu.athynia.common.ResourceManager;
 import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.ExecutorException;
 
@@ -17,7 +17,7 @@ import java.io.OutputStreamWriter;
  * Date: 21.04.2007
  */
 public class Test3 implements Executor {
-    public void execute(InputStream fromServer, OutputStream toServer, LocalResourceManager manager) throws ExecutorException {
+    public void execute(InputStream fromServer, OutputStream toServer, ResourceManager manager) throws ExecutorException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(fromServer));
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(toServer));
         String s;
