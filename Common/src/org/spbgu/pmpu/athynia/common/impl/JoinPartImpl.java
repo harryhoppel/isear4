@@ -43,6 +43,7 @@ public class JoinPartImpl implements JoinPart {
             int valueLength = Integer.parseInt(new String(binaryForm,
                 currentIndexInBinaryForm,
                 CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
+            currentIndexInBinaryForm += CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8;
             value = new String(binaryForm,
                 currentIndexInBinaryForm,
                 valueLength, "UTF-8");
