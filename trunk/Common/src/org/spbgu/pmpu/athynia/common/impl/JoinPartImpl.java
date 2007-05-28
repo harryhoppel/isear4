@@ -26,26 +26,26 @@ public class JoinPartImpl implements JoinPart {
             int currentIndexInBinaryForm = 0;
             wholePartsNumber = Integer.parseInt(new String(binaryForm,
                 currentIndexInBinaryForm,
-                currentIndexInBinaryForm + CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
+                CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
             currentIndexInBinaryForm += CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8;
             partNumber = Integer.parseInt(new String(binaryForm,
                 currentIndexInBinaryForm,
-                currentIndexInBinaryForm + CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
+                CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
             currentIndexInBinaryForm += CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8;
             int keyLength = Integer.parseInt(new String(binaryForm,
                 currentIndexInBinaryForm,
-                currentIndexInBinaryForm + CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
+                CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
             currentIndexInBinaryForm += CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8;
             key = new String(binaryForm,
                 currentIndexInBinaryForm,
-                currentIndexInBinaryForm + keyLength, "UTF-8");
+                keyLength, "UTF-8");
             currentIndexInBinaryForm += keyLength;
             int valueLength = Integer.parseInt(new String(binaryForm,
                 currentIndexInBinaryForm,
-                currentIndexInBinaryForm + CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
+                CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8"));
             value = new String(binaryForm,
                 currentIndexInBinaryForm,
-                currentIndexInBinaryForm + valueLength, "UTF-8");
+                valueLength, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Can't encode in UTF-8", e);
         }
@@ -77,6 +77,14 @@ public class JoinPartImpl implements JoinPart {
                     + key
                     + getIntInUtf8(valueLength)
                     + value;
+            byte [] bytedata = ret.getBytes("UTF-8");
+            for (int i = 0; i < bytedata.length; i += CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8) {
+                String rec = new String(bytedata, i, i + CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "utf-8");
+                System.out.println("rec = " + rec.getBytes().length);
+                System.out.println("bytedata [" + i + "]= " + rec);
+            }
+            JoinPartImpl part = new JoinPartImpl(ret.getBytes("UTF-8"));
+            System.out.println("ggg =)) " + part.getValue());
             return (ret.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             return null;
