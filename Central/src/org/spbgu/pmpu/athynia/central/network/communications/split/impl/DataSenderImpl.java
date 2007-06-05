@@ -8,8 +8,8 @@ import org.spbgu.pmpu.athynia.central.network.communications.common.Commit;
 import org.spbgu.pmpu.athynia.central.network.communications.impl.WorkersExecutorSenderImpl;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSender;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSplitter;
-import org.spbgu.pmpu.athynia.central.network.communications.split.SplitReceiver;
 import org.spbgu.pmpu.athynia.common.CommunicationConstants;
+import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
 import java.io.BufferedOutputStream;
@@ -33,10 +33,10 @@ public class DataSenderImpl implements DataSender {
         this.dataSplitter = dataSplitter;
     }
 
-    public boolean sendData(String key, String value, Worker[] workers) {
+    public boolean sendData(Class<? extends Executor> klass, String key, String value, Worker[] workers) {
         String[] splittedData = dataSplitter.splitData(value, workers.length);
         for (int i = 0; i < workers.length; i++) {
-            sendDataTask(workers[i], key, splittedData[i], i, workers.length);
+            sendDataTask(klass, workers[i], key, splittedData[i], i, workers.length);
         }
         LOG.debug("Data was sent to workers");
         boolean sended = waitForCompletion(workers);
@@ -72,8 +72,8 @@ public class DataSenderImpl implements DataSender {
         return true;
     }
 
-    private void sendDataTask(Worker worker, String key, String data, int particularPartNumber, int wholePartsQuantity) {
-        workersExecutorSender.runExecutorOnWorker(worker, SplitReceiver.class.getName());
+    private void sendDataTask(Class<? extends Executor> klass, Worker worker, String key, String data, int particularPartNumber, int wholePartsQuantity) {
+        workersExecutorSender.runExecutorOnWorker(worker, klass.getName());
         BufferedOutputStream outputToWorker;
         try {
             Socket workersSocket = worker.openSocket();
