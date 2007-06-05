@@ -13,9 +13,9 @@ import java.util.Comparator;
 public class DataJoinerImpl implements DataJoiner {
     private JoinPart[] receivedJoinParts;
 
-    public void setData(String[] receivedData) {
-        throw new UnsupportedOperationException();
-    }
+//    public void setData(String[] receivedData) {
+//        throw new UnsupportedOperationException();
+//    }
 
     public void setData(JoinPart[] receivedData) {
         receivedJoinParts = receivedData;

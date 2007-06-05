@@ -19,7 +19,7 @@ public class NetworkRunnerImpl implements NetworkRunner {
     public String runRemotely(Class<? extends Executor> klass, Data dataToSend, DataSplitter dataSplitter, Data toReceive, DataJoiner dataJoiner) throws CommunicationException {
         Set<Worker> workers = DataManager.getInstance().getData(WorkersManager.class).getAll();
         DataSender dataSender = new DataSenderImpl(dataSplitter);
-        dataSender.sendData(dataToSend.getKey(), dataToSend.getValue(), workers.toArray(new Worker[0]));
+        dataSender.sendData(klass, dataToSend.getKey(), dataToSend.getValue(), workers.toArray(new Worker[0]));
         //todo: delete following
         try {
             Thread.sleep(1000);
