@@ -1,15 +1,15 @@
 package org.spbgu.pmpu.athynia.central.network.communications.split;
 
-import org.spbgu.pmpu.athynia.central.network.communications.CommunicationConstants;
+import org.apache.log4j.Logger;
+import org.spbgu.pmpu.athynia.common.CommunicationConstants;
 import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.ExecutorException;
 import org.spbgu.pmpu.athynia.common.ResourceManager;
-import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.io.IOException;
 
 /**
  * User: vasiliy
@@ -23,6 +23,7 @@ public class SplitReceiver implements Executor {
             byte[] totalSplitNumbersBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
             fromServer.read(totalSplitNumbersBuffer);
             int totalSplitNumber = Integer.parseInt(decodeStringWithInteger(new String(totalSplitNumbersBuffer, "UTF-8")));
+            LOG.debug("totalSplitNumber = " + totalSplitNumber + "; from buffer: " + new String(totalSplitNumbersBuffer));
 
             byte[] particularSplitNumberBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
             fromServer.read(particularSplitNumberBuffer);

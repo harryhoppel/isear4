@@ -1,26 +1,26 @@
 package org.spbgu.pmpu.athynia.central;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.spbgu.pmpu.athynia.central.network.broadcast.BroadcastingDaemon;
 import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
-import org.spbgu.pmpu.athynia.central.network.communications.CentralMainPortListener;
-import org.spbgu.pmpu.athynia.central.network.communications.join.impl.JoinerImpl;
-import org.spbgu.pmpu.athynia.central.network.Worker;
+import org.spbgu.pmpu.athynia.central.network.NetworkRunner;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
-import org.spbgu.pmpu.athynia.central.network.communications.split.DataSender;
-import org.spbgu.pmpu.athynia.central.network.communications.split.impl.DataSenderImpl;
-import org.spbgu.pmpu.athynia.common.settings.Settings;
-import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
+import org.spbgu.pmpu.athynia.central.network.broadcast.BroadcastingDaemon;
+import org.spbgu.pmpu.athynia.central.network.communications.CentralMainPortListener;
+import org.spbgu.pmpu.athynia.central.network.communications.split.SplitReceiver;
+import org.spbgu.pmpu.athynia.central.network.communications.split.impl.DataSplitterImpl;
+import org.spbgu.pmpu.athynia.central.network.impl.DataImpl;
+import org.spbgu.pmpu.athynia.central.network.impl.DataJoinerImpl;
+import org.spbgu.pmpu.athynia.central.network.impl.NetworkRunnerImpl;
 import org.spbgu.pmpu.athynia.common.network.SocketOpener;
 import org.spbgu.pmpu.athynia.common.network.impl.SocketOpenerImpl;
+import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
+import org.spbgu.pmpu.athynia.common.settings.Settings;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.util.Set;
 
 /**
  * Author: Selivanov
@@ -43,7 +43,6 @@ public class Central {
     private SocketOpener socketOpener;
 
     public Central() throws MalformedURLException {
-        PropertyConfigurator.configure("log4j.properties");
         workersManager = DataManager.getInstance().getData(WorkersManager.class);
         classLoaderHomeDir = centralSettings.getValue("class-loader-home-dir");
         try {
@@ -120,10 +119,10 @@ public class Central {
         central.start();
         Thread.sleep(10 * 1000);
         LOG.info("Start sending the code");
-        Set<Worker> workers = DataManager.getInstance().getData(WorkersManager.class).getAll();
-        DataSender dataSender = new DataSenderImpl();
-        dataSender.sendData("xxx", "Hello, world!", workers.toArray(new Worker[0]));
-        String joined = (new JoinerImpl(DataManager.getInstance().getData(WorkersManager.class))).join("xxx");
+        NetworkRunner networkRunner = new NetworkRunnerImpl();
+        String joined = networkRunner.runRemotely(SplitReceiver.class, 
+                new DataImpl("xxx", "Hello, world!"), new DataSplitterImpl(),
+                new DataImpl("xxx", null), new DataJoinerImpl());
         System.out.println("joined = " + joined);
     }
 }

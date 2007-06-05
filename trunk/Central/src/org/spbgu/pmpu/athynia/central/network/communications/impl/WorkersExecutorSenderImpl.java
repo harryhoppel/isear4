@@ -23,6 +23,12 @@ public class WorkersExecutorSenderImpl implements WorkersExecutorSender {
             LOG.debug("Sending class: " + executorClassName + " to " + socketToWorker.getInetAddress() + ":" + socketToWorker.getPort());
             outputToWorker.write(("loadClass:" + executorClassName).getBytes("UTF-8"));
             outputToWorker.flush();
+            synchronized(this) {
+                try {
+                    wait(10);
+                } catch (InterruptedException ignore) {
+                }
+            }
             return true;
         } catch (IOException e) {
             LOG.error("Can't send executor class name(" + executorClassName + ") to worker: " + worker.getFullAddress(), e);

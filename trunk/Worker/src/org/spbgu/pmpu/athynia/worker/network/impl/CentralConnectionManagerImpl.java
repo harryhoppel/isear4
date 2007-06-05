@@ -46,23 +46,27 @@ public class CentralConnectionManagerImpl implements CentralConnectionManager {
     }
 
     public synchronized Socket getSocket() throws IOException {
-        if (socketToCentral != null && !socketToCentral.isClosed()
-                && socketToCentral.isBound() && socketToCentral.isConnected()
-                && !socketToCentral.isInputShutdown() && !socketToCentral.isOutputShutdown()) {
-            try {
-                socketToCentral.getInputStream();
-                socketToCentral.getOutputStream();
-            } catch (IOException e) {
+        synchronized (mainPortListener) {
+            if (socketToCentral != null && !socketToCentral.isClosed()
+                    && socketToCentral.isBound() && socketToCentral.isConnected()
+                    && !socketToCentral.isInputShutdown() && !socketToCentral.isOutputShutdown()) {
+                try {
+                    socketToCentral.getInputStream();
+                    socketToCentral.getOutputStream();
+                } catch (IOException e) {
+                    socketToCentral = mainPortListener.getCentralConnection();
+                }
+            } else {
                 socketToCentral = mainPortListener.getCentralConnection();
             }
-        } else {
-            socketToCentral = mainPortListener.getCentralConnection();
         }
         return socketToCentral;
     }
 
     public synchronized void closeSocket() {
-        mainPortListener.closeCentralConnection();
+        synchronized (mainPortListener) {
+            mainPortListener.closeCentralConnection();
+        }
         socketToCentral = null;
     }
 
