@@ -1,13 +1,14 @@
 package org.spbgu.pmpu.athynia.central.network.communications.join.impl;
 
 import org.apache.log4j.Logger;
+import org.spbgu.pmpu.athynia.central.network.DataJoiner;
 import org.spbgu.pmpu.athynia.central.network.Worker;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
-import org.spbgu.pmpu.athynia.central.network.communications.CommunicationConstants;
 import org.spbgu.pmpu.athynia.central.network.communications.WorkersExecutorSender;
 import org.spbgu.pmpu.athynia.central.network.communications.impl.WorkersExecutorSenderImpl;
 import org.spbgu.pmpu.athynia.central.network.communications.join.Joiner;
-import org.spbgu.pmpu.athynia.central.network.communications.join.SearchTask;
+import org.spbgu.pmpu.athynia.common.CommunicationConstants;
+import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.JoinPart;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
@@ -15,9 +16,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Set;
 
 /**
@@ -32,9 +30,13 @@ public class JoinerImpl implements Joiner {
 
     private final WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
     private WorkersManager workersManager;
+    private final Class<? extends Executor> executorClass;
+    private final DataJoiner dataJoiner;
 
-    public JoinerImpl(WorkersManager workersManager) {
+    public JoinerImpl(WorkersManager workersManager, Class<? extends Executor> klass, DataJoiner dataJoiner) {
         this.workersManager = workersManager;
+        this.executorClass = klass;
+        this.dataJoiner = dataJoiner;
     }
 
     public String join(String key) {
@@ -47,18 +49,19 @@ public class JoinerImpl implements Joiner {
         for (Worker worker : workers) {
             retrievedParts[i++] = retrieveData(worker);
         }
-        return mergeDataParts(retrievedParts);
+        dataJoiner.setData(retrievedParts);
+        return dataJoiner.getResult();
     }
 
     private void sendSearchTask(Worker worker, String key) {
-        workersExecutorSender.runExecutorOnWorker(worker, SearchTask.class.getName());
+        workersExecutorSender.runExecutorOnWorker(worker, executorClass.getName());
         try {
             BufferedOutputStream outputToWorker = new BufferedOutputStream(worker.openSocket().getOutputStream());
             outputToWorker.write(getIntInUtf8(key.length()).getBytes("UTF-8"));
             outputToWorker.write(key.getBytes("UTF-8"));
             outputToWorker.flush();
         } catch (IOException e) {
-            LOG.warn("Can't communicate with worker" + worker.getFullAddress(), e);
+            LOG.warn("Can't communicate with worker: " + worker.getFullAddress(), e);
         }
     }
 
@@ -76,35 +79,6 @@ public class JoinerImpl implements Joiner {
         } catch (IOException e) {
             return null; //ignore, we will throw an exception later
         }
-    }
-
-    private String mergeDataParts(JoinPart[] retrievedParts) {
-        ArrayList<JoinPart> filteredRetrievedParts = new ArrayList<JoinPart>();
-        for (JoinPart retrievedPart : retrievedParts) {
-            if (retrievedPart != null && retrievedPart.getWholePartsNumber() != -1) { // -1 - in case of null value found in worker's index
-                filteredRetrievedParts.add(retrievedPart);
-            }
-        }
-        if (filteredRetrievedParts.size() == 0) {
-            return null;
-        }
-        if (filteredRetrievedParts.get(0).getWholePartsNumber() != filteredRetrievedParts.size()) {
-            return null;
-        }
-        Collections.sort(filteredRetrievedParts, new Comparator<JoinPart>() {
-            public int compare(JoinPart o1, JoinPart o2) {
-                return ((Integer) o1.getPartNumber()).compareTo(o2.getPartNumber());
-            }
-        });
-        StringBuffer ret = new StringBuffer();
-        for (int index = 0; index < filteredRetrievedParts.size(); index++) {
-            JoinPart joinPart = filteredRetrievedParts.get(index);
-            if (joinPart.getPartNumber() != index) {
-                return null;
-            }
-            ret.append(joinPart.getValue());
-        }
-        return ret.toString();
     }
 
     private String getIntInUtf8(int i) {

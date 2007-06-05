@@ -61,23 +61,14 @@ public class MainPortListener implements Runnable {
     public synchronized Socket getCentralConnection() throws IOException {
         LOG.debug("Getting socket from worker main port listener");
         if (connection != null
-//                && !connection.isClosed()
-//                && connection.isBound()
-//                && connection.isConnected()
-//                && !connection.isInputShutdown()
-//                && !connection.isOutputShutdown()
                 ) {
             return connection;
         } else {
-//            if (connection != null) {
-//                    connection.close();
-//            }
             LOG.debug("Trying to connect to central: " + BroadcastListeningDaemon.centralAddress + ":" + BroadcastListeningDaemon.centralMainPort);
             connection = new Socket(BroadcastListeningDaemon.centralAddress, BroadcastListeningDaemon.centralMainPort);
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write((getIntInUtf8(Worker.MAIN_WORKER_CLASSOADER_PORT) + "," + getIntInUtf8(mainPort)).getBytes("UTF-8"));
             outputStream.flush();
-//            outputStream.close();
             return connection;
         }
     }

@@ -60,16 +60,13 @@ public class NetworkClassExecutor implements ClassExecutor {
         OutputStream output = null;
         InputStream input = null;
         try {
-//            SocketAddress socketAddress = new InetSocketAddress(centralAddress, cenralPort);
-//            Socket socket = new Socket();
-//            socket.connect(socketAddress);
-            //if ClassCastException => return false todo: unload this class
             Executor executor = (Executor) classLoader.loadClass(className).newInstance();
             Socket socket = DataManager.getInstance().getData(CentralConnectionManager.class).getSocket();
+            ResourceManager resourceManager = DataManager.getInstance().getData(ResourceManager.class);
             LOG.debug("Socket to central is bound to address: " + socket.getInetAddress() + ":" + socket.getPort());
             input = socket.getInputStream();
             output = socket.getOutputStream();
-            executor.execute(input, output, DataManager.getInstance().getData(ResourceManager.class));
+            executor.execute(input, output, resourceManager);
         } catch (Throwable t) {
             LOG.warn("Exception was thrown while executing class:" + className, t);
             return false;

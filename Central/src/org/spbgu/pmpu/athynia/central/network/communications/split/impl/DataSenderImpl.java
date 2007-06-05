@@ -2,7 +2,6 @@ package org.spbgu.pmpu.athynia.central.network.communications.split.impl;
 
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.network.Worker;
-import org.spbgu.pmpu.athynia.central.network.communications.CommunicationConstants;
 import org.spbgu.pmpu.athynia.central.network.communications.WorkersExecutorSender;
 import org.spbgu.pmpu.athynia.central.network.communications.common.Abort;
 import org.spbgu.pmpu.athynia.central.network.communications.common.Commit;
@@ -10,6 +9,7 @@ import org.spbgu.pmpu.athynia.central.network.communications.impl.WorkersExecuto
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSender;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSplitter;
 import org.spbgu.pmpu.athynia.central.network.communications.split.SplitReceiver;
+import org.spbgu.pmpu.athynia.common.CommunicationConstants;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
 import java.io.BufferedOutputStream;
@@ -27,8 +27,13 @@ public class DataSenderImpl implements DataSender {
 
     private final WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
 
+    private final DataSplitter dataSplitter;
+
+    public DataSenderImpl(DataSplitter dataSplitter) {
+        this.dataSplitter = dataSplitter;
+    }
+
     public boolean sendData(String key, String value, Worker[] workers) {
-        DataSplitter dataSplitter = new DataSplitterImpl();
         String[] splittedData = dataSplitter.splitData(value, workers.length);
         for (int i = 0; i < workers.length; i++) {
             sendDataTask(workers[i], key, splittedData[i], i, workers.length);

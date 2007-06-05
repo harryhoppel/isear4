@@ -1,5 +1,3 @@
-package numbers;
-
 /**
  * User: vasiliy
  */

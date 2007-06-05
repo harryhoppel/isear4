@@ -3,6 +3,7 @@ package org.spbgu.pmpu.athynia.central.network.communications;
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.impl.WorkerImpl;
+import org.spbgu.pmpu.athynia.common.CommunicationConstants;
 import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
 
 import java.io.BufferedInputStream;
@@ -45,7 +46,7 @@ public class CentralMainPortListener implements Runnable {
                 String received = new String(buffer, "UTF-8");
                 classloaderPort = Integer.parseInt(deleteZeroes(received.substring(0, received.indexOf(','))));
                 mainPort = Integer.parseInt(deleteZeroes(received.substring(received.indexOf(',') + 1)));
-                LOG.debug("Received port number: " + classloaderPort);
+                LOG.debug("New incoming connection from worker:" + newConnection.getInetAddress() + ":" + newConnection.getPort() + "; received port number: " + classloaderPort);
                 newAddress = newConnection.getInetAddress();
             } catch (IOException e) {
                 LOG.error("I/O error while waiting for incoming connections", e);
