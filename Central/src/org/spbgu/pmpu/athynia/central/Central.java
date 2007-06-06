@@ -121,8 +121,10 @@ public class Central {
         LOG.info("Start sending the code");
         NetworkRunner networkRunner = new NetworkRunnerImpl();
         String joined = networkRunner.runRemotely(SplitReceiver.class, 
-                new DataImpl("xxx", "Hello, world!"), new DataSplitterImpl(),
+                new DataImpl("xxx", TestString.LONG_STRING), new DataSplitterImpl(),
                 new DataImpl("xxx", null), new DataJoinerImpl());
         System.out.println("joined = " + joined);
+        System.out.println("TestString.LONG_STRING.length() = " + TestString.LONG_STRING.length());
+        System.out.println(TestString.LONG_STRING.equals(joined));
     }
 }
