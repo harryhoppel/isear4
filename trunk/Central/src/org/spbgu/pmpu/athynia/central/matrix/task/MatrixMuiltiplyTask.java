@@ -76,6 +76,7 @@ public class MatrixMuiltiplyTask implements Executor {
                 buf.append(aResult);
             }
 
+            LOG.debug("put: " + "matrix-multiply" + "->\n" + buf.toString());
             manager.write("matrix-multiply", buf.toString(), partNumber, totalSplitNumber, 0);
 
             toServer.write("OK".getBytes("UTF-8"));
