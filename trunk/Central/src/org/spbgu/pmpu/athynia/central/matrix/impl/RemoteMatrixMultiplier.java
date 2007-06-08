@@ -32,7 +32,7 @@ public class RemoteMatrixMultiplier implements MatrixOperator {
             time = System.currentTimeMillis();
             LOG.debug("Execute MatrixMuiltiplyTask: " + time);
             Matrix result = networkRunner.runRemotely(MatrixMuiltiplyTask.class,
-                new DataImpl<Matrix>("matrixB", matrixB), new MatrixRowSplitter(),
+                new DataImpl<Matrix>("matrixB", matrixB), new MatrixRowSplitter<Matrix>(),
                 new DataImpl<Matrix>("matrix-multiply", null), new MatrixJoiner());
             LOG.debug("Finish MatrixMuiltiplyTask: it takes " + (System.currentTimeMillis() - time) + "ms");
 
