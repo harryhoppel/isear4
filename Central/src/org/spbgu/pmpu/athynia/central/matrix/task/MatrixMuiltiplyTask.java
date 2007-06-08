@@ -65,9 +65,8 @@ public class MatrixMuiltiplyTask implements Executor {
 
             for (int index = startPos; index < vectors.size() + startPos; index++){
                 double[] elements = new double[size];
-                for (int i = 0; i < size; i++) {
-                    elements[i] = computeMultiply(vectors.get(index - startPos), matrix.getColumn(index));
-                }
+                LOG.debug("multiplying:\n" + matrix.getColumn(index)+ " * " + vectors.get(index - startPos));
+                elements[index - startPos] = computeMultiply(matrix.getColumn(index), vectors.get(index - startPos));
                 result.add(new Vector(elements));
             }
 

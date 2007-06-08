@@ -23,6 +23,7 @@ public class WorkersExecutorSenderImpl implements WorkersExecutorSender {
             LOG.debug("Sending class: " + executorClassName + " to " + socketToWorker.getInetAddress() + ":" + socketToWorker.getPort());
             outputToWorker.write(("loadClass:" + executorClassName).getBytes("UTF-8"));
             outputToWorker.flush();
+            socketToWorker.shutdownOutput();
             synchronized(this) {
                 try {
                     wait(10);

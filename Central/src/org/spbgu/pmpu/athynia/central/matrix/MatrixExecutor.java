@@ -19,13 +19,13 @@ public class MatrixExecutor implements Runnable{
     public void run() {
         LOG.info("try to read matrix");
         Matrix matrixA = new Matrix(new File(matrixSetting.getValue("matrixA")));
-//        Matrix matrixB = new Matrix(new File(matrixSetting.getValue("matrixB")));
+        Matrix matrixB = new Matrix(new File(matrixSetting.getValue("matrixB")));
         LOG.info("matrixA.size= " + matrixA.toString().length());
-//        LOG.info("matrixB.size= " + matrixB.toString().length());
+        LOG.info("matrixB.size= " + matrixB.toString().length());
         LOG.info("Start sending the code");
         MatrixOperator operator = new RemoteMatrixMultiplier();
         long currentTime = System.currentTimeMillis();
-        operator.multiply(matrixA, matrixA);
+        operator.multiply(matrixA, matrixB);
         LOG.info("Finish calculating, time: " + (System.currentTimeMillis() - currentTime) + "ms");
 
     }
