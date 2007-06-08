@@ -27,11 +27,11 @@ public class WorkerConnectionsManagerImpl implements WorkerConnectionsManager {
 
     public Socket getSocket(Worker worker) throws IOException {
         LOG.debug("Acquiring socket for worker: " + worker.getFullAddress());
-        try {
-            Thread.sleep(1000); //debug...
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+//        try {
+//            Thread.sleep(1000); //debug...
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
         Socket ret = openedSockets.get(worker);
         if (ret == null) {
             ret = socketOpener.openSocketOnDefaultNic(worker.getFullAddress().getHostName(), worker.getMainPort());

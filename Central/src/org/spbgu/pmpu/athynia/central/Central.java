@@ -2,15 +2,16 @@ package org.spbgu.pmpu.athynia.central;
 
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
-import org.spbgu.pmpu.athynia.central.network.NetworkRunner;
+import org.spbgu.pmpu.athynia.central.matrix.MatrixExecutor;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
+import org.spbgu.pmpu.athynia.central.network.NetworkRunner;
+import org.spbgu.pmpu.athynia.central.network.impl.NetworkRunnerImpl;
+import org.spbgu.pmpu.athynia.central.network.impl.DataJoinerImpl;
+import org.spbgu.pmpu.athynia.central.network.impl.DataImpl;
 import org.spbgu.pmpu.athynia.central.network.broadcast.BroadcastingDaemon;
 import org.spbgu.pmpu.athynia.central.network.communications.CentralMainPortListener;
 import org.spbgu.pmpu.athynia.central.network.communications.split.SplitReceiver;
 import org.spbgu.pmpu.athynia.central.network.communications.split.impl.DataSplitterImpl;
-import org.spbgu.pmpu.athynia.central.network.impl.DataImpl;
-import org.spbgu.pmpu.athynia.central.network.impl.DataJoinerImpl;
-import org.spbgu.pmpu.athynia.central.network.impl.NetworkRunnerImpl;
 import org.spbgu.pmpu.athynia.common.network.SocketOpener;
 import org.spbgu.pmpu.athynia.common.network.impl.SocketOpenerImpl;
 import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
@@ -95,8 +96,12 @@ public class Central {
 
     private void startCentralMainPortListener() {
         try {
+            ThreadGroup centralGroup = new ThreadGroup("Central Server threads");
+            centralGroup.setMaxPriority(Thread.MAX_PRIORITY);
+            centralGroup.setDaemon(true);
+
             CentralMainPortListener centralMainPortListener = new CentralMainPortListener(SERVER_PORT, workersManager);
-            Thread centralMainPortListenerThread = new Thread(centralMainPortListener, "Central main port listener");
+            Thread centralMainPortListenerThread = new Thread(centralGroup, centralMainPortListener, "Central main port listener");
             centralMainPortListenerThread.setDaemon(true);
             centralMainPortListenerThread.start();
         } catch (IllegalConfigException e) {
@@ -117,14 +122,23 @@ public class Central {
     public static void main(String[] args) throws Exception {
         Central central = new Central();
         central.start();
-        Thread.sleep(10 * 1000);
-        LOG.info("Start sending the code");
-        NetworkRunner networkRunner = new NetworkRunnerImpl();
-        String joined = networkRunner.runRemotely(SplitReceiver.class, 
-                new DataImpl("xxx", TestString.LONG_STRING), new DataSplitterImpl(),
-                new DataImpl("xxx", null), new DataJoinerImpl());
-        System.out.println("joined = " + joined);
-        System.out.println("TestString.LONG_STRING.length() = " + TestString.LONG_STRING.length());
-        System.out.println(TestString.LONG_STRING.equals(joined));
+
+//        Thread.sleep(10 * 1000);
+//        LOG.info("Start sending the code");
+//        NetworkRunner<String> networkRunner = new NetworkRunnerImpl<String>();
+//        String joined = networkRunner.runRemotely(SplitReceiver.class,
+//                new DataImpl<String>("xxx", TestString.LONG_STRING), new DataSplitterImpl(),
+//                new DataImpl<String>("xxx", null), new DataJoinerImpl());
+//        System.out.println("joined = " + joined.length());
+//        System.out.println("TestString.LONG_STRING.length() = " + TestString.LONG_STRING.length());
+//        System.out.println(TestString.LONG_STRING.equals(joined));
+
+        ThreadGroup centralGroup = new ThreadGroup("Matrix threads");
+        centralGroup.setMaxPriority(Thread.MAX_PRIORITY);
+        MatrixExecutor matrixExecutor = new MatrixExecutor();
+        Thread matrixThread = new Thread(centralGroup, matrixExecutor, "Matrix");
+        matrixThread.setDaemon(true);
+        matrixThread.start();
+
     }
 }

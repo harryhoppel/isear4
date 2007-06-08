@@ -120,7 +120,9 @@ public class NetworkClassLoader extends URLClassLoader {
             clientThread.start();
             ResponseHandler handler = new ResponseHandler();
             client.send(className.getBytes(), handler);
-            return unzipBytes(handler.waitForResponse());
+            byte[] bytes = handler.waitForResponse();
+            LOG.debug("get class bytes, size: " + bytes.length);
+            return unzipBytes(bytes);
         } catch (IOException e) {
             LOG.warn("Error while downloading:" + className, e);
         }

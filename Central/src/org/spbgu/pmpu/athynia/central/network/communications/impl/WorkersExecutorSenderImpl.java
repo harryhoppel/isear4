@@ -42,7 +42,7 @@ public class WorkersExecutorSenderImpl implements WorkersExecutorSender {
                     socketToWorker.close();
                 }
             } catch (IOException e) {
-                LOG.error("Can't close output socket/stream to worker: " + worker.getFullAddress(), e);
+                LOG.warn("Can't close output socket/stream to worker", e);
             }
         }
     }

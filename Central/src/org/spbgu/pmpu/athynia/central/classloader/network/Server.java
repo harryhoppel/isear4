@@ -29,7 +29,7 @@ public class Server implements Runnable {
     private int port;
     private Processor processor;
     private Selector selector;
-    private ByteBuffer readBuffer = ByteBuffer.allocate(1024);
+    private ByteBuffer readBuffer = ByteBuffer.allocate(4000);//todo
     private final List<Request> pendingChanges = new LinkedList<Request>();
     private final Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<SocketChannel, List<ByteBuffer>>();
     private boolean isRunning = true;

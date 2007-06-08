@@ -70,6 +70,7 @@ public class Server implements Runnable {
     }
 
     private void read(SelectionKey key) throws IOException {
+        LOG.debug("Server.read");
         SocketChannel socketChannel = (SocketChannel) key.channel();
         readBuffer.clear();
 
@@ -133,7 +134,9 @@ public class Server implements Runnable {
                     pendingChanges.clear();
                 }
 
+                LOG.debug("selector.selectedKeys() = " + selector.selectedKeys().size());
                 selector.select();
+                LOG.debug("selector.selectedKeys() = " + selector.selectedKeys().size());
                 Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
                 while (selectedKeys.hasNext()) {
                     SelectionKey key = selectedKeys.next();
@@ -153,7 +156,7 @@ public class Server implements Runnable {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("server error", e);
             }
         }
     }

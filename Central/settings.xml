@@ -5,7 +5,7 @@
             <class-loader-home-dir value="home"/>
         </central-server>
         <broadcast>
-            <broadcasting-timeout-in-ms value="3000"/>
+            <broadcasting-timeout-in-ms value="10000"/>
             <broadcast-local-port value="20000"/>
             <broadcastAddress value="239.0.0.1"/>
             <portToListen value="44445"/>
@@ -17,4 +17,10 @@
             <port value="10000"/>
         </classloader>
     </common>
+    <tasks>
+           <matrix>
+               <matrixA value="home/matrixA.txt"/>
+               <matrixB value="home/matrixB.txt"/>
+           </matrix>
+       </tasks>
 </settings>

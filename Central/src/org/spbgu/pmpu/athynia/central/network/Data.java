@@ -3,8 +3,8 @@ package org.spbgu.pmpu.athynia.central.network;
 /**
  * User: vasiliy
  */
-public interface Data {
+public interface Data<Value> {
     String getKey();
 
-    String getValue();
+    Value getValue();
 }

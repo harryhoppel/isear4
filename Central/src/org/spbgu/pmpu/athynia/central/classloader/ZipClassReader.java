@@ -22,9 +22,12 @@ public class ZipClassReader {
     }
 
     public byte[] getClassFromCache(String className) {
-        if (cache.containsKey(className))
-            return zipBytes(cache.get(className));
-        else return new byte[1];
+        LOG.debug("Try get class: " + className);
+        if (cache.containsKey(className)) {
+            byte[] bytes = zipBytes(cache.get(className));
+            LOG.debug("Get class bytes size: " + bytes.length);
+            return bytes;
+        } else return new byte[1];
     }
 
     public void readZipFile(File zipFile) {

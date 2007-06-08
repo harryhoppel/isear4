@@ -10,7 +10,7 @@ import java.util.Comparator;
 /**
  * User: vasiliy
  */
-public class DataJoinerImpl implements DataJoiner {
+public class DataJoinerImpl implements DataJoiner<String> {
     private JoinPart[] receivedJoinParts;
 
 //    public void setData(String[] receivedData) {
@@ -22,6 +22,7 @@ public class DataJoinerImpl implements DataJoiner {
     }
 
     public String getResult() {
+        //todo
         ArrayList<JoinPart> filteredRetrievedParts = new ArrayList<JoinPart>();
         for (JoinPart retrievedPart : receivedJoinParts) {
             if (retrievedPart != null && retrievedPart.getWholePartsNumber() != -1) { // -1 - in case of null value found in worker's index
