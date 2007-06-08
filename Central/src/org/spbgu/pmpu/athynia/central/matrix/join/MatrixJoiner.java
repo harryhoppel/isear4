@@ -7,6 +7,7 @@ import org.spbgu.pmpu.athynia.common.JoinPart;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.StringTokenizer;
 
 /**
  * User: A.Selivanov
@@ -14,12 +15,13 @@ import java.util.Comparator;
  */
 public class MatrixJoiner implements DataJoiner<Matrix> {
     JoinPart[] receivedJoinParts;
-    
+
     public void setData(JoinPart[] receivedData) {
         receivedJoinParts = receivedData;
     }
 
     public Matrix getResult() {
+        Matrix result = null;
         ArrayList<JoinPart> filteredRetrievedParts = new ArrayList<JoinPart>();
         for (JoinPart retrievedPart : receivedJoinParts) {
             if (retrievedPart != null && retrievedPart.getWholePartsNumber() != -1) { // -1 - in case of null value found in worker's index
@@ -38,15 +40,30 @@ public class MatrixJoiner implements DataJoiner<Matrix> {
             }
         });
 
-        StringBuffer ret = new StringBuffer();
-        for (int index = 0; index < filteredRetrievedParts.size(); index++) {
+        int currentVectorPos = 0;
+        result = new Matrix();
+        for (int index = 0; index < filteredRetrievedParts.size(); index++, currentVectorPos++) {
             JoinPart joinPart = filteredRetrievedParts.get(index);
             if (joinPart.getPartNumber() != index) {
                 return null;
             }
-            System.out.println("**** get part = " + joinPart.getPartNumber() + ", value = " + joinPart.getValue());
-            ret.append(joinPart.getValue());
+            StringTokenizer tokenizer = new StringTokenizer(joinPart.getValue(), Matrix.DELIMETERS);
+            int size = Integer.parseInt(tokenizer.nextToken());
+            result.setSize(size);
+            int pos = 0;
+            while (tokenizer.hasMoreTokens()) {
+                if (pos != size) {
+                    double value = Double.parseDouble(tokenizer.nextToken());
+                    result.setElement(pos, currentVectorPos, value);
+                    pos++;
+                } else {
+                    pos = 0;//just size
+                    tokenizer.nextToken();
+                    currentVectorPos++;
+                }
+            }
+
         }
-        return new Matrix(ret.toString());
+        return result;
     }
 }
