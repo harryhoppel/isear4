@@ -27,9 +27,9 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
 
     private final WorkersExecutorSender workersExecutorSender = new WorkersExecutorSenderImpl();
 
-    private final DataSplitter dataSplitter;
+    private final DataSplitter<Value> dataSplitter;
 
-    public DataSenderImpl(DataSplitter dataSplitter) {
+    public DataSenderImpl(DataSplitter<Value> dataSplitter) {
         this.dataSplitter = dataSplitter;
     }
 
