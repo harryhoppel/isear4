@@ -1,6 +1,7 @@
 package org.spbgu.pmpu.athynia.central.matrix;
 
 import junit.framework.TestCase;
+import org.spbgu.pmpu.athynia.central.matrix.impl.LocalMatrixOperator;
 
 /**
  * User: A.Selivanov
@@ -8,33 +9,35 @@ import junit.framework.TestCase;
  */
 public class TestLocalMatrixMuiliplier extends TestCase {
     public void testMatrixMultiply() {
-//        double[][] elementsA = {
-//            {3.0, 8.0, 1.0},
-//            {2.0, 8.0, 9.0},
-//            {2.0, 0.0, 0.0}};
-//
-//        double[][] elementsB = {
-//            {4.0, 6.0, 2.0},
-//            {0.0, 6.0, 4.0},
-//            {3.0, 5.0, 4.0}};
-//
-//        double[][] result = {
-//            {28.0, 20.0, 27.0},
-//            {80.0, 48.0, 64.0},
-//            {58.0, 54.0, 48.0}};
-//
-//        MatrixOperator operator = new LocalMatrixOperator();
-//        System.out.println("Start calculating matrix");
-//        long currentTime = System.currentTimeMillis();
-//        Matrix A = new Matrix(new File("matrixA.txt"));
-//        Matrix B = new Matrix(new File("matrixB.txt"));
-//        System.out.println("Finish opening, time: " + (System.currentTimeMillis() - currentTime) + "ms");
-//        currentTime = System.currentTimeMillis();
-////        Matrix matrix = operator.multiply(new Matrix(elementsA), new Matrix(elementsB));
-//        Matrix matrix = operator.multiply(A, B);
-//        System.out.println(matrix.getValues()[99][99]);
-//        System.out.println("Finish calculating, time: " + (System.currentTimeMillis() - currentTime) + "ms");
-////        assertArrayEquals(result, matrix.getValues());
+        double[][] elementsA = {
+            {3.0, 8.0, 1.0},
+            {2.0, 8.0, 9.0},
+            {2.0, 0.0, 0.0}};
+
+        double[][] elementsB = {
+            {4.0, 6.0, 2.0},
+            {0.0, 6.0, 4.0},
+            {3.0, 5.0, 4.0}};
+
+        double[][] result = {
+            {28.0, 20.0, 27.0},
+            {80.0, 48.0, 64.0},
+            {58.0, 54.0, 48.0}};
+
+        MatrixOperator operator = new LocalMatrixOperator();
+        System.out.println("Start calculating matrix");
+        long currentTime = System.currentTimeMillis();
+//        Matrix A = new Matrix(new File("Central/matrixA.txt"));
+        Matrix A = new Matrix(elementsA);
+//        Matrix B = new Matrix(new File("Central/matrixB.txt"));
+        Matrix B = new Matrix(elementsB);
+        System.out.println("Finish opening, time: " + (System.currentTimeMillis() - currentTime) + "ms");
+        currentTime = System.currentTimeMillis();
+//        Matrix matrix = operator.multiply(new Matrix(elementsA), new Matrix(elementsB));
+        Matrix matrix = operator.multiply(A, B);
+        System.out.println(matrix);
+        System.out.println("Finish calculating, time: " + (System.currentTimeMillis() - currentTime) + "ms");
+//        assertArrayEquals(result, matrix.getValues());
     }
 
     public void testInverse() {

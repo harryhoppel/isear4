@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * User: vasiliy
  */
-public class JoinPartImpl<Value extends String> implements JoinPart<Value> {
+public class JoinPartImpl implements JoinPart<String> {
     private static final Logger LOG = Logger.getLogger(JoinPartImpl.class);
 
     private final String key;
@@ -17,7 +17,7 @@ public class JoinPartImpl<Value extends String> implements JoinPart<Value> {
     private final int partNumber;
     private final int wholePartsNumber;
 
-    public JoinPartImpl(String key, Value value, int partNumber, int wholePartsNumber) {
+    public JoinPartImpl(String key, String value, int partNumber, int wholePartsNumber) {
         this.key = key;
         this.value = value;
         this.partNumber = partNumber;
@@ -25,9 +25,9 @@ public class JoinPartImpl<Value extends String> implements JoinPart<Value> {
     }
 
     public JoinPartImpl(byte[] binaryForm) {
-//        if (LOG.isDebugEnabled()) {
-//            LOG.debug("Data length is: " + binaryForm.length + "; received string: " + new String(binaryForm));
-//        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Data length is: " + binaryForm.length + "; received string: " + new String(binaryForm));
+        }
         try {
             int currentIndexInBinaryForm = 0;
             wholePartsNumber = Integer.parseInt(decodeStringWithInteger(new String(binaryForm,

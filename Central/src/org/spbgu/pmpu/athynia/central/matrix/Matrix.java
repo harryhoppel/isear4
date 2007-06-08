@@ -44,7 +44,7 @@ public class Matrix {
         }
     }
 
-    public Matrix(String stringMatrix){
+    public Matrix(String stringMatrix) {
         try {
             BufferedReader reader = new BufferedReader(new StringReader(stringMatrix));
             String line = reader.readLine();
@@ -70,7 +70,7 @@ public class Matrix {
 
     public Matrix copy() {
         double[][] result = new double[size][size];
-        for ( int i =0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             System.arraycopy(elements[i], 0, result[i], 0, size);
         }
         return new Matrix(result);
@@ -156,8 +156,8 @@ public class Matrix {
         StringBuffer buf = new StringBuffer();
         buf.append(size);
         buf.append('\n');
-        for(int i = 0; i < size; i++){
-            for(int j =0; j < size; j++){
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 buf.append(elements[i][j]).append(" ");
             }
             buf.append('\n');
@@ -204,5 +204,16 @@ public class Matrix {
 
     public Vector getColumn(int index) {
         return new Vector(elements[index]);
+    }
+
+    public Matrix transpose() {
+        double[][] result = new double[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                result[j][i] = elements[i][j];
+
+            }
+        }
+        return new Matrix(result);
     }
 }

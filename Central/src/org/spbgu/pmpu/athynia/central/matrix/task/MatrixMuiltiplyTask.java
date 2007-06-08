@@ -61,12 +61,13 @@ public class MatrixMuiltiplyTask implements Executor {
             int size = matrix.size();
 
             List<Vector> result = new ArrayList<Vector>();
-            int startPos = getStartIndex(size, partNumber, totalSplitNumber);
 
-            for (int index = startPos; index < vectors.size() + startPos; index++){
+            for (Vector vector : vectors) {
                 double[] elements = new double[size];
-                LOG.debug("multiplying:\n" + matrix.getColumn(index)+ " * " + vectors.get(index - startPos));
-                elements[index - startPos] = computeMultiply(matrix.getColumn(index), vectors.get(index - startPos));
+                for (int index = 0; index < size; index++) {
+                    LOG.debug("multiplying:\n" + matrix.getColumn(index) + " * " + vector);
+                    elements[index] = computeMultiply(matrix.getColumn(index), vector);
+                }
                 result.add(new Vector(elements));
             }
 
@@ -87,6 +88,7 @@ public class MatrixMuiltiplyTask implements Executor {
         }
     }
 
+    //not in use
     public static int getStartIndex(int size, int partNumber, int parts) {
         int[] ints = new int[parts];
         int part = (int) (Math.floor(size / parts) + size % parts);

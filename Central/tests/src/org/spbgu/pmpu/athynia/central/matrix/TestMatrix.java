@@ -2,9 +2,7 @@ package org.spbgu.pmpu.athynia.central.matrix;
 
 import junit.framework.TestCase;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 
@@ -29,31 +27,30 @@ public class TestMatrix extends TestCase {
             }
         }
         Matrix matrix = new Matrix(elements);
-        File out = new File("matrixA.txt");
-        if(!out.exists())
-            out.createNewFile();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(out));
-        writer.write(matrix.toString());
-        writer.flush();
+//        File out = new File("matrixA.txt");
+//        if(!out.exists())
+//            out.createNewFile();
+//        BufferedWriter writer = new BufferedWriter(new FileWriter(out));
+//        writer.write(matrix.toString());
+//        writer.flush();
 
-        for (int i = 0; i < COLUMN_SIZE; i++) {
-            for (int j = 0; j < ROW_SIZE; j++) {
-                elements[i][j] = random.nextDouble();
+//        for (int i = 0; i < COLUMN_SIZE; i++) {
+//            for (int j = 0; j < ROW_SIZE; j++) {
+//                elements[i][j] = random.nextDouble();
 //                elements[i][j] = random.nextInt(10);
-            }
-        }
-        matrix = new Matrix(elements);
-        out = new File("matrixB.txt");
-        if(!out.exists())
-            out.createNewFile();
-        writer = new BufferedWriter(new FileWriter(out));
-        writer.write(matrix.toString());
-        writer.flush();
+//            }
+//        }
+//        matrix = new Matrix(elements);
+//        out = new File("matrixB.txt");
+//        if(!out.exists())
+//            out.createNewFile();
+//        writer = new BufferedWriter(new FileWriter(out));
+//        writer.write(matrix.toString());
+//        writer.flush();
 
     }
 
     public void testMatrixFileInit() throws IOException {
-        final String matrixName = "matrixA";
         final double[][] result = {
             {7.0, 4.0, 6.0},
             {2.0, 5.0, 2.0},

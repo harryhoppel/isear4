@@ -20,7 +20,6 @@ public class MatrixJoiner implements DataJoiner<Matrix> {
     }
 
     public Matrix getResult() {
-        //todo
         ArrayList<JoinPart> filteredRetrievedParts = new ArrayList<JoinPart>();
         for (JoinPart retrievedPart : receivedJoinParts) {
             if (retrievedPart != null && retrievedPart.getWholePartsNumber() != -1) { // -1 - in case of null value found in worker's index
@@ -38,15 +37,16 @@ public class MatrixJoiner implements DataJoiner<Matrix> {
                 return ((Integer) o1.getPartNumber()).compareTo(o2.getPartNumber());
             }
         });
+
         StringBuffer ret = new StringBuffer();
         for (int index = 0; index < filteredRetrievedParts.size(); index++) {
             JoinPart joinPart = filteredRetrievedParts.get(index);
             if (joinPart.getPartNumber() != index) {
                 return null;
             }
+            System.out.println("**** get part = " + joinPart.getPartNumber() + ", value = " + joinPart.getValue());
             ret.append(joinPart.getValue());
         }
         return new Matrix(ret.toString());
-
     }
 }
