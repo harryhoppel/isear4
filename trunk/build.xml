@@ -17,8 +17,8 @@
         <delete dir="${classloader.home.dir}"/>
         <mkdir dir="${classloader.home.dir}"/>
         <zip basedir="${classloader.classes.dir}" destfile="${classloader.home.dir}/home.zip"/>
-        <copy file="${matrixA.file.name}" tofile="${classloader.home.dir}/${matrixA.file.name}" overwrite="true"/>
-        <copy file="${matrixB.file.name}" tofile="${classloader.home.dir}/${matrixB.file.name}" overwrite="true"/>
+        <copy file="${central.dir}/${matrixA.file.name}" tofile="${classloader.home.dir}/${matrixA.file.name}" overwrite="true"/>
+        <copy file="${central.dir}/${matrixB.file.name}" tofile="${classloader.home.dir}/${matrixB.file.name}" overwrite="true"/>
     </target>
 
 
