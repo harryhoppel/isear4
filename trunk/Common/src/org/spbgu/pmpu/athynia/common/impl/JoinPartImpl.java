@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * User: vasiliy
  */
-public class JoinPartImpl implements JoinPart<String> {
+public class JoinPartImpl implements JoinPart {
     private static final Logger LOG = Logger.getLogger(JoinPartImpl.class);
 
     private final String key;

@@ -68,6 +68,10 @@ public class Matrix {
         elements = new double[size][size];
     }
 
+    public Matrix() {
+        
+    }
+
     public Matrix copy() {
         double[][] result = new double[size][size];
         for (int i = 0; i < size; i++) {
@@ -215,5 +219,12 @@ public class Matrix {
             }
         }
         return new Matrix(result);
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+        if (elements == null) {
+            elements = new double[size][size];
+        }
     }
 }
