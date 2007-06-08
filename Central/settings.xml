@@ -9,7 +9,7 @@
             <broadcast-local-port value="20000"/>
             <broadcastAddress value="239.0.0.1"/>
             <portToListen value="44445"/>
-            <nicName value="lo"/>
+            <nicName value="lo0"/>
             <nicParticularAddress value="/127.0.0.1"/>
         </broadcast>
         <classloader>
