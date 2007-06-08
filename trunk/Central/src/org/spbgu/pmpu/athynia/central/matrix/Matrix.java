@@ -2,12 +2,11 @@ package org.spbgu.pmpu.athynia.central.matrix;
 
 import org.apache.log4j.Logger;
 
-import java.lang.*;
-import java.io.FileInputStream;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.StringTokenizer;
 
@@ -69,7 +68,7 @@ public class Matrix {
     }
 
     public Matrix() {
-        
+
     }
 
     public Matrix copy() {
@@ -223,7 +222,7 @@ public class Matrix {
 
     public void setSize(int size) {
         this.size = size;
-        if (elements == null) {
+        if (elements == null || elements.length != size || elements[0].length != size) {
             elements = new double[size][size];
         }
     }
