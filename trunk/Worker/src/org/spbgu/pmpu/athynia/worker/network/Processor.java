@@ -23,6 +23,7 @@ public class Processor implements Runnable {
     }
 
     public void processData(Server server, SocketChannel socket, byte[] data, int count) {
+        LOG.debug("process data");
         byte[] dataCopy = new byte[count];
         System.arraycopy(data, 0, dataCopy, 0, count);
         synchronized (queue) {

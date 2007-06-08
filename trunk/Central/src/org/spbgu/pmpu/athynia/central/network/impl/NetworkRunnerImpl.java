@@ -1,9 +1,15 @@
 package org.spbgu.pmpu.athynia.central.network.impl;
 
+import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.DataManager;
-import org.spbgu.pmpu.athynia.central.network.*;
+import org.spbgu.pmpu.athynia.central.network.Data;
+import org.spbgu.pmpu.athynia.central.network.DataJoiner;
+import org.spbgu.pmpu.athynia.central.network.NetworkRunner;
+import org.spbgu.pmpu.athynia.central.network.Worker;
+import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.communications.CommunicationException;
 import org.spbgu.pmpu.athynia.central.network.communications.join.SearchTask;
+import org.spbgu.pmpu.athynia.central.network.communications.join.Joiner;
 import org.spbgu.pmpu.athynia.central.network.communications.join.impl.JoinerImpl;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSender;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSplitter;
@@ -15,18 +21,23 @@ import java.util.Set;
 /**
  * User: vasiliy
  */
-public class NetworkRunnerImpl implements NetworkRunner {
-    public String runRemotely(Class<? extends Executor> klass, Data dataToSend, DataSplitter dataSplitter, Data toReceive, DataJoiner dataJoiner) throws CommunicationException {
+public class NetworkRunnerImpl<Value> implements NetworkRunner<Value>{
+    private Logger LOG = Logger.getLogger(NetworkRunnerImpl.class);
+
+
+    public void runRemotely(Class<? extends Executor> klass, Data<Value> dataToSend, DataSplitter dataSplitter) throws CommunicationException {
+        LOG.debug("NetworkRunnerImpl.runRemotely");
         Set<Worker> workers = DataManager.getInstance().getData(WorkersManager.class).getAll();
-        DataSender dataSender = new DataSenderImpl(dataSplitter);
+        DataSender<Value> dataSender = new DataSenderImpl<Value>(dataSplitter);
         dataSender.sendData(klass, dataToSend.getKey(), dataToSend.getValue(), workers.toArray(new Worker[0]));
-        //todo: delete following
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        JoinerImpl joiner = new JoinerImpl(DataManager.getInstance().getData(WorkersManager.class), SearchTask.class, dataJoiner);
+    }
+ 
+    public Value runRemotely(Class<? extends Executor> klass, Data<Value> dataToSend, DataSplitter dataSplitter, Data<Value> toReceive, DataJoiner dataJoiner) throws CommunicationException {
+        LOG.debug("NetworkRunnerImpl.runRemotely");
+        Set<Worker> workers = DataManager.getInstance().getData(WorkersManager.class).getAll();
+        DataSender<Value> dataSender = new DataSenderImpl<Value>(dataSplitter);
+        dataSender.sendData(klass, dataToSend.getKey(), dataToSend.getValue(), workers.toArray(new Worker[0]));
+        Joiner<Value> joiner = new JoinerImpl<Value>(DataManager.getInstance().getData(WorkersManager.class), SearchTask.class, dataJoiner);
         return joiner.join(toReceive.getKey());
     }
 }

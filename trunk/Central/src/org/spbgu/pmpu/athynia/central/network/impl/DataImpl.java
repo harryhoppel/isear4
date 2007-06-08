@@ -5,11 +5,11 @@ import org.spbgu.pmpu.athynia.central.network.Data;
 /**
  * User: vasiliy
  */
-public class DataImpl implements Data {
+public class DataImpl<Value> implements Data<Value> {
     private final String key;
-    private final String value;
+    private final Value value;
 
-    public DataImpl(String key, String value) {
+    public DataImpl(String key, Value value) {
         this.key = key;
         this.value = value;
     }
@@ -18,7 +18,7 @@ public class DataImpl implements Data {
         return key;
     }
 
-    public String getValue() {
+    public Value getValue() {
         return value;
     }
 }

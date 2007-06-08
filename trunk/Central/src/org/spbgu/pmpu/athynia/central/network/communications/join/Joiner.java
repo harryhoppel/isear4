@@ -5,6 +5,6 @@ import org.spbgu.pmpu.athynia.central.network.communications.CommunicationExcept
 /**
  * User: vasiliy
  */
-public interface Joiner {
-    String join(String key) throws CommunicationException;
+public interface Joiner<Value> {
+    Value join(String key) throws CommunicationException;
 }

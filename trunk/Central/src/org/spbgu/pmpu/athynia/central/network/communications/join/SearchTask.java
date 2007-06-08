@@ -29,10 +29,14 @@ public class SearchTask implements Executor {
             String key = new String(keyBuffer, "UTF-8");
             LOG.debug("Searching in index with a key: " + key);
             JoinPart joinPart = manager.search(key);
-            byte[] joinPartAsBinary = joinPart.toBinaryForm();
-            toServer.write(getIntInUtf8(joinPartAsBinary.length).getBytes("UTF-8"));
-            toServer.write(joinPartAsBinary);
-            LOG.debug("Responce was send to server: " + new String(joinPart.toBinaryForm()));
+            if (joinPart != null) {
+                byte[] joinPartAsBinary = joinPart.toBinaryForm();
+                toServer.write(getIntInUtf8(joinPartAsBinary.length).getBytes("UTF-8"));
+                toServer.write(joinPartAsBinary);
+            } else {
+                toServer.write(new byte[1]);
+            }
+//            LOG.debug("Responce was send to server: " + new String(joinPart.toBinaryForm()));
         } catch (IOException e) {
             LOG.warn("Can't communicate with central", e);
         }

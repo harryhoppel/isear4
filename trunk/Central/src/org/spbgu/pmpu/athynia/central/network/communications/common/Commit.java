@@ -16,11 +16,14 @@ public class Commit implements Executor {
     private static final Logger LOG = Logger.getLogger(Commit.class);
 
     public void execute(InputStream fromServer, OutputStream toServer, ResourceManager manager) throws ExecutorException {
+        System.out.println("Loading " + Commit.class.getName());
         manager.commit();
+        LOG.info("commited");
         try {
             toServer.write("OK".getBytes("UTF-8"));
+            toServer.flush();
         } catch (IOException e) {
-            LOG.warn("Can't communicate with central");
+            LOG.warn("Can't communicate with central", e);
         }
     }
 }

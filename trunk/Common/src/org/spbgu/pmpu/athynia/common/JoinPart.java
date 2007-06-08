@@ -3,7 +3,7 @@ package org.spbgu.pmpu.athynia.common;
 /**
  * User: vasiliy
  */
-public interface JoinPart {
+public interface JoinPart<Value> {
     String getKey();
     String getValue();
 

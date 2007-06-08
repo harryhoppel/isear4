@@ -20,7 +20,7 @@ import java.net.Socket;
 /**
  * User: vasiliy
  */
-public class DataSenderImpl implements DataSender {
+public class DataSenderImpl<Value> implements DataSender<Value> {
     //todo: should we send this from multiple threads? --> profile that
     //todo: where to synchronize - right now all sync is done on Central-side
     private static final Logger LOG = Logger.getLogger(DataSenderImpl.class);
@@ -33,8 +33,10 @@ public class DataSenderImpl implements DataSender {
         this.dataSplitter = dataSplitter;
     }
 
-    public boolean sendData(Class<? extends Executor> klass, String key, String value, Worker[] workers) {
+    public boolean sendData(Class<? extends Executor> klass, String key, Value value, Worker[] workers) {
+        LOG.debug("DataSenderImpl.sendData lass= " + klass + ", key = " + key);
         String[] splittedData = dataSplitter.splitData(value, workers.length);
+        LOG.debug("Have " + splittedData.length + " parts");
         for (int i = 0; i < workers.length; i++) {
             sendDataTask(klass, workers[i], key, splittedData[i], i, workers.length);
         }
@@ -48,6 +50,7 @@ public class DataSenderImpl implements DataSender {
         for (Worker worker : workers) {
             sendCommitTask(worker);
         }
+        LOG.debug("Commit tasks was sent to workers");
         boolean committed = waitForCompletion(workers);
         if (!committed) {
             LOG.debug("Data wasn't committed");
@@ -79,14 +82,19 @@ public class DataSenderImpl implements DataSender {
             Socket workersSocket = worker.openSocket();
             LOG.debug("Trying to send data to worker: " + worker.getFullAddress().getHostName() + ":" + worker.getMainPort());
             outputToWorker = new BufferedOutputStream(workersSocket.getOutputStream());
+            LOG.debug("sending key = " + key + ", particularPartNumber = " + particularPartNumber + ", wholePartsQuantity = " + wholePartsQuantity + "datasize = " + data.getBytes().length);
             outputToWorker.write(new JoinPartImpl(key, data, particularPartNumber, wholePartsQuantity).toBinaryForm());
             outputToWorker.flush();
+            LOG.debug("outputToWorker flushes");
+            workersSocket.shutdownOutput();
         } catch (IOException e) {
             LOG.warn("Can't send data to worker: " + worker.getFullAddress(), e);
         }
     }
 
     private boolean waitForCompletion(Worker[] workers) {
+        long time = System.currentTimeMillis();
+        LOG.debug("DataSenderImpl.waitForCompletion");
         synchronized (this) {
             try {
                 wait(CommunicationConstants.CENTRAL_WAIT_FOR_COMPLETION_TIMEOUT);
@@ -104,8 +112,10 @@ public class DataSenderImpl implements DataSender {
             try {
                 inputStream = socket.getInputStream();
                 inputStream.read(buffer);
+                socket.shutdownInput();
                 if (!new String(buffer, "UTF-8").equals("OK")) return false;
             } catch (IOException e) {
+                LOG.debug("DataSenderImpl.waitForCompletion finish, returns " + false + ", it takes = " + (System.currentTimeMillis() - time) +" ms");
                 return false;
             } finally {
                 if (inputStream != null) {
@@ -115,11 +125,13 @@ public class DataSenderImpl implements DataSender {
                 }
             }
         }
+        LOG.debug("DataSenderImpl.waitForCompletion finish, returns " + true + ", it takes = " + (System.currentTimeMillis() - time) +" ms");
         return true;
     }
 
     private void sendCommitTask(Worker worker) {
-        workersExecutorSender.runExecutorOnWorker(worker, Commit.class.getName());
+        boolean result = workersExecutorSender.runExecutorOnWorker(worker, Commit.class.getName());
+        LOG.debug("Commmit result: " + result);
     }
 
     private void sendAbortTask(Worker worker) {

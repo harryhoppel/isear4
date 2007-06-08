@@ -5,9 +5,9 @@ import org.spbgu.pmpu.athynia.common.JoinPart;
 /**
  * User: vasiliy
  */
-public interface DataJoiner {
+public interface DataJoiner<Value> {
 //    void setData(String[] receivedData);
     void setData(JoinPart[] receivedData);
 
-    String getResult();
+    Value getResult();
 }
