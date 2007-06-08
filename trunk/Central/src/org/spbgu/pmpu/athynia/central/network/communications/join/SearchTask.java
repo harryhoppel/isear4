@@ -30,12 +30,15 @@ public class SearchTask implements Executor {
             LOG.debug("Searching in index with a key: " + key);
             JoinPart joinPart = manager.search(key);
             if (joinPart != null) {
+                LOG.debug(key + " FOUND!!");
                 byte[] joinPartAsBinary = joinPart.toBinaryForm();
                 toServer.write(getIntInUtf8(joinPartAsBinary.length).getBytes("UTF-8"));
                 toServer.write(joinPartAsBinary);
             } else {
+                LOG.debug(key + " NOT FOUND!!");
                 toServer.write(new byte[1]);
             }
+            toServer.flush();
 //            LOG.debug("Responce was send to server: " + new String(joinPart.toBinaryForm()));
         } catch (IOException e) {
             LOG.warn("Can't communicate with central", e);

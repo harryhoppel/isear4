@@ -29,14 +29,15 @@ public class RemoteMatrixMultiplier implements MatrixOperator {
                 new DataImpl<Matrix>("matrixA", matrixA), new EmptySplitter<Matrix>());
             LOG.debug("Finish SaveToFileTask: it takes " + (System.currentTimeMillis() - time) + "ms");
 
-            time = System.currentTimeMillis();
-            LOG.debug("Execute MatrixMuiltiplyTask: " + time);
+            LOG.debug("Execute MatrixMuiltiplyTask");
             Matrix result = networkRunner.runRemotely(MatrixMuiltiplyTask.class,
                 new DataImpl<Matrix>("matrixB", matrixB), new MatrixRowSplitter<Matrix>(),
                 new DataImpl<Matrix>("matrix-multiply", null), new MatrixJoiner());
             LOG.debug("Finish MatrixMuiltiplyTask: it takes " + (System.currentTimeMillis() - time) + "ms");
 
-            LOG.debug("Result length = " + result.size() + ", result[0][0] = " + result.getValues()[0][0]);
+            if (result != null) {
+                LOG.debug("Result length = " + result.size() + ", result[0][0] = " + result.getValues()[0][0]);
+            }
             return result;
         } catch (CommunicationException e) {
             LOG.error("Exception while compute matrixA", e);

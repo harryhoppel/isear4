@@ -57,12 +57,14 @@ public class JoinerImpl<Value> implements Joiner<Value> {
 
     private void sendSearchTask(Worker worker, String key) {
         workersExecutorSender.runExecutorOnWorker(worker, executorClass.getName());
+        Socket socket;
         try {
-            BufferedOutputStream outputToWorker = new BufferedOutputStream(worker.openSocket().getOutputStream());
+            socket = worker.openSocket();
+            BufferedOutputStream outputToWorker = new BufferedOutputStream(socket.getOutputStream());
             outputToWorker.write(getIntInUtf8(key.length()).getBytes("UTF-8"));
             outputToWorker.write(key.getBytes("UTF-8"));
             outputToWorker.flush();
-            outputToWorker.close();
+            socket.shutdownOutput();
         } catch (IOException e) {
             LOG.warn("Can't communicate with worker: " + worker.getFullAddress(), e);
         }
