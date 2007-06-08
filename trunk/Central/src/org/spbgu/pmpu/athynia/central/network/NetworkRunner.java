@@ -10,5 +10,5 @@ import org.spbgu.pmpu.athynia.common.Executor;
 public interface NetworkRunner<Value> {
     void runRemotely(Class<? extends Executor> klass, Data<Value> dataToSend, DataSplitter<Value> dataSplitter) throws CommunicationException;
 
-    Value runRemotely(Class<? extends Executor> klass, Data<Value> dataToSend, DataSplitter<Value> dataSplitter, Data<Value> toReceive, DataJoiner dataJoiner) throws CommunicationException;
+    Value runRemotely(Class<? extends Executor> klass, Data<Value> dataToSend, DataSplitter<Value> dataSplitter, Data<Value> toReceive, DataJoiner<Value> dataJoiner) throws CommunicationException;
 }
