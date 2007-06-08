@@ -24,12 +24,11 @@ public class RemoteMatrixMultiplier implements MatrixOperator {
         try {
             NetworkRunner<Matrix> networkRunner = new NetworkRunnerImpl<Matrix>();
             long time = System.currentTimeMillis();
-            LOG.debug("Execute SaveToFileTask: " + time);
+            LOG.debug("Execute SaveToFileTask: ");
             networkRunner.runRemotely(SaveToFileTask.class,
                 new DataImpl<Matrix>("matrixA", matrixA), new EmptySplitter<Matrix>());
             LOG.debug("Finish SaveToFileTask: it takes " + (System.currentTimeMillis() - time) + "ms");
 
-            System.gc();
             time = System.currentTimeMillis();
             LOG.debug("Execute MatrixMuiltiplyTask: " + time);
             Matrix result = networkRunner.runRemotely(MatrixMuiltiplyTask.class,
