@@ -91,13 +91,15 @@ public class MatrixMuiltiplyTask implements Executor {
         int[] ints = new int[parts];
         int part = (int) (Math.floor(size / parts) + size % parts);
         ints[0] = 0;
-        ints[1] = part;
-        int elseParts = 0;
-        if (parts != 1) {
-            elseParts = (size - part) / (parts - 1);
-        }
-        for (int i = 2; i < parts; i++) {
-            ints[i] = part + (i-1) * elseParts;
+        if (part != size) {
+            ints[1] = part;
+            int elseParts = 0;
+            if (parts != 1) {
+                elseParts = (size - part) / (parts - 1);
+            }
+            for (int i = 2; i < parts; i++) {
+                ints[i] = part + (i-1) * elseParts;
+            }
         }
         return ints[partNumber];
     }

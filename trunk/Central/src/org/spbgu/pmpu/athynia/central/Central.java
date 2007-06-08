@@ -123,7 +123,7 @@ public class Central {
         Central central = new Central();
         central.start();
 
-//        Thread.sleep(10 * 1000);
+        Thread.sleep(10 * 1000);
 //        LOG.info("Start sending the code");
 //        NetworkRunner<String> networkRunner = new NetworkRunnerImpl<String>();
 //        String joined = networkRunner.runRemotely(SplitReceiver.class,

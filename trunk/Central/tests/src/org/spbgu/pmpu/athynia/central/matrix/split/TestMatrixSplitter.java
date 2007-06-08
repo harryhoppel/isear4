@@ -101,6 +101,7 @@ public class TestMatrixSplitter extends TestCase {
     }
 
     public void test() {
+        assertEquals(MatrixMuiltiplyTask.getStartIndex(3, 0, 1), 0);
         assertEquals(MatrixMuiltiplyTask.getStartIndex(10, 0, 5), 0);
         assertEquals(MatrixMuiltiplyTask.getStartIndex(10, 1, 10), 1);
         assertEquals(MatrixMuiltiplyTask.getStartIndex(10, 1, 3), 4);
