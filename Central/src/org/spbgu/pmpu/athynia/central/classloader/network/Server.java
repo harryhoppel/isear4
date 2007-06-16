@@ -76,7 +76,7 @@ public class Server implements Runnable {
         try {
             numRead = socketChannel.read(readBuffer);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("error on reading classloader server reading", e);
             key.cancel();
             socketChannel.close();
             return;
@@ -153,7 +153,7 @@ public class Server implements Runnable {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("error on classloader server", e);
             }
         }
     }

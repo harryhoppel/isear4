@@ -6,11 +6,13 @@ import org.spbgu.pmpu.athynia.common.settings.Settings;
 import org.spbgu.pmpu.athynia.common.settings.impl.XmlSettings;
 import org.spbgu.pmpu.athynia.worker.network.CentralConnectionManager;
 import org.spbgu.pmpu.athynia.worker.network.impl.CentralConnectionManagerImpl;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DataManager {
+    private Logger LOG = Logger.getLogger(DataManager.class);
     private static DataManager ourInstance = new DataManager();
     private Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
 
@@ -29,7 +31,7 @@ public class DataManager {
             final ResourceManager resourceManager = new BTreeResourceManager(settings.childSettings("resource-manager").getValue("database_file_name", BTreeResourceManager.DEFAULT_DATABASE_FILE_NAME));
             map.put(ResourceManager.class, resourceManager);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("error initilization datamanager", e);
         }
     }
 
