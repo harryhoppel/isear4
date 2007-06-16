@@ -26,7 +26,7 @@ public class JoinPartImpl implements JoinPart {
 
     public JoinPartImpl(byte[] binaryForm) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Data length is: " + binaryForm.length + "; received string: " + new String(binaryForm));
+//            LOG.debug("Data length is: " + binaryForm.length + "; received string: " + new String(binaryForm));
         }
         try {
             int currentIndexInBinaryForm = 0;

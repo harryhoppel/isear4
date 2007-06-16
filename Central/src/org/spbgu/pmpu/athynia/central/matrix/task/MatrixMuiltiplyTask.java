@@ -8,13 +8,7 @@ import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.ExecutorException;
 import org.spbgu.pmpu.athynia.common.ResourceManager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,18 +59,18 @@ public class MatrixMuiltiplyTask implements Executor {
             for (Vector vector : vectors) {
                 double[] elements = new double[size];
                 for (int index = 0; index < size; index++) {
-                    LOG.debug("multiplying:\n" + matrix.getColumn(index) + " * " + vector);
+//                    LOG.debug("multiplying:\n" + matrix.getColumn(index) + " * " + vector);
                     elements[index] = computeMultiply(matrix.getColumn(index), vector);
                 }
                 result.add(new Vector(elements));
             }
-
+           
             StringBuffer buf = new StringBuffer();
             for (Vector aResult : result) {
                 buf.append(aResult);
             }
 
-            LOG.debug("put: " + "matrix-multiply" + "->\n" + buf.toString());
+//            LOG.debug("put: " + "matrix-multiply" + "->\n" + buf.toString());
             manager.write("matrix-multiply", buf.toString(), partNumber, totalSplitNumber, 0);
 
             toServer.write("OK".getBytes("UTF-8"));

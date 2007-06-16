@@ -3,15 +3,15 @@ package org.spbgu.pmpu.athynia.central;
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
 import org.spbgu.pmpu.athynia.central.matrix.MatrixExecutor;
-import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.NetworkRunner;
-import org.spbgu.pmpu.athynia.central.network.impl.NetworkRunnerImpl;
-import org.spbgu.pmpu.athynia.central.network.impl.DataJoinerImpl;
-import org.spbgu.pmpu.athynia.central.network.impl.DataImpl;
+import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.broadcast.BroadcastingDaemon;
 import org.spbgu.pmpu.athynia.central.network.communications.CentralMainPortListener;
 import org.spbgu.pmpu.athynia.central.network.communications.split.SplitReceiver;
 import org.spbgu.pmpu.athynia.central.network.communications.split.impl.DataSplitterImpl;
+import org.spbgu.pmpu.athynia.central.network.impl.DataImpl;
+import org.spbgu.pmpu.athynia.central.network.impl.DataJoinerImpl;
+import org.spbgu.pmpu.athynia.central.network.impl.NetworkRunnerImpl;
 import org.spbgu.pmpu.athynia.common.network.SocketOpener;
 import org.spbgu.pmpu.athynia.common.network.impl.SocketOpenerImpl;
 import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
@@ -100,7 +100,7 @@ public class Central {
             centralGroup.setMaxPriority(Thread.MAX_PRIORITY);
             centralGroup.setDaemon(true);
 
-            CentralMainPortListener centralMainPortListener = new CentralMainPortListener(SERVER_PORT, workersManager);
+            CentralMainPortListener centralMainPortListener = new CentralMainPortListener(SERVER_PORT, workersManager, socketOpener);
             Thread centralMainPortListenerThread = new Thread(centralGroup, centralMainPortListener, "Central main port listener");
             centralMainPortListenerThread.setDaemon(true);
             centralMainPortListenerThread.start();

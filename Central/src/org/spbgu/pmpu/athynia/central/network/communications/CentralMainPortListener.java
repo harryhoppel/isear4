@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.impl.WorkerImpl;
 import org.spbgu.pmpu.athynia.common.CommunicationConstants;
+import org.spbgu.pmpu.athynia.common.network.SocketOpener;
 import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
 
 import java.io.BufferedInputStream;
@@ -22,10 +23,10 @@ public class CentralMainPortListener implements Runnable {
     private final ServerSocket centralMainSocket;
     private final WorkersManager workersManager;
 
-    public CentralMainPortListener(int centralMainPort, WorkersManager workersManager) throws IllegalConfigException {
+    public CentralMainPortListener(int centralMainPort, WorkersManager workersManager, SocketOpener socketOpener) throws IllegalConfigException {
         this.workersManager = workersManager;
         try {
-            centralMainSocket = new ServerSocket(centralMainPort);
+            centralMainSocket = socketOpener.openServerSocketOnDefaultNic(centralMainPort);
         } catch (IOException e) {
             throw new IllegalConfigException("Can't open central server socket", e);
         }
