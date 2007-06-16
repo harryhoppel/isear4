@@ -16,9 +16,11 @@ public class MatrixRowSplitter<Value extends Matrix> implements DataSplitter<Val
         Arrays.fill(result, "");
         int part = (int) (Math.floor(size / parts) + size % parts);
         int index;
+        StringBuffer stringBuffer = new StringBuffer();
         for (index = 0; index < part; index++) {
-            result[0] += matrix.getRow(index).toString();
+            stringBuffer.append(matrix.getRow(index).toString());
         }
+        result[0] = stringBuffer.toString();
 
         int preIndex = part;
         int elseParts = 0;
@@ -26,13 +28,15 @@ public class MatrixRowSplitter<Value extends Matrix> implements DataSplitter<Val
             elseParts = (size - part) / (parts - 1);
         }
         for (int j = 1; j < parts; j++) {
-            for (;index < size; index++) {
+            stringBuffer = new StringBuffer();
+            for (; index < size; index++) {
                 if (index - preIndex == elseParts) {
                     preIndex = index;
                     break;
                 }
-                result[j] += matrix.getRow(index).toString();
+                stringBuffer.append(matrix.getRow(index).toString());
             }
+            result[j] = stringBuffer.toString();
         }
         return result;
     }
