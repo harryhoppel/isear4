@@ -4,11 +4,13 @@ import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 import org.spbgu.pmpu.athynia.central.network.impl.WorkersManagerImpl;
 import org.spbgu.pmpu.athynia.common.settings.Settings;
 import org.spbgu.pmpu.athynia.common.settings.impl.XmlSettings;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DataManager {
+    Logger LOG = Logger.getLogger(DataManager.class);
     private static DataManager ourInstance = new DataManager();
     private Map<Class<?>, Object> map = new HashMap<Class<?>, Object>();
 
@@ -24,7 +26,7 @@ public class DataManager {
             final WorkersManager workersManager = WorkersManagerImpl.getInstance();
             map.put(WorkersManager.class, workersManager);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("error initilization datamanager", e);
         }
     }
 

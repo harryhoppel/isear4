@@ -54,7 +54,7 @@ public class CentralClassLoaderServer {
             executor.execute(processor);
             executor.execute(new Server(InetAddress.getByName(HOST_ADDRESS), SERVER_PORT, processor));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error while starting classloader server", e);
         }
     }
 }

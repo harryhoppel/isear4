@@ -80,7 +80,7 @@ public class NetworkClassExecutor implements ClassExecutor {
                 }
                 DataManager.getInstance().getData(CentralConnectionManager.class).closeSocket();
             } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOG.error(e);
             }
 
         }
