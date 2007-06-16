@@ -41,7 +41,7 @@ public class Central {
     private final WorkersManager workersManager;
     private final String classLoaderHomeDir;
 
-    private SocketOpener socketOpener;
+    public static SocketOpener socketOpener;
 
     public Central() throws MalformedURLException {
         workersManager = DataManager.getInstance().getData(WorkersManager.class);
@@ -127,7 +127,7 @@ public class Central {
         LOG.info("Start sending the code");
         NetworkRunner<String> networkRunner = new NetworkRunnerImpl<String>();
         String joined = networkRunner.runRemotely(SplitReceiver.class,
-                new DataImpl<String>("xxx", TestString.LONG_STRING), new DataSplitterImpl(),
+                new DataImpl<String>("xxx", TestString.LONG_STRING), new DataSplitterImpl<String>(),
                 new DataImpl<String>("xxx", null), new DataJoinerImpl());
         System.out.println("joined = " + joined.length());
         System.out.println("TestString.LONG_STRING.length() = " + TestString.LONG_STRING.length());

@@ -1,6 +1,7 @@
 package org.spbgu.pmpu.athynia.central.network.communications.impl;
 
 import org.apache.log4j.Logger;
+import org.spbgu.pmpu.athynia.central.Central;
 import org.spbgu.pmpu.athynia.central.network.Worker;
 import org.spbgu.pmpu.athynia.central.network.communications.WorkersExecutorSender;
 
@@ -18,7 +19,7 @@ public class WorkersExecutorSenderImpl implements WorkersExecutorSender {
         BufferedOutputStream outputToWorker = null;
         Socket socketToWorker = null;
         try {
-            socketToWorker = new Socket(worker.getFullAddress().getAddress(), worker.getFullAddress().getPort());
+            socketToWorker = Central.socketOpener.openSocketOnDefaultNic(worker.getFullAddress().getAddress().toString(), worker.getFullAddress().getPort());
             outputToWorker = new BufferedOutputStream(socketToWorker.getOutputStream());
             LOG.debug("Sending class: " + executorClassName + " to " + socketToWorker.getInetAddress() + ":" + socketToWorker.getPort());
             outputToWorker.write(("loadClass:" + executorClassName).getBytes("UTF-8"));
