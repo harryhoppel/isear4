@@ -6,14 +6,7 @@ import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.ExecutorException;
 import org.spbgu.pmpu.athynia.common.ResourceManager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 /**
  * User: A.Selivanov
@@ -59,7 +52,7 @@ public class SaveToFileTask implements Executor {
             while ((s = reader.readLine()) != null) {
                 writer.write(s);
                 writer.write('\n');
-                System.out.println(s);
+                //System.out.println(s);
                 size += s.getBytes().length;
                 LOG.debug("size=" + size);
             }

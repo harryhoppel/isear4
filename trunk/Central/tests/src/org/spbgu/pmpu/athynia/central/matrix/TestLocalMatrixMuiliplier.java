@@ -3,6 +3,8 @@ package org.spbgu.pmpu.athynia.central.matrix;
 import junit.framework.TestCase;
 import org.spbgu.pmpu.athynia.central.matrix.impl.LocalMatrixOperator;
 
+import java.io.File;
+
 /**
  * User: A.Selivanov
  * Date: 03.06.2007
@@ -27,15 +29,15 @@ public class TestLocalMatrixMuiliplier extends TestCase {
         MatrixOperator operator = new LocalMatrixOperator();
         System.out.println("Start calculating matrix");
         long currentTime = System.currentTimeMillis();
-//        Matrix A = new Matrix(new File("Central/matrixA.txt"));
-        Matrix A = new Matrix(elementsA);
-//        Matrix B = new Matrix(new File("Central/matrixB.txt"));
-        Matrix B = new Matrix(elementsB);
+        Matrix A = new Matrix(new File("Central/matrixA.txt"));
+//        Matrix A = new Matrix(elementsA);
+        Matrix B = new Matrix(new File("Central/matrixB.txt"));
+//        Matrix B = new Matrix(elementsB);
         System.out.println("Finish opening, time: " + (System.currentTimeMillis() - currentTime) + "ms");
         currentTime = System.currentTimeMillis();
 //        Matrix matrix = operator.multiply(new Matrix(elementsA), new Matrix(elementsB));
         Matrix matrix = operator.multiply(A, B);
-        System.out.println(matrix);
+//        System.out.println(matrix);
         System.out.println("Finish calculating, time: " + (System.currentTimeMillis() - currentTime) + "ms");
 //        assertArrayEquals(result, matrix.getValues());
     }
