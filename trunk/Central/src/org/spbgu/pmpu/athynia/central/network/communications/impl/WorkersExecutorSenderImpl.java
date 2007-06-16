@@ -19,13 +19,13 @@ public class WorkersExecutorSenderImpl implements WorkersExecutorSender {
         BufferedOutputStream outputToWorker = null;
         Socket socketToWorker = null;
         try {
-            socketToWorker = Central.socketOpener.openSocketOnDefaultNic(worker.getFullAddress().getAddress().toString(), worker.getFullAddress().getPort());
+            socketToWorker = Central.socketOpener.openSocketOnDefaultNic(worker.getFullAddress().getAddress().getHostAddress(), worker.getFullAddress().getPort());
             outputToWorker = new BufferedOutputStream(socketToWorker.getOutputStream());
             LOG.debug("Sending class: " + executorClassName + " to " + socketToWorker.getInetAddress() + ":" + socketToWorker.getPort());
             outputToWorker.write(("loadClass:" + executorClassName).getBytes("UTF-8"));
             outputToWorker.flush();
             socketToWorker.shutdownOutput();
-            synchronized(this) {
+            synchronized (this) {
                 try {
                     wait(10);
                 } catch (InterruptedException ignore) {
