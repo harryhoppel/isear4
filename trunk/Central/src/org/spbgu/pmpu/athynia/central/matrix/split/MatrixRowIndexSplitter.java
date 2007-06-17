@@ -1,15 +1,15 @@
 package org.spbgu.pmpu.athynia.central.matrix.split;
 
-import org.spbgu.pmpu.athynia.central.matrix.Matrix;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSplitter;
+import org.spbgu.pmpu.athynia.central.matrix.Matrix;
 
 import java.util.Arrays;
 
 /**
  * User: A.Selivanov
- * Date: 06.06.2007
+ * Date: 17.06.2007
  */
-public class MatrixRowSplitter implements DataSplitter<Matrix> {
+public class MatrixRowIndexSplitter implements DataSplitter<Matrix> {
     public String[] splitData(Matrix matrix, int parts) {
         int size = matrix.size();
         String[] result = new String[parts];
@@ -18,7 +18,7 @@ public class MatrixRowSplitter implements DataSplitter<Matrix> {
         int index;
         StringBuffer stringBuffer = new StringBuffer();
         for (index = 0; index < part; index++) {
-            stringBuffer.append(matrix.getRow(index).toString());
+            stringBuffer.append(index).append(",");
         }
         result[0] = stringBuffer.toString();
 
@@ -34,10 +34,10 @@ public class MatrixRowSplitter implements DataSplitter<Matrix> {
                     preIndex = index;
                     break;
                 }
-                stringBuffer.append(matrix.getRow(index).toString());
+                stringBuffer.append(index).append(",");
             }
             result[j] = stringBuffer.toString();
         }
-        return result;
+        return result; 
     }
 }

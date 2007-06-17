@@ -11,7 +11,7 @@ import org.spbgu.pmpu.athynia.central.matrix.task.MatrixMuiltiplyTask;
  */
 public class TestMatrixSplitter extends TestCase {
     public void testRowSplit() {
-        DataSplitter<Matrix> splitter = new MatrixRowSplitter<Matrix>();
+        DataSplitter<Matrix> splitter = new MatrixRowSplitter();
         double[][] rowElements = {
             {1.0, 2.0, 3.0, 4.0, 5.0},
             {1.0, 2.0, 3.0, 4.0, 5.0},
@@ -56,7 +56,7 @@ public class TestMatrixSplitter extends TestCase {
     }
 
     public void testColumnSplit() {
-        DataSplitter<Matrix> splitter = new MatrixColumnSplitter<Matrix>();
+        DataSplitter<Matrix> splitter = new MatrixColumnSplitter();
         double[][] rowElements = {
             {1.0, 1.0, 1.0, 1.0, 1.0},
             {2.0, 2.0, 2.0, 2.0, 2.0},
@@ -108,6 +108,51 @@ public class TestMatrixSplitter extends TestCase {
         assertEquals(MatrixMuiltiplyTask.getStartIndex(10, 1, 10), 1);
         assertEquals(MatrixMuiltiplyTask.getStartIndex(10, 1, 3), 4);
         assertEquals(MatrixMuiltiplyTask.getStartIndex(10, 2, 4), 6);
+    }
+
+    public void testMatrixIndexSplitter(){
+        DataSplitter<Matrix> splitter = new MatrixRowIndexSplitter();
+        double[][] rowElements = {
+            {1.0, 1.0, 1.0, 1.0, 1.0},
+            {2.0, 2.0, 2.0, 2.0, 2.0},
+            {3.0, 3.0, 3.0, 3.0, 3.0},
+            {4.0, 4.0, 4.0, 4.0, 4.0},
+            {5.0, 5.0, 5.0, 5.0, 5.0}};
+
+        String[] test1 = {"0,1,2,3,4,"};
+        String[] test2 = {
+            "0,1,2,",
+            "3,4,"};
+        String[] test3 = {
+            "0,1,2,",
+            "3,",
+            "4,"};
+        String[] test4 = {
+            "0,1,",
+            "2,",
+            "3,",
+            "4,"};
+        String[] test5 = {
+            "0,",
+            "1,",
+            "2,",
+            "3,",
+            "4,"};
+        Matrix matrix = new Matrix(rowElements);
+        String[] result = splitter.splitData(matrix, 1);
+        assertStringArrayEquals(result, test1);
+
+        result = splitter.splitData(matrix, 2);
+        assertStringArrayEquals(result, test2);
+
+        result = splitter.splitData(matrix, 3);
+        assertStringArrayEquals(result, test3);
+
+        result = splitter.splitData(matrix, 4);
+        assertStringArrayEquals(result, test4);
+
+        result = splitter.splitData(matrix, 5);
+        assertStringArrayEquals(result, test5);
     }
 
     private void assertStringArrayEquals(String[] first, String[] second) {

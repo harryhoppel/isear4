@@ -46,6 +46,7 @@
         <copy file="lib/jdom.jar" todir="${production.lib.dir}"/>
         <copy file="lib/athynia-common.jar" todir="${production.lib.dir}"/>
         <copy file="lib/jdbm-1.0.jar" todir="${production.lib.dir}"/>
+        <copy file="lib/Jama-1.0.2.jar" todir="${production.lib.dir}"/>
     </target>
 
 

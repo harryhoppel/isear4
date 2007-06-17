@@ -19,6 +19,7 @@
         <zip basedir="${classloader.classes.dir}" destfile="${classloader.home.dir}/home.zip"/>
         <copy file="${central.dir}/${matrixA.file.name}" tofile="${classloader.home.dir}/${matrixA.file.name}" overwrite="true"/>
         <copy file="${central.dir}/${matrixB.file.name}" tofile="${classloader.home.dir}/${matrixB.file.name}" overwrite="true"/>
+        <copy file="${central.dir}/${matrixInverse.file.name}" tofile="${classloader.home.dir}/${matrixInverse.file.name}" overwrite="true"/>
     </target>
 
 
