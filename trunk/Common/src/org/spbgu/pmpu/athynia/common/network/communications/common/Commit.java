@@ -1,4 +1,4 @@
-package org.spbgu.pmpu.athynia.central.network.communications.common;
+package org.spbgu.pmpu.athynia.common.network.communications.common;
 
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.common.Executor;

@@ -1,4 +1,4 @@
-package org.spbgu.pmpu.athynia.central.network.communications.common;
+package org.spbgu.pmpu.athynia.common.network.communications.common;
 
 import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.ExecutorException;
