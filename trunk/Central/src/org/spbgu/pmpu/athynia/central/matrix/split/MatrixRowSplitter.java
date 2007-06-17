@@ -11,6 +11,9 @@ import java.util.Arrays;
  */
 public class MatrixRowSplitter implements DataSplitter<Matrix> {
     public String[] splitData(Matrix matrix, int parts) {
+        if (parts == 0) {
+            return new String[0];
+        }
         int size = matrix.size();
         String[] result = new String[parts];
         Arrays.fill(result, "");

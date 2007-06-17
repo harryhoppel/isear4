@@ -131,7 +131,7 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
 
     private void sendCommitTask(Worker worker) {
         boolean result = workersExecutorSender.runExecutorOnWorker(worker, Commit.class.getName());
-        LOG.debug("Commmit result: " + result);
+        LOG.debug("Commmit task was successefully send: " + result);
     }
 
     private void sendAbortTask(Worker worker) {

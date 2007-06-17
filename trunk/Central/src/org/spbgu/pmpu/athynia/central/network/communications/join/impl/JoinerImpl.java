@@ -4,8 +4,6 @@ import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.network.DataJoiner;
 import org.spbgu.pmpu.athynia.central.network.Worker;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
-import org.spbgu.pmpu.athynia.central.network.NetworkRunner;
-import org.spbgu.pmpu.athynia.central.network.impl.NetworkRunnerImpl;
 import org.spbgu.pmpu.athynia.central.network.communications.WorkersExecutorSender;
 import org.spbgu.pmpu.athynia.central.network.communications.impl.WorkersExecutorSenderImpl;
 import org.spbgu.pmpu.athynia.central.network.communications.join.Joiner;
@@ -71,8 +69,9 @@ public class JoinerImpl<Value> implements Joiner<Value> {
     }
 
     private JoinPart retrieveData(Worker worker) {
+        Socket workerSocket = null;
         try {
-            Socket workerSocket = worker.openSocket();
+            workerSocket = worker.openSocket();
             LOG.debug("Sending request for data to worker: " + workerSocket.getInetAddress() + ":" + workerSocket.getPort());
             BufferedInputStream inputFromWorker = new BufferedInputStream(workerSocket.getInputStream());
             byte[] joinPartLengthBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
@@ -83,6 +82,14 @@ public class JoinerImpl<Value> implements Joiner<Value> {
             return new JoinPartImpl(joinPartBuffer);
         } catch (IOException e) {
             return null; //ignore, we will throw an exception later
+        } finally{
+            try {
+                if (workerSocket != null) {
+                    workerSocket.close();
+                }
+            } catch (IOException e) {
+                LOG.warn("Can't close input stream from worker", e);
+            }
         }
     }
 
