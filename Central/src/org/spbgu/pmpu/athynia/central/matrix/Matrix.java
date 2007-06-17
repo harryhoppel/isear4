@@ -9,17 +9,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.StringTokenizer;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 public class Matrix {
     private static final Logger LOG = Logger.getLogger(Matrix.class);
     public static final String DELIMETERS = " ,;/><?\'\"\t\n\r!@#$%^&*()=|\\[]:";
-
-    private double[][] elements;
+    private Jama.Matrix matrix;
     private int size;
 
+
     public Matrix(double[][] elements) {
-        this.elements = elements;
-        size = elements.length;
+        matrix = new Jama.Matrix(elements);
+        size = matrix.getColumnDimension();
     }
 
     public Matrix(File matrixFile) {
@@ -29,12 +31,13 @@ public class Matrix {
             String line = reader.readLine();
             StringTokenizer tokenizer = new StringTokenizer(line, DELIMETERS);
             size = Integer.parseInt(tokenizer.nextToken());
-            elements = new double[size][size];
+
+            matrix = new Jama.Matrix(size, size);
 
             for (int i = 0; (line = reader.readLine()) != null; i++) {
                 tokenizer = new StringTokenizer(line, DELIMETERS);
                 for (int j = 0; tokenizer.hasMoreTokens(); j++) {
-                    elements[i][j] = Double.parseDouble(tokenizer.nextToken());
+                    matrix.set(i, j, Double.parseDouble(tokenizer.nextToken()));
                 }
             }
         } catch (IOException e) {
@@ -49,12 +52,12 @@ public class Matrix {
             String line = reader.readLine();
             StringTokenizer tokenizer = new StringTokenizer(line, DELIMETERS);
             size = Integer.parseInt(tokenizer.nextToken());
-            elements = new double[size][size];
+            matrix = new Jama.Matrix(size, size);
 
             for (int i = 0; (line = reader.readLine()) != null; i++) {
                 tokenizer = new StringTokenizer(line, DELIMETERS);
                 for (int j = 0; tokenizer.hasMoreTokens(); j++) {
-                    elements[i][j] = Double.parseDouble(tokenizer.nextToken());
+                    matrix.set(i, j, Double.parseDouble(tokenizer.nextToken()));
                 }
             }
         } catch (IOException e) {
@@ -63,105 +66,32 @@ public class Matrix {
     }
 
     public Matrix(int size) {
+        matrix = new Jama.Matrix(size, size);
         this.size = size;
-        elements = new double[size][size];
     }
 
     public Matrix() {
+        this(0);
+    }
 
+    public Matrix (Jama.Matrix matrix) {
+        this.matrix = matrix;
+        size = matrix.getColumnDimension();
     }
 
     public Matrix copy() {
-        double[][] result = new double[size][size];
-        for (int i = 0; i < size; i++) {
-            System.arraycopy(elements[i], 0, result[i], 0, size);
-        }
-        return new Matrix(result);
-    }
-
-    public Matrix invert() {
-        double result[][] = new double[size][size];
-        double b[][] = new double[size][size];
-        int index[] = new int[size];
-        for (int i = 0; i < size; ++i) b[i][i] = 1;
-
-        // Transform the matrix into an upper triangle
-        gaussian(index);
-
-        // Update the matrix b[i][j] with the ratios stored
-        for (int i = 0; i < size - 1; ++i)
-            for (int j = i + 1; j < size; ++j)
-                for (int k = 0; k < size; ++k)
-                    b[index[j]][k]
-                        -= elements[index[j]][i] * b[index[i]][k];
-
-        // Perform backward substitutions
-        for (int i = 0; i < size; ++i) {
-            result[size - 1][i] = b[index[size - 1]][i] / elements[index[size - 1]][size - 1];
-            for (int j = size - 2; j >= 0; --j) {
-                result[j][i] = b[index[j]][i];
-                for (int k = j + 1; k < size; ++k) {
-                    result[j][i] -= elements[index[j]][k] * result[k][i];
-                }
-                result[j][i] /= elements[index[j]][j];
-            }
-        }
-        return new Matrix(result);
-    }
-
-    private void gaussian(int index[]) {
-        double c[] = new double[size];
-
-        // Initialize the index
-        for (int i = 0; i < size; ++i) index[i] = i;
-
-        // Find the rescaling factors, one from each row
-        for (int i = 0; i < size; ++i) {
-            double c1 = 0;
-            for (int j = 0; j < size; ++j) {
-                double c0 = Math.abs(elements[i][j]);
-                if (c0 > c1) c1 = c0;
-            }
-            c[i] = c1;
-        }
-
-        // Search the pivoting element from each column
-        int k = 0;
-        for (int j = 0; j < size - 1; ++j) {
-            double pi1 = 0;
-            for (int i = j; i < size; ++i) {
-                double pi0 = Math.abs(elements[index[i]][j]);
-                pi0 /= c[index[i]];
-                if (pi0 > pi1) {
-                    pi1 = pi0;
-                    k = i;
-                }
-            }
-
-            // Interchange rows according to the pivoting order
-            int itmp = index[j];
-            index[j] = index[k];
-            index[k] = itmp;
-            for (int i = j + 1; i < size; ++i) {
-                double pj = elements[index[i]][j] / elements[index[j]][j];
-
-                // Record pivoting ratios below the diagonal
-                elements[index[i]][j] = pj;
-
-                // Modify other elements accordingly
-                for (int l = j + 1; l < size; ++l)
-                    elements[index[i]][l] -= pj * elements[index[j]][l];
-            }
-        }
+        return new Matrix(matrix.copy());
     }
 
     public String toString() {
+        //todo
         StringBuffer buf = new StringBuffer();
+        int size = size();
         buf.append(size);
         buf.append('\n');
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                buf.append(elements[i][j]).append(" ");
+                buf.append(getDouble(matrix.getArray()[i][j])).append(" ");
             }
             buf.append('\n');
         }
@@ -169,24 +99,11 @@ public class Matrix {
     }
 
     public double[][] getValues() {
-        return elements;
+        return matrix.getArray();
     }
 
     public double determinate() {
-        int index[] = new int[size];
-        gaussian(index);
-        double d = 1;
-        for (int i = 0; i < size; ++i) d = d * elements[index[i]][i];
-        int sgn = 1;
-        for (int i = 0; i < size; ++i) {
-            if (i != index[i]) {
-                sgn = -sgn;
-                int j = index[i];
-                index[i] = index[j];
-                index[j] = j;
-            }
-        }
-        return sgn * d;
+        return getDouble(matrix.det());
     }
 
     public int size() {
@@ -194,36 +111,85 @@ public class Matrix {
     }
 
     public void setElement(int i, int j, double value) {
-        elements[i][j] = value;
+        matrix.set(i, j, value);
     }
 
     public Vector getRow(int index) {
+        //todo
         double[] result = new double[size];
         for (int i = 0; i < size; i++) {
-            result[i] = elements[i][index];
+            result[i] = matrix.getArray()[i][index];
         }
         return new Vector(result);
     }
 
     public Vector getColumn(int index) {
-        return new Vector(elements[index]);
+        return new Vector(matrix.getArray()[index]);
     }
 
     public Matrix transpose() {
-        double[][] result = new double[size][size];
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                result[j][i] = elements[i][j];
-
-            }
-        }
-        return new Matrix(result);
+        return new Matrix(matrix.transpose());
     }
 
     public void setSize(int size) {
         this.size = size;
-        if (elements == null || elements.length != size || elements[0].length != size) {
-            elements = new double[size][size];
+        if (size == 0 || matrix.getArray().length != size || matrix.getArray()[0].length != size) {
+            matrix = new Jama.Matrix(size, size);
         }
+    }
+
+    public Matrix invert() {
+        return new Matrix(matrix.inverse());
+    }
+
+    public Matrix invert2() {
+        Matrix result = new Matrix(size);
+        double det = this.determinate();
+        System.out.println("det = " + det);
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                double minor = getMinorDet(i, j);
+                result.setElement(j, i, getDouble(minor / det));
+            }
+        }
+        return result;
+    }
+
+    public static double getDouble(double d) {
+        NumberFormat format = NumberFormat.getInstance();
+        Number number = null;
+        try {
+            number = format.parse(format.format(d));
+        } catch (ParseException e) {
+            LOG.warn("unknown double format", e);
+        }
+        assert number != null;
+        double result = number.doubleValue();
+        return result == 0.0 ? Math.abs(result) : result;
+    }
+
+    public boolean equals(Object obj) {
+        Matrix matrix = (Matrix) obj;
+        boolean result = size == matrix.size();
+        if (result) {
+            result = matrix.getMatrix().equals(matrix.getMatrix());
+        }
+        return result;
+    }
+
+    public double getMinorDet(int i, int j){
+        double sgn = Math.pow(-1, i + j);
+        int[] columnIndexes = new int[size - 1];
+        int[] rowIndexes = new int[size - 1];
+        for (int k = 0; k < size - 1; k++) {
+            if (i != k) columnIndexes[k] = k;
+            if (j != k) rowIndexes[k] = k;
+        }
+        Jama.Matrix minor = matrix.getMatrix(columnIndexes, rowIndexes);
+        return getDouble(sgn * minor.det());
+    }
+
+    private Jama.Matrix getMatrix() {
+        return matrix;
     }
 }

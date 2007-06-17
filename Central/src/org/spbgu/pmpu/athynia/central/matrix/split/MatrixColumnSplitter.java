@@ -9,8 +9,8 @@ import java.util.Arrays;
  * User: A.Selivanov
  * Date: 08.06.2007
  */
-public class MatrixColumnSplitter<Value extends Matrix> implements DataSplitter<Value> {
-    public String[] splitData(Value matrix, int parts) {
+public class MatrixColumnSplitter implements DataSplitter<Matrix> {
+    public String[] splitData(Matrix matrix, int parts) {
         int size = matrix.size();
         String[] result = new String[parts];
         Arrays.fill(result, "");
