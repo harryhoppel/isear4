@@ -17,4 +17,6 @@ public interface ResourceManager {
     public int getSize();
 
     public JoinPart search(String key);
+
+    void close();
 }

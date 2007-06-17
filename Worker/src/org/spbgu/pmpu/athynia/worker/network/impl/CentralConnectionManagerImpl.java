@@ -41,7 +41,7 @@ public class CentralConnectionManagerImpl implements CentralConnectionManager {
         } catch (IllegalConfigException e) {
             LOG.error("Can't listen to central's broadcasts!", e);
         } catch (IOException e) {
-            LOG.error("Can't setup socket opener");
+            LOG.error("Can't setup socket opener", e);
         }
     }
 

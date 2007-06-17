@@ -37,6 +37,7 @@
                 target="1.5">
             <classpath refid="classpath"/>
         </javac>
+        <copy file="log4j.properties" todir="${compiled.src.dir}"/>
     </target>
 
 
@@ -60,7 +61,8 @@
         <junit
                 fork="yes"
                 failureproperty="testFailed"
-                dir="${basedir}">
+                dir="${basedir}"
+                printsummary="withOutAndErr">
             <classpath refid="classpath"/>
             <batchtest todir="${tests.result.dir}/">
                 <formatter type="brief"/>

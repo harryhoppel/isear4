@@ -57,4 +57,8 @@ public class LocalResourceManager implements ResourceManager {
             return ret;
         }
     }
+
+    public void close() {
+        //nothing
+    }
 }
