@@ -70,7 +70,8 @@
             fork="yes"
             failureproperty="testFailed"
             filtertrace="yes"
-            dir="${basedir}" timeout="60000">
+            dir="${basedir}" timeout="60000"
+            printsummary="withOutAndErr">
             <classpath refid="classpath"/>
             <batchtest todir="${tests.result.dir}/">
                 <formatter type="brief"/>

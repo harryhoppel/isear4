@@ -5,6 +5,7 @@ import org.spbgu.pmpu.athynia.common.JoinPart;
 import org.spbgu.pmpu.athynia.common.ResourceManager;
 import org.spbgu.pmpu.athynia.worker.util.FileUtil;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -12,18 +13,23 @@ import java.io.IOException;
  * Date: 28.05.2007
  */
 public class TestBTreeResourseManager extends TestCase {
+    ResourceManager manager;
+
     public void tearDown() {
+        if (manager != null) {
+            manager.close();
+        }
         System.gc();
         String testFileName = BTreeResourceManager.DEFAULT_DATABASE_FILE_NAME;
-        FileUtil.deleteFile(testFileName);
-        FileUtil.deleteFile(testFileName + ".db");
-        FileUtil.deleteFile(testFileName + ".lg");
+        FileUtil.deleteFile(new File(testFileName).toURI());
+        FileUtil.deleteFile(new File(testFileName + ".db").toURI());
+        FileUtil.deleteFile(new File(testFileName + ".lg").toURI());
     }
 
     public void testManagerInsert() throws IOException {
         String key = "hello";
         String value = "world";
-        ResourceManager manager = new BTreeResourceManager();
+        manager = new BTreeResourceManager();
         manager.write(key, value, 1, 2, 1000);
         manager.commit();
         manager = new BTreeResourceManager();
@@ -32,7 +38,7 @@ public class TestBTreeResourseManager extends TestCase {
     }
 
     public void testBasics() throws IOException {
-        ResourceManager manager = new BTreeResourceManager();
+        manager = new BTreeResourceManager();
         String test0, test1, test2;
         String value1, value2;
 
@@ -54,7 +60,7 @@ public class TestBTreeResourseManager extends TestCase {
     }
 
     public void testAbort() {
-        ResourceManager manager = new BTreeResourceManager();
+        manager = new BTreeResourceManager();
         String test0, test1, test2;
         String value1, value2;
 
@@ -82,7 +88,7 @@ public class TestBTreeResourseManager extends TestCase {
     }
 
     public void testRemove() {
-        ResourceManager manager = new BTreeResourceManager();
+        manager = new BTreeResourceManager();
         String test0, test1, test2;
         String value1, value2;
 
@@ -110,7 +116,7 @@ public class TestBTreeResourseManager extends TestCase {
     }
 
     public void testLargeData() {
-        ResourceManager manager = new BTreeResourceManager();
+        manager = new BTreeResourceManager();
         int size = manager.getSize();
 
         int iterations = 5000;

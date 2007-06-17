@@ -12,6 +12,7 @@ import org.spbgu.pmpu.athynia.common.ResourceManager;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 
 import java.util.Properties;
+import java.io.IOException;
 
 /**
  * User: A.Selivanov
@@ -31,7 +32,6 @@ public class BTreeResourceManager implements ResourceManager {
     }
 
     public BTreeResourceManager(String dataBaseFileName){
-        PropertyConfigurator.configure("log4j.properties");
          try {
             recordManager = RecordManagerFactory.createRecordManager(dataBaseFileName, properties);
             long recid = recordManager.getNamedObject(BTREE_NAME);
@@ -97,6 +97,14 @@ public class BTreeResourceManager implements ResourceManager {
             LOG.error("Error while searching in Resorce BTree", e);
         }
         return null;
+    }
+
+    public void close() {
+        try {
+            recordManager.close();
+        } catch (IOException e) {
+            LOG.error("Error trying to close in Resorce BTree", e);
+        }
     }
 
 }
