@@ -2,11 +2,11 @@ package org.spbgu.pmpu.athynia.central.network;
 
 import org.spbgu.pmpu.athynia.common.network.SocketOpener;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Set;
-import java.io.IOException;
 
 /**
  * User: vasiliy
@@ -34,6 +34,4 @@ public interface WorkersManager {
     Worker findWorker(InetSocketAddress address);
 
     Socket openSocket(Worker worker) throws IOException;
-    void closeSocket(Worker worker) throws IOException;
-    void replaceSocket(Worker worker, Socket newConnection) throws IOException;
 }

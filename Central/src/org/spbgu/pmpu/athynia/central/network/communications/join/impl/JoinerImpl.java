@@ -57,12 +57,11 @@ public class JoinerImpl<Value> implements Joiner<Value> {
         workersExecutorSender.runExecutorOnWorker(worker, executorClass.getName());
         Socket socket;
         try {
-            socket = worker.openSocket();
+            socket = worker.getSocket();
             BufferedOutputStream outputToWorker = new BufferedOutputStream(socket.getOutputStream());
             outputToWorker.write(getIntInUtf8(key.length()).getBytes("UTF-8"));
             outputToWorker.write(key.getBytes("UTF-8"));
             outputToWorker.flush();
-            socket.shutdownOutput();
         } catch (IOException e) {
             LOG.warn("Can't communicate with worker: " + worker.getFullAddress(), e);
         }
@@ -71,7 +70,7 @@ public class JoinerImpl<Value> implements Joiner<Value> {
     private JoinPart retrieveData(Worker worker) {
         Socket workerSocket = null;
         try {
-            workerSocket = worker.openSocket();
+            workerSocket = worker.getSocket();
             LOG.debug("Sending request for data to worker: " + workerSocket.getInetAddress() + ":" + workerSocket.getPort());
             BufferedInputStream inputFromWorker = new BufferedInputStream(workerSocket.getInputStream());
             byte[] joinPartLengthBuffer = new byte[CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8];
@@ -82,15 +81,7 @@ public class JoinerImpl<Value> implements Joiner<Value> {
             return new JoinPartImpl(joinPartBuffer);
         } catch (IOException e) {
             return null; //ignore, we will throw an exception later
-        } finally{
-            try {
-                if (workerSocket != null) {
-                    workerSocket.close();
-                }
-            } catch (IOException e) {
-                LOG.warn("Can't close input stream from worker", e);
-            }
-        }
+        } 
     }
 
     private String getIntInUtf8(int i) {

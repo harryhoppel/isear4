@@ -90,7 +90,7 @@ public class Central {
             Thread broadcastingDaemonThread = new Thread(broadcastingThreadGroup, broadcastingDaemon, "Broadcasting daemon");
             broadcastingDaemonThread.start();
         } catch (IllegalConfigException e) {
-            LOG.error("Illegal broadcasting config: can't search for workers", e);
+            LOG.fatal("Illegal broadcasting config: can't search for workers", e);
         }
     }
 

@@ -12,6 +12,5 @@ public interface Worker {
 
     int getMainPort();
 
-    Socket openSocket() throws IOException;
-    void closeSocket() throws IOException;
+    Socket getSocket() throws IOException;
 }

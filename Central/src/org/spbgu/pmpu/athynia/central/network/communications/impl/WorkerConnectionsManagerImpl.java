@@ -27,33 +27,13 @@ public class WorkerConnectionsManagerImpl implements WorkerConnectionsManager {
 
     public Socket getSocket(Worker worker) throws IOException {
         LOG.debug("Acquiring socket for worker: " + worker.getFullAddress());
-        try {
-            Thread.sleep(1000); //debug...
-        } catch (InterruptedException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
         Socket ret = openedSockets.get(worker);
         if (ret == null) {
+            LOG.debug("Opening new socket to worker...");
             ret = socketOpener.openSocketOnDefaultNic(worker.getFullAddress().getHostName(), worker.getMainPort());
             openedSockets.put(worker, ret);
         }
         LOG.debug("Socket acquired for worker: " + ret.getInetAddress() + ":" + ret.getPort());
         return ret;
-    }
-
-    public synchronized void closeSocket(Worker worker) throws IOException {
-        Socket socketToClose = openedSockets.remove(worker);
-        LOG.debug("Trying to close socket: " + socketToClose.getInetAddress() + ":" + socketToClose.getPort());
-        socketToClose.close();
-        LOG.debug("Socket was closed");
-    }
-
-    public void replaceWorkerConnection(Worker worker, Socket newConnection) throws IOException {
-        Socket socketToreplace = openedSockets.remove(worker);
-        if (socketToreplace != null) {
-            socketToreplace.close();
-        }
-        LOG.debug("Replacing worker's socket; worker: " + worker.getFullAddress() + ", new socket: " + newConnection.getInetAddress() + ":" + newConnection.getPort());
-        openedSockets.put(worker, newConnection);
     }
 }

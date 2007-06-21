@@ -3,9 +3,9 @@ package org.spbgu.pmpu.athynia.central.network.impl;
 import org.spbgu.pmpu.athynia.central.network.Worker;
 import org.spbgu.pmpu.athynia.central.network.WorkersManager;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.io.IOException;
 
 /**
  * User: vasiliy
@@ -29,12 +29,8 @@ public class WorkerImpl implements Worker {
         return mainPort;
     }
 
-    public Socket openSocket() throws IOException {
+    public Socket getSocket() throws IOException {
         return manager.openSocket(this);
-    }
-
-    public void closeSocket() throws IOException {
-        manager.closeSocket(this);
     }
 
     public WorkersManager getRegisteredManager() {
