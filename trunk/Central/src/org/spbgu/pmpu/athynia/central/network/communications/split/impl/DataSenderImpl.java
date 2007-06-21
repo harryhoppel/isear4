@@ -3,14 +3,14 @@ package org.spbgu.pmpu.athynia.central.network.communications.split.impl;
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.network.Worker;
 import org.spbgu.pmpu.athynia.central.network.communications.WorkersExecutorSender;
-import org.spbgu.pmpu.athynia.common.network.communications.common.Abort;
-import org.spbgu.pmpu.athynia.common.network.communications.common.Commit;
 import org.spbgu.pmpu.athynia.central.network.communications.impl.WorkersExecutorSenderImpl;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSender;
 import org.spbgu.pmpu.athynia.central.network.communications.split.DataSplitter;
 import org.spbgu.pmpu.athynia.common.CommunicationConstants;
 import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
+import org.spbgu.pmpu.athynia.common.network.communications.common.Abort;
+import org.spbgu.pmpu.athynia.common.network.communications.common.Commit;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -56,20 +56,8 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
             LOG.debug("Data wasn't committed");
             for (Worker worker : workers) {
                 sendAbortTask(worker);
-                try {
-                    worker.closeSocket();
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
             }
             return false;
-        }
-        for (Worker worker : workers) {
-            try {
-                worker.closeSocket();
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
         }
         LOG.debug("Data was committed successfully");
         return true;
@@ -77,16 +65,14 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
 
     private void sendDataTask(Class<? extends Executor> klass, Worker worker, String key, String data, int particularPartNumber, int wholePartsQuantity) {
         workersExecutorSender.runExecutorOnWorker(worker, klass.getName());
-        BufferedOutputStream outputToWorker;
         try {
-            Socket workersSocket = worker.openSocket();
+            Socket workersSocket = worker.getSocket();
             LOG.debug("Trying to send data to worker: " + worker.getFullAddress().getHostName() + ":" + worker.getMainPort());
-            outputToWorker = new BufferedOutputStream(workersSocket.getOutputStream());
+            BufferedOutputStream outputToWorker = new BufferedOutputStream(workersSocket.getOutputStream());
             LOG.debug("sending key = " + key + ", particularPartNumber = " + particularPartNumber + ", wholePartsQuantity = " + wholePartsQuantity + "datasize = " + data.getBytes().length);
             outputToWorker.write(new JoinPartImpl(key, data, particularPartNumber, wholePartsQuantity).toBinaryForm());
             outputToWorker.flush();
             LOG.debug("outputToWorker flushes");
-            workersSocket.shutdownOutput();
         } catch (IOException e) {
             LOG.warn("Can't send data to worker: " + worker.getFullAddress(), e);
         }
@@ -103,26 +89,18 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
         for (Worker worker : workers) {
             Socket socket = null;
             try {
-                socket = worker.openSocket();
+                socket = worker.getSocket();
             } catch (IOException e) {
                 LOG.warn("Can't open socket to worker: " + worker.getFullAddress(), e);
             }
             byte[] buffer = new byte[CommunicationConstants.OK_STRING_SIZE_IN_BYTES_IN_UTF8];
-            InputStream inputStream = null;
             try {
-                inputStream = socket.getInputStream();
+                InputStream inputStream = socket.getInputStream();
                 inputStream.read(buffer);
-                socket.shutdownInput();
                 if (!new String(buffer, "UTF-8").equals("OK")) return false;
             } catch (IOException e) {
                 LOG.debug("DataSenderImpl.waitForCompletion finish, returns " + false + ", it takes = " + (System.currentTimeMillis() - time) +" ms");
                 return false;
-            } finally {
-                if (inputStream != null) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {/*ignore*/}
-                }
             }
         }
         LOG.debug("DataSenderImpl.waitForCompletion finish, returns " + true + ", it takes = " + (System.currentTimeMillis() - time) +" ms");

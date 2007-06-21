@@ -70,21 +70,12 @@ public class NetworkClassExecutor implements ClassExecutor {
         } catch (Throwable t) {
             LOG.warn("Exception was thrown while executing class:" + className, t);
             return false;
-        } finally {
+        } finally{
             try {
-                if (input != null) {
-                    input.close();
-                }
-                if (output != null) {
-                    output.close();
-                }
-                DataManager.getInstance().getData(CentralConnectionManager.class).closeSocket();
+                output.flush();
             } catch (IOException e) {
-                LOG.error(e);
             }
-
         }
-        //todo auto close streams
         return true;
     }
 }

@@ -5,12 +5,7 @@ import org.spbgu.pmpu.athynia.common.settings.IllegalConfigException;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.MulticastSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 
 /**
  * User: vasiliy
@@ -79,29 +74,13 @@ public class BroadcastListeningDaemon implements Runnable {
                 LOG.debug("Multicast socket closed in worker");
             }
         }
-        Socket socket = null;
-        OutputStream outputToCentral = null;
         try {
-            socket = new Socket(centralAddress, centralBroadcastPort);
-            outputToCentral = socket.getOutputStream();
+            Socket socket = new Socket(centralAddress, centralBroadcastPort);
+            OutputStream outputToCentral = socket.getOutputStream();
             outputToCentral.write((Integer.toString(workerClassloaderMainPort) + "," + Integer.toString(workerMainPort)).getBytes("UTF-8"));
+            outputToCentral.flush();
         } catch (IOException e) {
             LOG.error("Can't communicate with central", e);
-        } finally {
-            if (outputToCentral != null) {
-                try {
-                    outputToCentral.close();
-                } catch (IOException e) {
-                    LOG.error("Can't close opened stream to central", e);
-                }
-            }
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    LOG.error("Can't close opened socket to central", e);
-                }
-            }
         }
     }
 

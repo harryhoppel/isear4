@@ -59,14 +59,7 @@ public class CentralMainPortListener implements Runnable {
                 continue;
             }
             WorkerImpl worker = new WorkerImpl(new InetSocketAddress(newAddress, classloaderPort), mainPort, workersManager);
-            boolean added = workersManager.addNewWorker(worker);
-            if (!added) {
-                try {
-                    workersManager.replaceSocket(worker, newConnection);
-                } catch (IOException e) {
-                    LOG.warn("Can't replace worker's socket with a new one; worker: " + newAddress + ":" + classloaderPort);
-                }
-            }
+            workersManager.addNewWorker(worker);
         }
     }
 

@@ -46,7 +46,7 @@ public class MatrixMuiltiplyTask implements Executor {
             BufferedReader reader = new BufferedReader(new InputStreamReader(fromServer));
             String s;
             List<Vector> vectors = new ArrayList<Vector>();
-            while ((s = reader.readLine()) != null) {
+            while (fromServer.available() > 0 && (s = reader.readLine())  != null) {
                 vectors.add(new Vector(s));
             }
 

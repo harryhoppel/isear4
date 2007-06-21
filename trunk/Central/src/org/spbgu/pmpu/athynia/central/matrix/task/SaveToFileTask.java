@@ -49,15 +49,18 @@ public class SaveToFileTask implements Executor {
             String s ;
             int size = 0;
 
-            while ((s = reader.readLine()) != null) {
+            while (fromServer.available() > 0 && (s = reader.readLine()) != null) {
                 writer.write(s);
                 writer.write('\n');
                 //System.out.println(s);
                 size += s.getBytes().length;
                 LOG.debug("size=" + size);
             }
+            LOG.debug("File was written");
             writer.flush();
+            LOG.debug("File was flushed to disk");
             writer.close();
+            LOG.debug("Matrix was written");
 
             toServer.write("OK".getBytes("UTF-8"));
             toServer.flush();

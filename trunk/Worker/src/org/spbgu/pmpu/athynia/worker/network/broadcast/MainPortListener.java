@@ -74,15 +74,6 @@ public class MainPortListener implements Runnable {
     }
 
     public synchronized void closeCentralConnection() {
-        if (connection != null) {
-            try {
-                connection.close();
-                connection = null;
-                LOG.debug("Socket to central was closed");
-            } catch (IOException e) {
-                LOG.warn("Can't close connection to central", e);
-            }
-        }
     }
 
     private String getIntInUtf8(int i) {
