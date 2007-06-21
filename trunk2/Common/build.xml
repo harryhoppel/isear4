@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<project name="Athynia-common" default="usage" basedir=".">
+
+    <property file="build.properties"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <pathelement location="${compiled.src.dir}"/>
+        <pathelement location="${compiled.tests.dir}"/>
+        <fileset dir="${tests.lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+
+    <target name="usage" description="Lists all ant-targets and their description">
+        <echo>
+            release - Compiles and tests everything (recommended task)
+
+            clean - Cleans everything what was done by build-script
+
+            compile - Compiles all project sources (and creates necessary folders)
+        </echo>
+    </target>
+
+
+    <target name="compile" description="Compiles all project sources(and creates necessary folders, sets logging up, copies settings-files etc.)">
+        <mkdir dir="${compiled.src.dir}"/>
+        <javac
+                srcdir="${src.dir}"
+                destdir="${compiled.src.dir}"
+                fork="yes"
+                debug="true"
+                debuglevel="source,lines,vars"
+                target="1.5">
+            <classpath refid="classpath"/>
+        </javac>
+        <copy file="log4j.properties" todir="${compiled.src.dir}"/>
+    </target>
+
+
+    <target name="tests-compile" description="Compiles all tests(and creates necessary folders)">
+        <mkdir dir="${compiled.tests.dir}"/>
+        <javac
+                srcdir="${tests.src.dir}"
+                destdir="${compiled.tests.dir}"
+                fork="yes"
+                debug="true"
+                debuglevel="source,lines,vars"
+                target="1.5">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+
+
+    <target name="test" description="Runs all tests" depends="tests-compile">
+        <delete dir="${tests.result.dir}" failonerror="true"/>
+        <mkdir dir="${tests.result.dir}"/>
+        <junit
+                fork="yes"
+                failureproperty="testFailed"
+                dir="${basedir}"
+                printsummary="withOutAndErr">
+            <classpath refid="classpath"/>
+            <batchtest todir="${tests.result.dir}/">
+                <formatter type="brief"/>
+                <fileset dir="${compiled.tests.dir}">
+                    <include name="**/*.class"/>
+                    <exclude name="org/spbgu/pmpu/athynia/common/network/SocketOpenerTest$1.class"/> <!-- not a test - a helper thread -->
+                </fileset>
+            </batchtest>
+        </junit>
+        <fail if="testFailed" message="Unlucky build - tests failed"/>
+    </target>
+
+
+    <target name="release" description="Compiles and tests everything" depends="jar,tests-compile,test"/>
+
+
+    <target name="clean release" description="Cleans, compiles and tests everything" depends="clean,jar,tests-compile,test"/>
+
+
+    <target name="jar" description="Creates jar-file with Athynia-common" depends="compile">
+        <mkdir dir="${jar.build.dir}"/>
+        <jar destfile="${jar.file.path}">
+            <manifest>
+                <attribute name="Class-Path" value="jdom.jar"/>
+            </manifest>
+            <fileset dir="${compiled.src.dir}"/>
+        </jar>
+    </target>
+
+
+    <target name="clean" description="Cleans everything what was done by build-script">
+        <delete failonerror="false" dir="${build.dir}"/>
+    </target>
+</project>

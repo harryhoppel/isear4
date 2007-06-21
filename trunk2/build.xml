@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<project name="Athynia-all" default="usage" basedir=".">
+
+    <property file="build.properties"/>
+
+
+    <target name="usage" description="Lists all ant-targets and their description">
+        <echo>
+            release - Compiles and tests everything
+            
+            clean - Cleans everything what was done by build-script
+        </echo>
+    </target>
+
+
+    <target name="release" description="Builds all" depends="release-common, release-central, release-worker">
+        <delete dir="${classloader.home.dir}"/>
+        <mkdir dir="${classloader.home.dir}"/>
+        <zip basedir="${classloader.classes.dir}" destfile="${classloader.home.dir}/home.zip"/>
+        <copy file="${central.dir}/${matrixA.file.name}" tofile="${classloader.home.dir}/${matrixA.file.name}" overwrite="true"/>
+        <copy file="${central.dir}/${matrixB.file.name}" tofile="${classloader.home.dir}/${matrixB.file.name}" overwrite="true"/>
+        <copy file="${central.dir}/${matrixInverse.file.name}" tofile="${classloader.home.dir}/${matrixInverse.file.name}" overwrite="true"/>
+    </target>
+
+
+    <target name="release-common" description="Builds common-libs">
+        <ant dir="${common.dir}" target="release" inheritall="false"/>
+    </target>
+
+
+    <target name="release-central" description="Builds central">
+        <copy file="${common.lib.jar}" todir="${central.libs.dir}" overwrite="true"/>
+        <ant dir="${central.dir}" target="release" inheritall="false"/>
+    </target>
+
+
+    <target name="release-worker" description="Builds worker">
+        <copy file="${common.lib.jar}" todir="${worker.libs.dir}" overwrite="true"/>
+        <ant dir="${worker.dir}" target="release" inheritall="false"/>
+    </target>
+
+
+    <target name="clean" description="Cleans everything" depends="clean-central, clean-worker, clean-common">    
+    </target>
+
+
+    <target name="clean-central" description="Cleans central">
+        <ant dir="${central.dir}" target="clean" inheritall="false"/>
+    </target>
+
+
+    <target name="clean-worker" description="Cleans worker">
+        <ant dir="${worker.dir}" target="clean" inheritall="false"/>
+    </target>
+
+
+    <target name="clean-common" description="Cleans common">
+        <ant dir="${common.dir}" target="clean" inheritall="false"/>
+    </target>
+</project>

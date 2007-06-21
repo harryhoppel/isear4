@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+<project name="Athynia-central" default="usage" basedir=".">
+
+    <property file="build.properties"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <pathelement location="${compiled.src.dir}"/>
+        <pathelement location="${compiled.tests.dir}"/>
+        <fileset dir="${tests.lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+
+    <target name="usage" description="Lists all ant-targets and their description">
+        <echo>
+            usage - This task
+
+            release - Compiles and tests everything (recommended task)
+
+            clean - Cleans everything what was done by build-script
+
+            compile - Compiles all project sources (and creates necessary folders)
+        </echo>
+    </target>
+
+
+    <target name="compile" description="Compiles all project sources(and creates necessary folders, sets logging up, copies settings-files etc.)">
+        <mkdir dir="${compiled.src.dir}"/>
+        <javac
+                srcdir="${src.dir}"
+                destdir="${compiled.src.dir}"
+                fork="yes"
+                debug="true"
+                debuglevel="source,lines,vars"
+                target="1.5">
+            <classpath refid="classpath"/>
+        </javac>
+        <copy file="log4j.properties" todir="${compiled.src.dir}"/>
+        <copy file="settings.xml" todir="${compiled.src.dir}"/>
+        <mkdir dir="${production.lib.dir}"/>
+        <copy file="lib/log4j-1.2.14.jar" todir="${production.lib.dir}"/>
+        <copy file="lib/jdom.jar" todir="${production.lib.dir}"/>
+        <copy file="lib/athynia-common.jar" todir="${production.lib.dir}"/>
+        <copy file="lib/Jama-1.0.2.jar" todir="${production.lib.dir}"/>
+        <copy file="run-central.sh" todir="${compiled.src.dir}"/>
+    </target>
+
+
+    <target name="tests-compile" description="Compiles all tests(and creates necessary folders)">
+        <mkdir dir="${compiled.tests.dir}"/>
+        <javac
+                srcdir="${tests.src.dir}"
+                destdir="${compiled.tests.dir}"
+                fork="yes"
+                debug="true"
+                debuglevel="source,lines,vars"
+                target="1.5">
+            <classpath refid="classpath"/>
+
+        </javac>
+    </target>
+
+
+    <target name="test" description="Runs all tests" depends="tests-compile">
+        <delete dir="${tests.result.dir}" failonerror="true"/>
+        <mkdir dir="${tests.result.dir}"/>
+        <junit
+                fork="yes"
+                failureproperty="testFailed"
+                dir="${basedir}"
+                printsummary="withOutAndErr">
+            <classpath refid="classpath"/>
+            <batchtest todir="${tests.result.dir}/">
+                <formatter type="brief"/>
+                <fileset dir="${compiled.tests.dir}">
+                    <include name="**/*.class"/>
+                    <exclude name="**/worker/**"/><!--classloaders classes-->
+                    <exclude name="org/spbgu/pmpu/athynia/central/classloader/testclasses/RemoteTest1.class"/> <!--not a test -->
+                </fileset>
+            </batchtest>
+        </junit>
+        <fail if="testFailed" message="Unlucky build - tests failed"/>
+    </target>
+
+
+    <target name="release" description="Compiles and tests everything" depends="jar,tests-compile,test"/>
+
+
+    <target name="clean release" description="Cleans, compiles and tests everything" depends="clean,jar,tests-compile,test"/>
+
+
+    <target name="jar" description="Creates jar-file with central-app" depends="compile">
+        <mkdir dir="${jar.build.dir}"/>
+        <delete dir="${temp.dir}" failonerror="true"/>
+        <mkdir dir="${temp.dir}"/>
+        <unjar dest="${temp.dir}">
+            <fileset dir="${production.lib.dir}" includes="*.jar"/> 
+        </unjar>
+        <jar destfile="${jar.file.path}">
+            <fileset dir="${compiled.src.dir}"
+                     excludes="run-central.sh,settings.xml,**/org/spbgu/pmpu/athynia/worker/classloader/usercode/simple/**"/>
+            <fileset dir="${temp.dir}"/>
+            <manifest>
+                <attribute name="Main-Class" value="org.spbgu.pmpu.athynia.central.Central"/>
+            </manifest>
+        </jar>
+        <delete dir="${temp.dir}" failonerror="true"/>
+        <copy file="${compiled.src.dir}/settings.xml" todir="${jar.build.dir}"/>
+    </target>
+
+
+    <target name="clean" description="Cleans everything what was done by build-script">
+        <delete failonerror="false" dir="${build.dir}"/>
+    </target>
+
+    <target name="data" description="build data for classloader" depends="compile">
+        <delete dir="${zip.serverdata.dir}"/>
+        <mkdir dir="${zip.serverdata.dir}"/>
+        <zip destfile="${zip.serverdata.dir}/${zip.serverData.name}">
+            <fileset dir="${compiled.src.dir}">
+                <include name="**/org/spbgu/pmpu/athynia/worker/classloader/usercode/simple/**"/>
+            </fileset>
+            <fileset dir="${zip.serverdata.dir}"/>
+        </zip>
+    </target>
+
+    <target name="test data" description="build test data for classloader" depends="tests-compile">
+        <delete dir="${zip.tests.serverdata.dir}"/>
+        <mkdir dir="${zip.tests.serverdata.dir}"/>
+        <zip destfile="${zip.tests.serverdata.dir}/${zip.tests.name}">
+            <fileset dir="${compiled.tests.dir}">
+                <include name="**/org/spbgu/pmpu/athynia/worker/classloader/usercode/simple/**"/>
+            </fileset>
+            <fileset dir="${zip.tests.serverdata.dir}"/>
+        </zip>
+    </target>
+</project>

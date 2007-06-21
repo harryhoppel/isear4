@@ -1,0 +1,27 @@
+<settings>
+    <common>
+        <central-server>
+            <port value="9999"/>
+            <class-loader-home-dir value="home"/>
+        </central-server>
+        <broadcast>
+            <broadcasting-timeout-in-ms value="5000"/>
+            <broadcast-local-port value="20000"/>
+            <broadcastAddress value="239.0.0.1"/>
+            <portToListen value="44445"/>
+            <nicName value="lo0"/>
+            <nicParticularAddress value="/127.0.0.1"/>
+        </broadcast>
+        <classloader>
+            <host-address value="127.0.0.1"/>
+            <port value="10000"/>
+        </classloader>
+    </common>
+    <tasks>
+           <matrix>
+               <matrixA value="home/matrixA.txt"/>
+               <matrixB value="home/matrixB.txt"/>
+               <matrixInverse value="home/matrixInverse.txt"/>
+           </matrix>
+       </tasks>
+</settings>

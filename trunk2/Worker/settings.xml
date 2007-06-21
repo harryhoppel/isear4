@@ -1,0 +1,19 @@
+<settings>
+    <broadcast>
+        <broadcast-port value="44445"/>
+        <group-address-to-join value="239.0.0.1"/>
+        <default-local-nic value="lo0"/>
+        <default-local-address value="/127.0.0.1"/>
+    </broadcast>
+    <classloader>
+        <home-directory value="home"/>
+    </classloader>
+    <server>
+        <host-address value="127.0.0.1"/>
+        <worker-main-classloader-port value="44446"/>
+        <worker-main-port value="44447"/>
+    </server>
+    <resource-manager>
+        <database_file_name value="test"/>
+    </resource-manager>
+</settings>
