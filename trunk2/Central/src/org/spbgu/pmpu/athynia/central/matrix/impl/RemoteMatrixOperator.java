@@ -62,7 +62,7 @@ public class RemoteMatrixOperator implements MatrixOperator {
             Matrix result = networkRunner.runRemotely(MatrixInverseTask.class,
                 new DataImpl<Matrix>("matrix", matrix), new MatrixRowIndexSplitter(),
                 new DataImpl<Matrix>("InverseMatrix", null), new MatrixJoiner());
-            LOG.debug("Finish MatrixMuiltiplyTask: it takes " + (System.currentTimeMillis() - time) + "ms");
+            LOG.debug("Finish MatrixInverseTask: it takes " + (System.currentTimeMillis() - time) + "ms");
             if (result != null) {
                 LOG.debug("Result length = " + result.size() + ", result[0][0] = " + result.getValues()[0][0]);
             }
