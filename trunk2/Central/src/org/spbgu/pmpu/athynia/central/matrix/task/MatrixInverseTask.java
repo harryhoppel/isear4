@@ -3,20 +3,17 @@ package org.spbgu.pmpu.athynia.central.matrix.task;
 import org.apache.log4j.Logger;
 import org.spbgu.pmpu.athynia.central.matrix.Matrix;
 import org.spbgu.pmpu.athynia.central.matrix.Vector;
+import org.spbgu.pmpu.athynia.common.CommunicationConstants;
 import org.spbgu.pmpu.athynia.common.Executor;
 import org.spbgu.pmpu.athynia.common.ExecutorException;
 import org.spbgu.pmpu.athynia.common.ResourceManager;
-import org.spbgu.pmpu.athynia.common.CommunicationConstants;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.List;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -72,11 +69,45 @@ public class MatrixInverseTask implements Executor {
 
             List<Vector> result = new ArrayList<Vector>();
 
+            final JProgressBar[] progressBar = new JProgressBar[1];
+            final JFrame[] frame = new JFrame[1];
+            try {
+                EventQueue.invokeAndWait(new Runnable() {
+                    public void run() {
+                        frame[0] = new JFrame();
+                        frame[0].setMinimumSize(new Dimension(700, 300));
+                        frame[0].setBounds(0, 0, 700, 300);
+                        JPanel panel = new JPanel(new GridBagLayout());
+                        panel.setBounds(0, 0, 700, 300);
+                        panel.setMinimumSize(new Dimension(700, 300));
+                        panel.setSize(700, 300);
+                        progressBar[0] = new JProgressBar();
+                        progressBar[0].setBounds(0, 0, 700, 300);
+                        progressBar[0].setMinimumSize(new Dimension(700, 300));
+                        progressBar[0].setPreferredSize(new Dimension(700, 300));
+                        progressBar[0].setBorderPainted(true);
+                        progressBar[0].setSize(700, 300);
+                        frame[0].add(progressBar[0]);
+                        frame[0].add(panel);
+                        frame[0].setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        frame[0].pack();
+                        frame[0].setVisible(true);
+                    }
+                });
+            } catch (InterruptedException e) {
+                LOG.warn("Interrupted! ", e);
+            } catch (InvocationTargetException e) {
+                LOG.warn("Wrong invocation target! ", e);
+            }
+            progressBar[0].setMaximum(indexes.size());
+            int progress = 0;
+
             for (Integer index : indexes) {
                 double[] elements = new double[size];
                 for (int i = 0; i < size; i++) {
                     elements[i] = compute(index, i);
                 }
+                progressBar[0].setValue(progress++);
                 result.add(new Vector(elements));
             }
 
@@ -86,6 +117,8 @@ public class MatrixInverseTask implements Executor {
             }
 
             manager.write("InverseMatrix", buf.toString(), partNumber, totalSplitNumber, 0);
+
+            frame[0].dispose();
 
             toServer.write("OK".getBytes("UTF-8"));
             toServer.flush();
