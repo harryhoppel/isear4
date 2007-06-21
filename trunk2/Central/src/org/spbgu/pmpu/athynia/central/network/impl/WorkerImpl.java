@@ -14,11 +14,21 @@ public class WorkerImpl implements Worker {
     private final InetSocketAddress address;
     private final WorkersManager manager;
     private final int mainPort;
+    private int state;
 
     public WorkerImpl(InetSocketAddress address, int mainPort, WorkersManager manager) {
         this.address = address;
         this.mainPort = mainPort;
         this.manager = manager;
+        state = 0;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 
     public InetSocketAddress getFullAddress() {

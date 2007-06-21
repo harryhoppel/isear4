@@ -16,6 +16,12 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
 
 /**
  * User: vasiliy
@@ -33,12 +39,19 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
         this.dataSplitter = dataSplitter;
     }
 
-    public boolean sendData(Class<? extends Executor> klass, String key, Value value, Worker[] workers) {
+    public boolean sendData(final Class<? extends Executor> klass, final String key, Value value, final Worker[] workers) {
         LOG.debug("DataSenderImpl.sendData lass= " + klass + ", key = " + key);
-        String[] splittedData = dataSplitter.splitData(value, workers.length);
+        final int wholePartsQuantity = workers.length;
+        final String[] splittedData = dataSplitter.splitData(value, wholePartsQuantity);
         LOG.debug("Have " + splittedData.length + " parts");
+        java.util.concurrent.Executor dataSender = Executors.newFixedThreadPool(wholePartsQuantity);
         for (int i = 0; i < workers.length; i++) {
-            sendDataTask(klass, workers[i], key, splittedData[i], i, workers.length);
+            final int part = i;
+            dataSender.execute(new Runnable() {
+                public void run() {
+                    sendDataTask(klass, workers[part], key, splittedData[part], part, wholePartsQuantity);
+                }
+            });
         }
         LOG.debug("Data was sent to workers");
         boolean sended = waitForCompletion(workers);
@@ -47,20 +60,33 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
             LOG.debug("Data wasn't committed");
             return false;
         }
-        for (Worker worker : workers) {
-            sendCommitTask(worker);
+        java.util.concurrent.Executor dataCommiter = Executors.newFixedThreadPool(wholePartsQuantity);
+        for (int i = 0; i < workers.length; i++) {
+            final int part = i;
+            dataCommiter.execute(new Runnable() {
+                public void run() {
+                    sendCommitTask(workers[part]);
+                }
+            });
         }
         LOG.debug("Commit tasks was sent to workers");
         boolean committed = waitForCompletion(workers);
         if (!committed) {
             LOG.debug("Data wasn't committed");
-            for (Worker worker : workers) {
-                sendAbortTask(worker);
-                try {
-                    worker.closeSocket();
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+            java.util.concurrent.Executor dataAborter = Executors.newFixedThreadPool(wholePartsQuantity);
+            for (int i = 0; i < workers.length; i++) {
+                final int part = i;
+                dataAborter.execute(new Runnable() {
+                    public void run() {
+                        sendAbortTask(workers[part]);
+                        try {
+                            workers[part].closeSocket();
+                        } catch (IOException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+
+                    }
+                });
             }
             return false;
         }
@@ -75,6 +101,16 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
         return true;
     }
 
+    private void restartTask(Class<? extends Executor> klass, String key, Worker[] workers, String[] splittedData) {
+        List<Integer> failedIndexes = new ArrayList<Integer>();
+        Queue<Worker> completedWorkers = new ArrayDeque<Worker>();
+        for (int i = 0; i < workers.length; i++) {
+            if (workers[i].getState() == Worker.COMPLETE_STATE) {
+                completedWorkers.add(workers[i]);
+            }
+        }
+    }
+
     private void sendDataTask(Class<? extends Executor> klass, Worker worker, String key, String data, int particularPartNumber, int wholePartsQuantity) {
         workersExecutorSender.runExecutorOnWorker(worker, klass.getName());
         BufferedOutputStream outputToWorker;
@@ -87,8 +123,11 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
             outputToWorker.flush();
             LOG.debug("outputToWorker flushes");
             workersSocket.shutdownOutput();
+            worker.setState(Worker.PROCESSING_STATE);
         } catch (IOException e) {
             LOG.warn("Can't send data to worker: " + worker.getFullAddress(), e);
+            e.printStackTrace();
+            worker.setState(Worker.FAIL_STATE);
         }
     }
 
@@ -106,6 +145,7 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
                 socket = worker.openSocket();
             } catch (IOException e) {
                 LOG.warn("Can't open socket to worker: " + worker.getFullAddress(), e);
+                worker.setState(Worker.FAIL_STATE);
             }
             byte[] buffer = new byte[CommunicationConstants.OK_STRING_SIZE_IN_BYTES_IN_UTF8];
             InputStream inputStream = null;
@@ -113,9 +153,13 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
                 inputStream = socket.getInputStream();
                 inputStream.read(buffer);
                 socket.shutdownInput();
-                if (!new String(buffer, "UTF-8").equals("OK")) return false;
+                if (!new String(buffer, "UTF-8").equals("OK")) {
+                    worker.setState(Worker.FAIL_STATE);
+                    return false;
+                }
             } catch (IOException e) {
-                LOG.debug("DataSenderImpl.waitForCompletion finish, returns " + false + ", it takes = " + (System.currentTimeMillis() - time) +" ms");
+                LOG.debug("DataSenderImpl.waitForCompletion finish, returns " + false + ", it takes = " + (System.currentTimeMillis() - time) + " ms");
+                worker.setState(Worker.FAIL_STATE);
                 return false;
             } finally {
                 if (inputStream != null) {
@@ -124,8 +168,10 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
                     } catch (IOException e) {/*ignore*/}
                 }
             }
+            worker.setState(Worker.COMPLETE_STATE);
         }
         LOG.debug("DataSenderImpl.waitForCompletion finish, returns " + true + ", it takes = " + (System.currentTimeMillis() - time) +" ms");
+
         return true;
     }
 

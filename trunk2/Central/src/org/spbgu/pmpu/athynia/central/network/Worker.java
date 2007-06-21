@@ -8,6 +8,14 @@ import java.net.Socket;
  * User: vasiliy
  */
 public interface Worker {
+    final Integer NEW_STATE = 0;
+    final Integer PROCESSING_STATE = 1;
+    final Integer COMPLETE_STATE = 2;
+    final Integer FAIL_STATE = 3;
+
+    int getState();
+    void setState(int state);
+
     InetSocketAddress getFullAddress();
 
     int getMainPort();

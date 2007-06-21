@@ -17,7 +17,7 @@ public class MatrixExecutor implements Runnable{
     static final Settings matrixSetting = DataManager.getInstance().getData(Settings.class).childSettings("tasks").childSettings("matrix");
 
     public void run() {
-        matrixMultiply();
+//        matrixMultiply();
         inverseMatrix();
     }
 

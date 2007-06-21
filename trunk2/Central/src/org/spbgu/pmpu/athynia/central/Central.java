@@ -1,6 +1,7 @@
 package org.spbgu.pmpu.athynia.central;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.spbgu.pmpu.athynia.central.classloader.CentralClassLoaderServer;
 import org.spbgu.pmpu.athynia.central.matrix.MatrixExecutor;
 import org.spbgu.pmpu.athynia.central.network.NetworkRunner;
@@ -124,14 +125,14 @@ public class Central {
         central.start();
 
         Thread.sleep(10 * 1000);
-        LOG.info("Start sending the code");
-        NetworkRunner<String> networkRunner = new NetworkRunnerImpl<String>();
-        String joined = networkRunner.runRemotely(SplitReceiver.class,
-                new DataImpl<String>("xxx", TestString.LONG_STRING), new DataSplitterImpl<String>(),
-                new DataImpl<String>("xxx", null), new DataJoinerImpl());
-        System.out.println("joined = " + joined.length());
-        System.out.println("TestString.LONG_STRING.length() = " + TestString.LONG_STRING.length());
-        System.out.println(TestString.LONG_STRING.equals(joined));
+//        LOG.info("Start sending the code");
+//        NetworkRunner<String> networkRunner = new NetworkRunnerImpl<String>();
+//        String joined = networkRunner.runRemotely(SplitReceiver.class,
+//                new DataImpl<String>("xxx", TestString.LONG_STRING), new DataSplitterImpl<String>(),
+//                new DataImpl<String>("xxx", null), new DataJoinerImpl());
+//        System.out.println("joined = " + joined.length());
+//        System.out.println("TestString.LONG_STRING.length() = " + TestString.LONG_STRING.length());
+//        System.out.println(TestString.LONG_STRING.equals(joined));
 
         ThreadGroup centralGroup = new ThreadGroup("Matrix threads");
         centralGroup.setMaxPriority(Thread.MAX_PRIORITY);
