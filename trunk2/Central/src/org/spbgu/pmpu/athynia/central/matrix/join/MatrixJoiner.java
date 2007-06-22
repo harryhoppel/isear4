@@ -31,9 +31,9 @@ public class MatrixJoiner implements DataJoiner<Matrix> {
         if (filteredRetrievedParts.size() == 0) {
             return null;
         }
-        if (filteredRetrievedParts.get(0).getWholePartsNumber() != filteredRetrievedParts.size()) {
-            return null;
-        }
+//        if (filteredRetrievedParts.get(0).getWholePartsNumber() != filteredRetrievedParts.size()) {
+//            return null;
+//        }
         Collections.sort(filteredRetrievedParts, new Comparator<JoinPart>() {
             public int compare(JoinPart o1, JoinPart o2) {
                 return ((Integer) o1.getPartNumber()).compareTo(o2.getPartNumber());

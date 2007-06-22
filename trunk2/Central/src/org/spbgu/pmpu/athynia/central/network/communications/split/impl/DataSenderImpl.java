@@ -18,9 +18,6 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Queue;
-import java.util.ArrayDeque;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.Executors;
 
 /**
@@ -56,23 +53,36 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
         LOG.debug("Data was sent to workers");
         boolean sended = waitForCompletion(workers);
         LOG.debug("Operation \"Wait for completion\" completed");
+
+        List<Integer> failIndexes = new ArrayList<Integer>();
         if (!sended) {
             LOG.debug("Data wasn't committed");
-            return false;
-        }
-        java.util.concurrent.Executor dataCommiter = Executors.newFixedThreadPool(wholePartsQuantity);
-        for (int i = 0; i < workers.length; i++) {
-            final int part = i;
-            dataCommiter.execute(new Runnable() {
-                public void run() {
-                    sendCommitTask(workers[part]);
+            for (int i = 0; i < workers.length; i++) {
+                if (workers[i].getState() == Worker.FAIL_STATE) {
+                    failIndexes.add(i);
                 }
-            });
+            }
+        }
+        java.util.concurrent.Executor dataCommiter = Executors.newFixedThreadPool(wholePartsQuantity - failIndexes.size());
+        for (int i = 0; i < workers.length; i++) {
+            if (!failIndexes.contains(i)) {
+                final int part = i;
+                dataCommiter.execute(new Runnable() {
+                    public void run() {
+                        sendCommitTask(workers[part]);
+                    }
+                });
+            }
         }
         LOG.debug("Commit tasks was sent to workers");
         boolean committed = waitForCompletion(workers);
+        boolean restarted = true;
         if (!committed) {
-            LOG.debug("Data wasn't committed");
+            restarted = restartFailedTasks(failIndexes, klass, key, splittedData, workers, wholePartsQuantity);
+        }
+
+        if (!restarted) {
+            LOG.error("Cant restarted task!");
             java.util.concurrent.Executor dataAborter = Executors.newFixedThreadPool(wholePartsQuantity);
             for (int i = 0; i < workers.length; i++) {
                 final int part = i;
@@ -90,6 +100,7 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
             }
             return false;
         }
+
         for (Worker worker : workers) {
             try {
                 worker.closeSocket();
@@ -101,14 +112,26 @@ public class DataSenderImpl<Value> implements DataSender<Value> {
         return true;
     }
 
-    private void restartTask(Class<? extends Executor> klass, String key, Worker[] workers, String[] splittedData) {
-        List<Integer> failedIndexes = new ArrayList<Integer>();
-        Queue<Worker> completedWorkers = new ArrayDeque<Worker>();
-        for (int i = 0; i < workers.length; i++) {
-            if (workers[i].getState() == Worker.COMPLETE_STATE) {
-                completedWorkers.add(workers[i]);
+    private boolean restartFailedTasks(List<Integer> failIndexes, final Class<? extends Executor> klass, final String key, final String[] splittedData, final Worker[] workers, final int wholePartsQuantity) {
+        LOG.debug("RestartFailedTasks");
+        for (int index = 0; index < failIndexes.size(); index++) {
+            Integer fail = failIndexes.get(index);
+            java.util.concurrent.Executor dataSender = Executors.newFixedThreadPool(failIndexes.size());
+            final int runnableWorker = fail == 0 ? fail + 1 : fail - 1;
+            dataSender.execute(new Runnable() {
+                public void run() {
+                    sendDataTask(klass, workers[runnableWorker], key, splittedData[runnableWorker], runnableWorker, wholePartsQuantity);
+                }
+            });
+            LOG.debug("Data was sent to workers");
+            boolean sended = waitForCompletion(new Worker[]{workers[runnableWorker]});
+            LOG.debug("Operation \"Wait for completion\" completed");
+            if (!sended) {
+                LOG.debug("Data wasn't committed");
+                return false;
             }
         }
+        return true;
     }
 
     private void sendDataTask(Class<? extends Executor> klass, Worker worker, String key, String data, int particularPartNumber, int wholePartsQuantity) {

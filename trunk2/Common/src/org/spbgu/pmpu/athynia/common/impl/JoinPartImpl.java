@@ -41,12 +41,12 @@ public class JoinPartImpl implements JoinPart {
             String keyLengthAsString = new String(binaryForm,
                     currentIndexInBinaryForm,
                     CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8, "UTF-8");
-            LOG.debug("Key length as string: " + keyLengthAsString);
             int keyLength = Integer.parseInt(decodeStringWithInteger(keyLengthAsString));
             currentIndexInBinaryForm += CommunicationConstants.INTEGER_LENGTH_IN_BYTES_IN_UTF8;
             key = new String(binaryForm,
                     currentIndexInBinaryForm,
                     keyLength, "UTF-8");
+            LOG.debug("Key: " + key);
             currentIndexInBinaryForm += keyLength;
             int valueLength = Integer.parseInt(decodeStringWithInteger(new String(binaryForm,
                     currentIndexInBinaryForm,
