@@ -88,6 +88,8 @@ public class BTreeResourceManager implements ResourceManager {
                     stringBuffer.append(" ");
                     stringBuffer.append(value);
                     newPart = new JoinPartImpl(key, stringBuffer.toString(), old.getPartNumber(), wholeNumbers);
+                } else if (old.getPartNumber() == currentPartNumber){
+                    newPart = new JoinPartImpl(key, value, currentPartNumber, wholeNumbers);
                 } else {
                     stringBuffer.append(value);
                     stringBuffer.append(" ");

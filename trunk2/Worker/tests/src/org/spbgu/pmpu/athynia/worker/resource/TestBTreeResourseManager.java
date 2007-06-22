@@ -162,6 +162,13 @@ public class TestBTreeResourseManager extends TestCase {
         manager.commit();
         joinPart = manager.search(key2);
         assertEquals("value2 value1", joinPart.getValue());
+        
+        manager.merge(key2, value1, 3, 5, 100);
+        manager.commit();
+        manager.merge(key2, value2, 3, 5, 100);
+        manager.commit();
+        joinPart = manager.search(key2);
+        assertEquals("value2", joinPart.getValue());
         assertEquals(3, joinPart.getPartNumber());
     }
 }
