@@ -10,7 +10,13 @@ import org.spbgu.pmpu.athynia.common.ResourceManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +122,7 @@ public class MatrixInverseTask implements Executor {
                 buf.append(aResult);
             }
 
-            manager.write("InverseMatrix", buf.toString(), partNumber, totalSplitNumber, 0);
+            manager.merge("InverseMatrix", buf.toString(), partNumber, totalSplitNumber, 0);
 
             frame[0].dispose();
 
