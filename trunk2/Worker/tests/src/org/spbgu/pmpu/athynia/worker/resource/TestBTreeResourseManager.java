@@ -3,6 +3,7 @@ package org.spbgu.pmpu.athynia.worker.resource;
 import junit.framework.TestCase;
 import org.spbgu.pmpu.athynia.common.JoinPart;
 import org.spbgu.pmpu.athynia.common.ResourceManager;
+import org.spbgu.pmpu.athynia.common.impl.JoinPartImpl;
 import org.spbgu.pmpu.athynia.worker.util.FileUtil;
 
 import java.io.File;
@@ -134,5 +135,33 @@ public class TestBTreeResourseManager extends TestCase {
         }
         manager.commit();
         assertEquals(size, manager.getSize());
+    }
+
+    public void testMerge() {
+        manager = new BTreeResourceManager();
+        String key1, key2;
+        String value1, value2;
+
+        key1 = "test0";
+        key2 = "test2";
+        value1 = "value1";
+        value2 = "value2";
+
+
+        manager.write(key1, value1, 0, 5, 100);
+        manager.commit();
+        manager.merge(key1, value2, 1, 5, 100);
+        manager.commit();
+        JoinPart joinPart = manager.search(key1);
+        assertEquals("value1 value2", joinPart.getValue());
+        assertEquals(0, joinPart.getPartNumber());
+
+        manager.merge(key2, value1, 4, 5, 100);
+        manager.commit();
+        manager.merge(key2, value2, 3, 5, 100);
+        manager.commit();
+        joinPart = manager.search(key2);
+        assertEquals("value2 value1", joinPart.getValue());
+        assertEquals(3, joinPart.getPartNumber());
     }
 }

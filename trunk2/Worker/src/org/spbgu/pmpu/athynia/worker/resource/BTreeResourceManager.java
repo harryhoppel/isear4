@@ -77,6 +77,33 @@ public class BTreeResourceManager implements ResourceManager {
         }
     }
 
+    public void merge(String key, String value, int currentPartNumber, int wholeNumbers, long timeoutUntilDrop) {
+        try {
+            JoinPart old = (JoinPart) tree.find(key);
+            if (old != null) {
+                JoinPart newPart = null;
+                StringBuffer stringBuffer = new StringBuffer();
+                if (old.getPartNumber() < currentPartNumber) {
+                    stringBuffer.append(old.getValue());
+                    stringBuffer.append(" ");
+                    stringBuffer.append(value);
+                    newPart = new JoinPartImpl(key, stringBuffer.toString(), old.getPartNumber(), wholeNumbers);
+                } else {
+                    stringBuffer.append(value);
+                    stringBuffer.append(" ");
+                    stringBuffer.append(old.getValue());
+                    newPart = new JoinPartImpl(key, stringBuffer.toString(), currentPartNumber, wholeNumbers);
+                }
+                tree.insert(key, newPart, true);
+            } else {
+                JoinPart joinPart = new JoinPartImpl(key, value, currentPartNumber, wholeNumbers);
+                tree.insert(key, joinPart, true);
+            }
+        } catch (IOException e) {
+            LOG.error("Error while searching in Resorce BTree", e);
+        }
+    }
+
     public JoinPart remove(String key) {
         try {
             return (JoinPart) tree.remove(key);

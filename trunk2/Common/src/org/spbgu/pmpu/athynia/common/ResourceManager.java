@@ -11,6 +11,7 @@ public interface ResourceManager {
 
     public void write(String key, String value);
     public void write(String key, String value, int currentPartNumber, int wholeNumbers, long timeoutUntilDrop);
+    public void merge(String key, String value, int currentPartNumber, int wholeNumbers, long timeoutUntilDrop);
 
     public JoinPart remove(String key);
 

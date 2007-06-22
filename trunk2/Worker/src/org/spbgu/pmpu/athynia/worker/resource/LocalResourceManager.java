@@ -26,6 +26,10 @@ public class LocalResourceManager implements ResourceManager {
         LOG.debug("New pre-commit write to index: " + key + " ---> " + value);
     }
 
+    public void merge(String key, String value, int currentPartNumber, int wholeNumbers, long timeoutUntilDrop) {
+        //nothing
+    }
+
     public JoinPart remove(String key) {
         return index.remove(key);
     }
